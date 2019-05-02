@@ -1,0 +1,9 @@
+{
+    "private": true,
+    "scripts": {
+        "test": "npx mocha --recursive ./tests/*_test.js"
+    },
+    "devDependencies": {
+        "mocha": "^6.1.4"
+    }
+}

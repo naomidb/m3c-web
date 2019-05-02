@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>M3C Profile</title>
+
+    <link href="m3c.css" />
+    <link href="person.css" />
+
+    <!-- Promise and window.fetch polyfills for Internet Explorer -->
+    <script crossorigin="" src="https://cdn.jsdelivr.net/npm/promise-polyfill@8/dist/polyfill.min.js"></script>
+    <script crossorigin src="https://unpkg.com/whatwg-fetch@3.0.0/dist/fetch.umd.js"></script>
+</head>
+<body>
+    
+    <div id="profile">
+
+    </div>
+
+    <!-- The order is important. -->
+    <script src="tpf.js"></script>
+    <script src="m3c.js"></script>
+
+    <script>
+        console.log("M3C")
+        var endpoint = "http://stage.vivo.metabolomics.info/tpf/core"
+        var client = new m3c.Client(endpoint)
+        
+        client.GetPerson("https://vivo.metabolomics.info/individual/n007")
+          .then(function (person) {
+              if (!person) return
+
+              for (let i = 0; i < person.triples.length; i++) {
+                  const t = person.triples[i]
+                  console.log(t.Subject, t.Predicate, t.Object)
+              }
+
+              document.getElementById("profile").innerHTML = 
+                "<h1>" + person.Name() + "</h1>"
+          })
+          .catch(console.error)
+    </script>
+</body>
+</html>
