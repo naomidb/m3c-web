@@ -15,32 +15,34 @@
 </head>
 <body>
     
-    <div id="profile">
-
-    </div>
+    <div id="profile"></div>
 
     <!-- The order is important. -->
     <script src="tpf.js"></script>
     <script src="m3c.js"></script>
 
     <script>
-        console.log("M3C")
-        var endpoint = "http://stage.vivo.metabolomics.info/tpf/core"
-        var client = new m3c.Client(endpoint)
-        
-        client.GetPerson("https://vivo.metabolomics.info/individual/n007")
-          .then(function (person) {
-              if (!person) return
+        const
+            foaf = "http://xmlns.com/foaf/0.1/",
+            obo = "http://purl.obolibrary.org/obo/",
+            rdf = "http://www.w3.org/1999/02/22-rdf-syntax-ns#",
+            rdfs = "http://www.w3.org/2000/01/rdf-schema#",
+            vcard = "http://www.w3.org/2006/vcard/ns#"
 
-              for (let i = 0; i < person.triples.length; i++) {
-                  const t = person.triples[i]
-                  console.log(t.Subject, t.Predicate, t.Object)
-              }
+        const endpoint = "http://stage.vivo.metabolomics.info/tpf/core"
+        const jamesBond = "https://vivo.metabolomics.info/individual/n007"
 
-              document.getElementById("profile").innerHTML = 
-                "<h1>" + person.Name() + "</h1>"
-          })
-          .catch(console.error)
+        m3c.Configure(endpoint)
+
+        m3c.Query(jamesBond)
+            .Link(obo, "ARG_2000028")
+            .Link(vcard, "hasEmail")
+            .Link(vcard, "email")
+            .Results(function (emails) {
+                document.getElementById("profile").innerHTML =
+                emails.join("<br />")
+            })
     </script>
 </body>
+
 </html>
