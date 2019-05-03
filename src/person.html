@@ -19,7 +19,6 @@
 
     <!-- The order is important. -->
     <script src="tpf.js"></script>
-    <script src="m3c.js"></script>
 
     <script>
         const
@@ -32,15 +31,15 @@
         const endpoint = "http://stage.vivo.metabolomics.info/tpf/core"
         const jamesBond = "https://vivo.metabolomics.info/individual/n007"
 
-        m3c.Configure(endpoint)
-
-        m3c.Query(jamesBond)
+        const client = new tpf.Client(endpoint)
+        client
+            .Entity(jamesBond)
             .Link(obo, "ARG_2000028")
             .Link(vcard, "hasEmail")
             .Link(vcard, "email")
             .Results(function (emails) {
                 document.getElementById("profile").innerHTML =
-                emails.join("<br />")
+                    emails.join("<br />")
             })
     </script>
 </body>
