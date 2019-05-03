@@ -10,12 +10,20 @@
     <link href="person.css" />
 
     <!-- Promise and window.fetch polyfills for Internet Explorer -->
-    <script crossorigin="" src="https://cdn.jsdelivr.net/npm/promise-polyfill@8/dist/polyfill.min.js"></script>
+    <script crossorigin src="https://cdn.jsdelivr.net/npm/promise-polyfill@8/dist/polyfill.min.js"></script>
     <script crossorigin src="https://unpkg.com/whatwg-fetch@3.0.0/dist/fetch.umd.js"></script>
 </head>
 <body>
     
-    <div id="profile"></div>
+    <div id="profile">
+        <h1 id="name"></h1>
+
+        <h2>Emails</h2>
+        <ul id="emails"></ul>
+
+        <h2>Phones</h2>
+        <ul id="phones"></ul>
+    </div>
 
     <!-- The order is important. -->
     <script src="tpf.js"></script>
@@ -32,14 +40,40 @@
         const jamesBond = "https://vivo.metabolomics.info/individual/n007"
 
         const client = new tpf.Client(endpoint)
+
+        client
+            .Entity(jamesBond)
+            .Link(rdfs, "label")
+            .Results(function (labels) {
+                document.getElementById("name").innerHTML = labels[0]
+            })
+
+        client
+            .Entity(jamesBond)
+            .Link(obo, "ARG_2000028")
+            .Link(vcard, "hasTelephone")
+            .Link(vcard, "telephone")
+            .Results(function (phones) {
+                document.getElementById("phones").innerHTML =
+                    phones
+                        .map(function (phone) {
+                            return "<li>" + phone + "</li>"
+                        })
+                        .join("\n")
+            })
+
         client
             .Entity(jamesBond)
             .Link(obo, "ARG_2000028")
             .Link(vcard, "hasEmail")
             .Link(vcard, "email")
             .Results(function (emails) {
-                document.getElementById("profile").innerHTML =
-                    emails.join("<br />")
+                document.getElementById("emails").innerHTML =
+                    emails
+                        .map(function (email) {
+                            return "<li>" + email + "</li>"
+                        })
+                        .join("\n")
             })
     </script>
 </body>
