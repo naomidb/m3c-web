@@ -53,7 +53,9 @@ One of the novel ideas for the web frontend is to use only the TPF server to
 fetch data.
 
 The TPF Client is implemented in [`src/tpf.js`](src/tpf.js). It features a
-[fluent interface][] inte
+[fluent interface][] and caching to eliminate unnecessary calls to the server.
+
+
 
 
 [fluent interface]: https://en.wikipedia.org/wiki/Fluent_interface
