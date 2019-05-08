@@ -2,23 +2,27 @@
 
 if (typeof require !== "undefined") {
     var str = require("./str.js")
+    var tpf = require("./tpf.js")
 }
 
-var ppl = (function namespace() {
+/**
+ * Functions related to a Person or people.
+ * @module ppl
+ */
+var ppl = (function module() {
     const
         base = "http://www.metabolomics.info/ontologies/2019/metabolomics-consortium#",
-        foaf = "http://xmlns.com/foaf/0.1/",
         obo = "http://purl.obolibrary.org/obo/",
-        rdf = "http://www.w3.org/1999/02/22-rdf-syntax-ns#",
         rdfs = "http://www.w3.org/2000/01/rdf-schema#",
         vcard = "http://www.w3.org/2006/vcard/ns#",
         vitro = "http://vitro.mannlib.cornell.edu/ns/vitro/public#"
 
     /**
+     * Fills in the HTML element for the specified entity using the TPF client.
      *
-     * @param {tpf.client} client
-     * @param {string} entity
-     * @param {Element} element Root node for this profile.
+     * @param {tpf.Client} client
+     * @param {string}     entity  IRI for the person.
+     * @param {Element}    element Root HTML node for this profile.
      */
     function RenderPerson(client, entity, element) {
         client
@@ -49,9 +53,8 @@ var ppl = (function namespace() {
         client
             .Entity(entity)
             .Link(base, "isPIfor")
-            .Results(function (projectURIs) {
-                console.log({ projectURIs })
-            })
+            .Results(renderProjects)
+
 
         function renderEmails(emails) {
             const ul = element.querySelector(".emails")
@@ -97,8 +100,33 @@ var ppl = (function namespace() {
                 img.src = urls[0]
             }
         }
+
+        function renderProjects(projects) {
+            const ul = element.querySelector("ul.projects")
+
+            projects.forEach(renderProject)
+
+            function renderProject(projectIRI) {
+                client
+                    .Entity(projectIRI)
+                    .Link(rdfs, "label")
+                    .Results(renderProjectListItem)
+
+                function renderProjectListItem(labels) {
+                    const li = document.createElement("li")
+                    ul.appendChild(li)
+
+                    li.innerHTML = str.Format(
+                        '<a href="project.html?{}">{}</a>',
+                        projectIRI.slice(1, -1),
+                        labels[0]
+                    )
+                }
+            }
+        }
     }
 
+    // Module Exports
     return {
         RenderPerson: RenderPerson
     }

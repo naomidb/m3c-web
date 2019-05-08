@@ -1,6 +1,14 @@
 "use strict"
 
-var tpf = (function namespace() {
+if (typeof require !== "undefined") {
+    // No imports.
+}
+
+/**
+ * Functionality used to interact with a Triple Pattern Fragment (TPF) server.
+ * @module tpf
+ */
+var tpf = (function module() {
 
     /**
      * Client for a Triple Pattern Fragment server.
@@ -10,6 +18,9 @@ var tpf = (function namespace() {
      * and Promise-based querying using {@link Client#Query}.
      */
     class Client {
+        /**
+         * @param {string} endpoint
+         */
         constructor(endpoint) {
             this.cache = {}
             this.endpoint = endpoint
@@ -79,6 +90,7 @@ var tpf = (function namespace() {
      * Creates an IRI Reference string of the form \<http://example.com/x>.
      * @param {string} prefix
      * @param {string} fragment
+     * @returns {string}
      */
     function IRIReference(prefix, fragment) {
         return "<" + prefix + fragment + ">"
@@ -87,6 +99,7 @@ var tpf = (function namespace() {
     /**
      * Parses n-triples into an array of three strings.
      * @param {string} text
+     * @returns {{Subject: string, Object: string, Predicate: string}}
      */
     function ParseTriples(text) {
         const triples = []
@@ -119,6 +132,7 @@ var tpf = (function namespace() {
      * @param {string} subject
      * @param {string} predicate
      * @param {string} object
+     * @returns {Promise<{Subject: string, Object: string, Predicate: string}>}
      */
     function Query(endpoint, subject, predicate, object) {
         const criteria = {
@@ -148,11 +162,14 @@ var tpf = (function namespace() {
             return str
         }
 
-        if (str[0] !== '"' || str[str.length - 1] !== '"') {
+
+        if (str[0] !== '"') {
             return str
         }
 
-        return str.slice(1, -1)
+        return str
+            .replace('^^<http://www.w3.org/1999/02/22-rdf-syntax-ns#langString>', '')
+            .slice(1, -1)
     }
 
     /** Encodes the individual parts of a query string to make it URI safe. */
@@ -263,7 +280,7 @@ var tpf = (function namespace() {
             triple.Predicate.indexOf(metadata) === -1
     }
 
-    // Namespace Exports
+    // Module Exports
     return {
         Client: Client,
         IRIReference: IRIReference,
