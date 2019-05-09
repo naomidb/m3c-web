@@ -16,16 +16,12 @@ var tpf = (function module() {
      * The main benefit of this client is its caching of previous TPF requests.
      * Additionally, it supports both a fluent API using {@link Client#Entity}
      * and Promise-based querying using {@link Client#Query}.
+     *
+     * @param {string} endpoint URL of the TPF server.
+     * @class
      */
-    class Client {
-        /**
-         * @param {string} endpoint
-         */
-        constructor(endpoint) {
-            this.cache = {}
-            this.endpoint = endpoint
-            this.lookup = this.lookup.bind(this)
-        }
+    function Client(endpoint) {
+        const cache = {}
 
         /**
          * Query the TPF server for an entity using a fluent/chaining interface.
@@ -39,7 +35,7 @@ var tpf = (function module() {
          *       .Link("http://www.w3.org/2006/vcard/ns#", "email")
          *       .Results(function (emails) { console.log(emails) })
          */
-        Entity(iri) {
+        this.Entity = function Entity(iri) {
             return new fluentQuery(this, iri)
         }
 
@@ -49,15 +45,12 @@ var tpf = (function module() {
          * @param {string} predicate
          * @param {string} object
          */
-        Query(subject, predicate, object) {
+        this.Query = function Query(subject, predicate, object) {
             return Query(this.endpoint, subject, predicate, object)
         }
 
         /** Queries the TPF server for the entity with `iri`, if not cached. */
-        lookup(iri) {
-            const valid = this.valid
-            const cache = this.cache
-
+        this.lookup = function lookup(iri) {
             if (valid(cache[iri])) {
                 return Promise.resolve(cache[iri].triples)
             }
@@ -74,7 +67,7 @@ var tpf = (function module() {
         }
 
         /** Returns whether an item is in the cache and is recent or not. */
-        valid(cacheItem) {
+        function valid(cacheItem) {
             if (!cacheItem) {
                 return false
             }
@@ -204,18 +197,16 @@ var tpf = (function module() {
      * This works by tracking, but postponing, the lookups until {@link Results}
      * is called. At that point, each entity is looked up, then filtered. The
      * process repeats until there are no more links to follow.
+     * @class
      */
-    class fluentQuery {
-        constructor(client, subject) {
-            this.client = client
-            this.subjects = [subject]
-            this.triples = []
-            this.functions = []
-        }
+    function fluentQuery(client, subject) {
+        const self = this
+        this.subjects = [subject]
+        this.triples = []
+        this.functions = []
 
-        Link(ontology, fragment) {
-            const self = this
-            const lookup = this.client.lookup
+        this.Link = function Link(ontology, fragment) {
+            const lookup = client.lookup
             const pred = IRIReference(ontology, fragment)
 
             function link() {
@@ -240,10 +231,9 @@ var tpf = (function module() {
         /**
          * Executes the query, then calling `callback` with the results.
          * @param {(results: string[])} callback
+         * @returns {fluentQuery}
          */
-        Results(callback) {
-            const self = this
-
+        this.Results = function Results(callback) {
             this.process()
                 .then(function () {
                     const decoded = self.subjects.map(decodeString)
@@ -253,12 +243,11 @@ var tpf = (function module() {
             return this
         }
 
-        process() {
+        this.process = function process() {
             if (this.functions.length === 0) {
                 return Promise.resolve(this.results)
             }
 
-            const self = this
             const head = this.functions.shift()
 
             return head()
