@@ -1,6 +1,7 @@
 "use strict"
 
 if (typeof require !== "undefined") {
+    var m3c = require("./m3c.js")
     var str = require("./str.js")
     var tpf = require("./tpf.js")
 }
@@ -115,6 +116,11 @@ var ppl = (function module() {
         function renderProjects(projects) {
             const ul = element.querySelector("ul.projects")
 
+            if (projects.length === 0) {
+                ul.innerHTML = "<li><em>None</em></li>"
+                return
+            }
+
             projects.forEach(renderProject)
 
             function renderProject(projectIRI) {
@@ -128,8 +134,8 @@ var ppl = (function module() {
                     ul.appendChild(li)
 
                     li.innerHTML = str.Format(
-                        '<a href="project.html?{}">{}</a>',
-                        projectIRI.slice(1, -1),
+                        '<a href="{}">{}</a>',
+                        m3c.ProfileLink("project", projectIRI.slice(1, -1)),
                         labels[0]
                     )
                 }

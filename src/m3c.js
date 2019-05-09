@@ -49,7 +49,7 @@ var m3c = (function module() {
 
         const endpoint = params.get("endpoint")
         if (endpoint) {
-            url += "&" + encodeURIComponent(endpoint)
+            url += "&endpoint=" + encodeURIComponent(endpoint)
         }
 
         return url
