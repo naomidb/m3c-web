@@ -25,6 +25,11 @@ var ppl = (function module() {
      * @param {Element}    element Root HTML node for this profile.
      */
     function RenderPerson(client, entity, element) {
+        if (!entity) {
+            element.innerText = "No profile specified."
+            return
+        }
+
         client
             .Entity(entity)
             .Link(rdfs, "label")
@@ -73,7 +78,13 @@ var ppl = (function module() {
         }
 
         function renderName(labels) {
-            const name = labels[0].trim()
+            let name = labels[0]
+            if (!name) {
+                element.innerText = "Unknown person."
+                return
+            }
+
+            name = name.trim()
             element.querySelector(".name").innerHTML = name
             element.querySelector(".photo").alt = name
         }

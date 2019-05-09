@@ -3,6 +3,16 @@ Metabolomics Consortium Coordinating Center (M3C) Web Frontend
 
 Web frontend for the M3C People Portal.
 
+Quickstart
+----------
+
+_Note: since there are no public releases yet, you must be on the University of
+Florida network to view anything._
+
+Open the `person.html` page in your browser and change the URL to:
+
+    person.html?iri=https://vivo.metabolomics.info/individual/n007&endpoint=http://stage.vivo.metabolomics.info/tpf/core
+
 
 Contributing
 ------------
