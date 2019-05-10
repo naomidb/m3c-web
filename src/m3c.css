@@ -5,3 +5,27 @@
 body {
     font-family: -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Oxygen-Sans,Ubuntu,Cantarell,"Helvetica Neue",sans-serif;
 }
+
+.template {
+    display: none;
+}
+
+ol,
+ul {
+    list-style-type: none;
+    padding-left: unset;
+}
+
+i.fa-phone,
+i.fa-envelope {
+    margin-right: 0.5em;
+}
+
+a,
+a:visited {
+    color: #bc581a;
+    text-decoration: none;
+}
+
+/* Orange #bc581a
+Blue #00529b */

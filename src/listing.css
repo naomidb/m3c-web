@@ -1,0 +1,11 @@
+ol.results li {
+    padding: 1em;
+}
+
+ol.results li {
+    border-bottom: 1px solid #00529b;
+}
+
+ol.results li:last-child {
+    border-bottom-color: transparent;
+}

@@ -34,6 +34,7 @@ var tpf = (function module() {
          *       .Link("http://www.w3.org/2006/vcard/ns#", "hasEmail")
          *       .Link("http://www.w3.org/2006/vcard/ns#", "email")
          *       .Results(function (emails) { console.log(emails) })
+         * @param {string} iri
          */
         this.Entity = function Entity(iri) {
             return new fluentQuery(this, iri)
@@ -41,12 +42,13 @@ var tpf = (function module() {
 
         /**
          * Query the TPF server.
+         * 
          * @param {string} subject
          * @param {string} predicate
          * @param {string} object
          */
-        this.Query = function Query(subject, predicate, object) {
-            return Query(this.endpoint, subject, predicate, object)
+        this.Query = function query(subject, predicate, object) {
+            return Query(endpoint, subject, predicate, object)
         }
 
         /** Queries the TPF server for the entity with `iri`, if not cached. */
@@ -147,6 +149,7 @@ var tpf = (function module() {
         return fetch(url, options)
             .then(function (data) { return data.text() })
             .then(ParseTriples)
+            .then(function (triples) { return triples.filter(useful) })
     }
 
     /** Removes the surrounding double-quotation marks from a string. */
@@ -239,6 +242,22 @@ var tpf = (function module() {
                     const decoded = self.subjects.map(decodeString)
                     callback(decoded)
                 })
+
+            return this
+        }
+
+        /**
+         * Executes the query and passes a single result to `callback`.
+         * @param {(result: string)} callback
+         */
+        this.Single = function Single(callback) {
+            this.Results(function (multiple) {
+                if (multiple.length === 0) {
+                    callback("")
+                } else {
+                    callback(multiple[0])
+                }
+            })
 
             return this
         }

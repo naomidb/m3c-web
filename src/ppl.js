@@ -13,10 +13,106 @@ if (typeof require !== "undefined") {
 var ppl = (function module() {
     const
         base = "http://www.metabolomics.info/ontologies/2019/metabolomics-consortium#",
+        foaf = "http://xmlns.com/foaf/0.1/",
         obo = "http://purl.obolibrary.org/obo/",
+        rdf = "http://www.w3.org/1999/02/22-rdf-syntax-ns#",
         rdfs = "http://www.w3.org/2000/01/rdf-schema#",
         vcard = "http://www.w3.org/2006/vcard/ns#",
         vitro = "http://vitro.mannlib.cornell.edu/ns/vitro/public#"
+
+    const placeholder = "http://stage.vivo.metabolomics.info/images/placeholders/person.thumbnail.jpg"
+
+    /**
+     * Fills in the HTML element for all Persons.
+     *
+     * @param {tpf.Client} client
+     * @param {Element}    element Root HTML node for this profile.
+     */
+    function RenderPeople(client, element) {
+        const ol = element.querySelector("ol")
+        const template = element.querySelector("li.person.template")
+
+        client
+            .Query(null, rdf + "type", foaf + "Person")
+            .then(function (results) {
+                results.forEach(function (triple) {
+                    renderPersonCard(triple.Subject.slice(1, -1))
+                })
+            })
+
+        function renderPersonCard(entity) {
+            const li = template.cloneNode(true)
+            li.className = li.className.replace("template", "")
+
+            const link = li.querySelector("a")
+            link.href = m3c.ProfileLink("person", entity)
+
+            ol.append(li)
+
+            client
+                .Entity(entity)
+                .Link(rdfs, "label")
+                .Single(renderName)
+
+            client
+                .Entity(entity)
+                .Link(vitro, "mainImage")
+                .Link(vitro, "downloadLocation")
+                .Single(renderPhoto)
+
+            client
+                .Entity(entity)
+                .Link(obo, "ARG_2000028")
+                .Link(vcard, "hasTelephone")
+                .Link(vcard, "telephone")
+                .Single(renderPhone)
+
+            client
+                .Entity(entity)
+                .Link(obo, "ARG_2000028")
+                .Link(vcard, "hasEmail")
+                .Link(vcard, "email")
+                .Single(renderEmail)
+
+            function renderEmail(email) {
+                if (!email) {
+                    return
+                }
+
+                li.querySelector(".email").innerHTML = str.Format(
+                    '<i class="fas fa-envelope"></i>{}',
+                    email
+                )
+            }
+
+            function renderName(name) {
+                name = name.trim()
+                link.querySelector(".name").innerText = name
+                link.querySelector(".photo").alt = name
+
+                sort(ol, 1)
+            }
+
+            function renderPhone(telephone) {
+                if (!telephone) {
+                    return
+                }
+
+                li.querySelector(".phone").innerHTML = str.Format(
+                    '<i class="fas fa-phone"></i>{}',
+                    telephone
+                )
+            }
+
+            function renderPhoto(src) {
+                if (!src) {
+                    src = placeholder
+                }
+
+                link.querySelector(".photo").src = src
+            }
+        }
+    }
 
     /**
      * Fills in the HTML element for the specified entity using the TPF client.
@@ -104,7 +200,6 @@ var ppl = (function module() {
 
         function renderPhoto(urls) {
             const img = element.querySelector(".photo")
-            const placeholder = "http://stage.vivo.metabolomics.info/images/placeholders/person.thumbnail.jpg"
 
             if (urls.length === 0) {
                 img.src = placeholder
@@ -143,9 +238,43 @@ var ppl = (function module() {
         }
     }
 
+    /**
+     * Sorts the HTML ordered list of Persons.
+     * @param {Element} root      Root element containing the `<ol>`.
+     * @param {number}  direction Descending <0; ascending >0; 0 is nonsense.
+     */
+    function Sort(root, direction) {
+        sort(root.querySelector("ol"), direction)
+    }
+
+    /** Sorts an ordered list's items. */
+    function sort(ol, direction) {
+        const lis = Array.prototype.slice.call(ol.querySelectorAll("li"))
+        lis.sort(function (a, b) {
+            const name1 = a.querySelector(".name").innerText.toUpperCase()
+            const name2 = b.querySelector(".name").innerText.toUpperCase()
+
+            if (!name1) return -1
+            if (!name2) return 1
+            if (name1 < name2) return -1 * direction
+            if (name1 > name2) return 1 * direction
+            return 0
+        })
+
+        while (ol.firstChild) {
+            ol.removeChild(ol.firstChild)
+        }
+
+        lis.forEach(function (li) {
+            ol.append(li)
+        })
+    }
+
     // Module Exports
     return {
-        RenderPerson: RenderPerson
+        RenderPeople: RenderPeople,
+        RenderPerson: RenderPerson,
+        Sort: Sort,
     }
 
 })()
