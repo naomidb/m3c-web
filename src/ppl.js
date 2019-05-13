@@ -59,6 +59,12 @@ var ppl = (function module() {
 
             client
                 .Entity(entity)
+                .Link(base, "associatedWith")
+                .Link(rdfs, "label")
+                .Single(renderOrganization)
+
+            client
+                .Entity(entity)
                 .Link(obo, "ARG_2000028")
                 .Link(vcard, "hasTelephone")
                 .Link(vcard, "telephone")
@@ -84,10 +90,16 @@ var ppl = (function module() {
 
             function renderName(name) {
                 name = name.trim()
-                link.querySelector(".name").innerText = name
+                link.querySelector(".name").innerHTML =
+                    '<i class="fas fa-user"></i>' + name
                 link.querySelector(".photo").alt = name
 
                 sort(ol, 1)
+            }
+
+            function renderOrganization(name) {
+                li.querySelector(".organization").innerHTML =
+                    '<i class="fas fa-building"></i>' + name.trim()
             }
 
             function renderPhone(telephone) {
@@ -127,13 +139,18 @@ var ppl = (function module() {
         client
             .Entity(entity)
             .Link(rdfs, "label")
-            .Results(renderName)
+            .Single(renderName)
 
         client
             .Entity(entity)
             .Link(vitro, "mainImage")
             .Link(vitro, "downloadLocation")
             .Results(renderPhoto)
+
+        client
+            .Entity(entity)
+            .Link(base, "associatedWith")
+            .Single(renderOrganization)
 
         client
             .Entity(entity)
@@ -219,8 +236,7 @@ var ppl = (function module() {
                 .join("\n")
         }
 
-        function renderName(labels) {
-            let name = labels[0]
+        function renderName(name) {
             if (!name) {
                 element.innerText = "Unknown person."
                 return
@@ -229,6 +245,20 @@ var ppl = (function module() {
             name = name.trim()
             element.querySelector(".name").innerHTML = name
             element.querySelector(".photo").alt = name
+        }
+
+        function renderOrganization(organizationIRI) {
+            client
+                .Entity(organizationIRI)
+                .Link(rdfs, "label")
+                .Single(function (name) {
+                    const div = element.querySelector(".organization")
+                    div.innerHTML = str.Format(
+                        '<i class="fas fa-building"></i><a href="{}">{}</a>',
+                        m3c.ProfileLink("organization", organizationIRI.slice(1, -1)),
+                        name
+                    )
+                })
         }
 
         function renderPhones(phones) {

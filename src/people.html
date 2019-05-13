@@ -27,7 +27,7 @@
     
     <div id="listing">
 
-        <button class="reverse">Reverse</button>
+        <a href="#" class="reverse">Reverse</a>
 
         <ol class="results">
             <!-- Templates aren't visible, but their clones are filled out with real data. -->
@@ -36,6 +36,7 @@
                     <img class="photo" width=64 height=64></img>
                     <div class="name"></div>
                 </a>
+                <div class="organization"></div>
                 <div class="email"></div>
                 <div class="phone"></div>
             </li>
@@ -52,10 +53,11 @@
         const client = m3c.NewTPFClient()
         const htmlRoot = document.getElementById("listing")
 
-        const btnReverse = htmlRoot.querySelector("button.reverse")
+        const ctrlReverse = htmlRoot.querySelector(".reverse")
         let direction = 1
 
-        btnReverse.addEventListener("click", function () {
+        ctrlReverse.addEventListener("click", function (clickEvent) {
+            clickEvent.preventDefault()
             direction *= -1
             ppl.Sort(htmlRoot, direction)
         })

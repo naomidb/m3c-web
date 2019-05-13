@@ -1,5 +1,6 @@
 ol.results li {
     padding: 1em;
+    line-height: 130%;
 }
 
 ol.results li {
@@ -8,4 +9,9 @@ ol.results li {
 
 ol.results li:last-child {
     border-bottom-color: transparent;
+}
+
+.name {
+    font-size: larger;
+    margin-bottom: 0.3em;
 }
