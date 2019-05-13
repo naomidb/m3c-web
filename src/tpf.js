@@ -10,6 +10,8 @@ if (typeof require !== "undefined") {
  */
 var tpf = (function module() {
 
+    const rdf = "http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+
     /**
      * Client for a Triple Pattern Fragment server.
      *
@@ -21,6 +23,7 @@ var tpf = (function module() {
      * @class
      */
     function Client(endpoint) {
+        const self = this
         const cache = {}
 
         /**
@@ -37,7 +40,11 @@ var tpf = (function module() {
          * @param {string} iri
          */
         this.Entity = function Entity(iri) {
-            return new fluentQuery(this, iri)
+            return new fluentQuery(self, [iri])
+        }
+
+        this.List = function List(type) {
+            return new fluentQuery(self, []).List(type)
         }
 
         /**
@@ -202,12 +209,57 @@ var tpf = (function module() {
      * process repeats until there are no more links to follow.
      * @class
      */
-    function fluentQuery(client, subject) {
+    function fluentQuery(client, subjects) {
         const self = this
-        this.subjects = [subject]
+        this.subjects = subjects
         this.triples = []
         this.functions = []
 
+        /**
+         * Executes `callback` on every result of the query.
+         * @param {(results: triple[])} callback
+         * @returns {fluentQuery}
+         */
+        this.ForEach = function ForEach(callback) {
+            this.Results(function (results) {
+                results.forEach(callback)
+            })
+            return this
+        }
+
+        /**
+         * Queries for all entities of `type`.
+         * @param {string} type
+         * @returns {fluentQuery}
+         */
+        this.List = function List(type) {
+            const a = rdf + "type"
+
+            function list() {
+                return client
+                    .Query(null, a, type)
+                    .then(function (instances) {
+                        self.subjects =
+                            instances.map(function (t) { return t.Subject })
+                    })
+            }
+
+            this.functions.push(list)
+
+            return this
+        }
+
+        /**
+         * Follows the link between current subjects and objects with predicate
+         * comprised of ontology and fragment.
+         *
+         * For example, if the current subject is a VCard, you could call
+         * `Link(vcard, "hasEmail")` to get all Email Attributes.
+         *
+         * @param {string} ontology
+         * @param {string} fragment
+         * @returns {fluentQuery}
+         */
         this.Link = function Link(ontology, fragment) {
             const lookup = client.lookup
             const pred = IRIReference(ontology, fragment)

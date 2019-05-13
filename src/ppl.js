@@ -15,12 +15,11 @@ var ppl = (function module() {
         base = "http://www.metabolomics.info/ontologies/2019/metabolomics-consortium#",
         foaf = "http://xmlns.com/foaf/0.1/",
         obo = "http://purl.obolibrary.org/obo/",
-        rdf = "http://www.w3.org/1999/02/22-rdf-syntax-ns#",
         rdfs = "http://www.w3.org/2000/01/rdf-schema#",
         vcard = "http://www.w3.org/2006/vcard/ns#",
         vitro = "http://vitro.mannlib.cornell.edu/ns/vitro/public#"
 
-    const placeholder = "http://stage.vivo.metabolomics.info/images/placeholders/person.thumbnail.jpg"
+    const placeholder = "https://cdn.pixabay.com/photo/2016/08/08/09/17/avatar-1577909_960_720.png"
 
     /**
      * Fills in the HTML element for all Persons.
@@ -33,11 +32,9 @@ var ppl = (function module() {
         const template = element.querySelector("li.person.template")
 
         client
-            .Query(null, rdf + "type", foaf + "Person")
-            .then(function (results) {
-                results.forEach(function (triple) {
-                    renderPersonCard(triple.Subject.slice(1, -1))
-                })
+            .List(foaf + "Person")
+            .ForEach(function (personIRI) {
+                renderPersonCard(personIRI.slice(1, -1))
             })
 
         function renderPersonCard(entity) {
@@ -154,9 +151,57 @@ var ppl = (function module() {
 
         client
             .Entity(entity)
-            .Link(base, "isPIfor")
+            .Link(base, "isPIFor")
+            .Link(base, "collectionFor")
+            .Link(base, "runBy")
+            .Results(renderAdditionalCollaborators)
+
+        client
+            .Entity(entity)
+            .Link(base, "runnerOf")
+            .Link(base, "isStudyFor")
+            .Link(base, "hasPI")
+            .Results(renderAdditionalCollaborators)
+
+        client
+            .Entity(entity)
+            .Link(base, "isPIFor")
             .Results(renderProjects)
 
+        client
+            .Entity(entity)
+            .Link(base, "runnerOf")
+            .Results(renderStudies)
+
+        function renderAdditionalCollaborators(collaborators) {
+            if (collaborators.length === 0) {
+                return
+            }
+
+            const section = element.querySelector("section.people")
+            section.className = section.className.replace("hidden", "")
+
+            const ul = element.querySelector("ul.people")
+            collaborators.forEach(renderCollaborator)
+
+            function renderCollaborator(personIRI) {
+                client
+                    .Entity(personIRI)
+                    .Link(rdfs, "label")
+                    .Single(renderCollaboratorListItem)
+
+                function renderCollaboratorListItem(name) {
+                    const li = document.createElement("li")
+                    ul.appendChild(li)
+
+                    li.innerHTML = str.Format(
+                        '<a href="{}">{}</a>',
+                        m3c.ProfileLink("person", personIRI.slice(1, -1)),
+                        name
+                    )
+                }
+            }
+        }
 
         function renderEmails(emails) {
             const ul = element.querySelector(".emails")
@@ -222,16 +267,45 @@ var ppl = (function module() {
                 client
                     .Entity(projectIRI)
                     .Link(rdfs, "label")
-                    .Results(renderProjectListItem)
+                    .Single(renderProjectListItem)
 
-                function renderProjectListItem(labels) {
+                function renderProjectListItem(name) {
                     const li = document.createElement("li")
                     ul.appendChild(li)
 
                     li.innerHTML = str.Format(
                         '<a href="{}">{}</a>',
                         m3c.ProfileLink("project", projectIRI.slice(1, -1)),
-                        labels[0]
+                        name
+                    )
+                }
+            }
+        }
+
+        function renderStudies(studies) {
+            const ul = element.querySelector("ul.studies")
+
+            if (studies.length === 0) {
+                ul.innerHTML = "<li><em>None</em></li>"
+                return
+            }
+
+            studies.forEach(renderStudy)
+
+            function renderStudy(studyIRI) {
+                client
+                    .Entity(studyIRI)
+                    .Link(rdfs, "label")
+                    .Single(renderStudyListItem)
+
+                function renderStudyListItem(name) {
+                    const li = document.createElement("li")
+                    ul.appendChild(li)
+
+                    li.innerHTML = str.Format(
+                        '<a href="{}">{}</a>',
+                        m3c.ProfileLink("study", studyIRI.slice(1, -1)),
+                        name
                     )
                 }
             }
