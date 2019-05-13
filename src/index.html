@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+
+    <title>M3C People Portal</title>
+
+    <!-- Font Awesome for neat icons. -->
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.8.1/css/all.css" integrity="sha384-50oBUHEmvpQ+1lW4y57PTFmhCaXp0ML5d60M1M7uH2+nqUivzIebhndOJK28anvf" crossorigin="anonymous">
+
+    <link rel="stylesheet" href="m3c.css" />
+    <link rel="stylesheet" href="index.css" />
+
+    <!-- Promise polyfill to support Internet Explorer -->
+    <script crossorigin src="https://cdn.jsdelivr.net/npm/promise-polyfill@8/dist/polyfill.min.js"></script>
+    <!-- Fetch polyfill to support Internet Explorer -->
+    <script crossorigin src="https://unpkg.com/whatwg-fetch@3.0.0/dist/fetch.umd.js"></script>
+    <!-- URL polyfill to support Internet Explorer -->
+    <script crossorigin src="https://unpkg.com/@ungap/url-search-params@0.1.2/min.js"></script>
+
+</head>
+<body class="profile">
+    
+    <h1>M3C People Portal</h1>
+
+    <nav>
+        <ul id="links">
+            <li class="People"></li>
+            <li class="Publications"></li>
+            <li class="Projects"></li>
+            <li class="Studies"></li>
+            <li class="Organizations"></li>
+            <li class="Datasets"></li>
+            <li class="Tools"></li>
+        </ul>
+    </nav>
+
+    <!-- The order is important. -->
+    <script src="tpf.js"></script>
+    <script src="str.js"></script>
+    <script src="m3c.js"></script>
+
+    <script>
+        const client = m3c.NewTPFClient()
+        const links = document.getElementById("links")
+        links.querySelectorAll("li").forEach(addLink)
+
+        function addLink(li) {
+            const concept = li.className
+            const lowered = concept.toLowerCase()
+            const type = m3c.IRIFor(concept)
+
+            client
+                .List(type)
+                .Results(function (instances) {
+                    li.innerHTML = str.Format(
+                        '<a href="{}">{} <span class="count">{}</span></a>',
+                        m3c.ListingLink(lowered),
+                        concept,
+                        instances.length
+                    )
+                })
+        }
+    </script>
+</body>
+
+</html>

@@ -1,0 +1,14 @@
+#links {
+    display: table;
+}
+
+#links li {
+    display: inline-block;
+    padding: 1em;
+    text-align: center;
+}
+
+.count {
+    font-size: smaller;
+    display: block;
+}

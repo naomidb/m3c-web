@@ -15,6 +15,54 @@ var m3c = (function module() {
     const params = new URLSearchParams(loc.search)
     const defaultEndpoint = loc.protocol + "//" + loc.hostname + "/tpf/core"
 
+    function IRIFor(concept) {
+        const
+            base = "http://www.metabolomics.info/ontologies/2019/metabolomics-consortium#",
+            bibo = "http://purl.org/ontology/bibo/",
+            foaf = "http://xmlns.com/foaf/0.1/"
+
+        const iris = {
+            "Dataset": base + "Dataset",
+            "Datasets": base + "Dataset",
+            "Organization": foaf + "Organization",
+            "Organizations": foaf + "Organization",
+            "Person": foaf + "Person",
+            "People": foaf + "Person",
+            "Project": base + "Project",
+            "Projects": base + "Project",
+            "Publication": bibo + "Document",
+            "Publications": bibo + "Document",
+            "Study": base + "Study",
+            "Studies": base + "Study",
+            "Tool": base + "Tool",
+            "Tools": base + "Tool",
+        }
+
+        return iris[concept]
+    }
+
+    /**
+     * Generates the canonical, relative form of a Listing page link.
+     *
+     * Example when used on the staging server *stage.x.org*
+     *
+     *    ListingLink("people")
+     *    => "people.html?endpoint=http://stage.x.org"
+     *
+     * @param {"people"|"publications"|"projects"|"studies"|"organizations"|"datasets"|"tools"} type
+     *        Entity type.
+     */
+    function ListingLink(type) {
+        let url = type + ".html"
+
+        const endpoint = params.get("endpoint")
+        if (endpoint) {
+            url += "?endpoint=" + encodeURIComponent(endpoint)
+        }
+
+        return url
+    }
+
     /**
      * Configures a new TPF Client.
      *
@@ -65,6 +113,8 @@ var m3c = (function module() {
 
     // Module Exports
     return {
+        IRIFor: IRIFor,
+        ListingLink: ListingLink,
         NewTPFClient: NewTPFClient,
         ProfileLink: ProfileLink,
         Subject: Subject,
