@@ -1,3 +1,7 @@
 img.photo {
     margin-bottom: 1em;
 }
+
+.publications li a {
+    font-style: italic;
+}

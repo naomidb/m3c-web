@@ -49,7 +49,7 @@ var tpf = (function module() {
 
         /**
          * Query the TPF server.
-         * 
+         *
          * @param {string} subject
          * @param {string} predicate
          * @param {string} object
@@ -261,26 +261,22 @@ var tpf = (function module() {
          * @returns {fluentQuery}
          */
         this.Link = function Link(ontology, fragment) {
-            const lookup = client.lookup
-            const pred = IRIReference(ontology, fragment)
+            this.functions.push(link)
+            return this
 
             function link() {
-                return Promise
-                    .all(
-                        self.subjects
-                            .map(function (subject) { return lookup(subject) })
-                    )
-                    .then(function (results) {
-                        self.subjects =
-                            flatten(results)
-                                .filter(function (t) { return t.Predicate === pred })
-                                .map(function (t) { return t.Object })
-                    })
+                return self
+                    .lookupSubjects()
+                    .then(setSubjects)
             }
 
-            this.functions.push(link)
-
-            return this
+            function setSubjects(results) {
+                const pred = IRIReference(ontology, fragment)
+                self.subjects =
+                    flatten(results)
+                        .filter(function (t) { return t.Predicate === pred })
+                        .map(function (t) { return t.Object })
+            }
         }
 
         /**
@@ -314,6 +310,40 @@ var tpf = (function module() {
             return this
         }
 
+        /**
+         * Filters the current subjects by
+         *
+         * @param {string} ontology
+         * @param {string} fragment
+         * @returns {fluentQuery}
+         */
+        this.Type = function Type(ontology, fragment) {
+            this.functions.push(filter)
+            return this
+
+            function filter() {
+                return self
+                    .lookupSubjects()
+                    .then(filterSubjectsWithDesiredType)
+            }
+
+            function filterSubjectsWithDesiredType(results) {
+                const a = IRIReference(rdf, "type")
+                const type = IRIReference(ontology, fragment)
+
+                self.subjects =
+                    flatten(results)
+                        .filter(function (t) { return t.Predicate === a && t.Object === type })
+                        .map(function (t) { return t.Subject })
+            }
+        }
+
+        /** Helper function to get all triples for all the current subjects. */
+        this.lookupSubjects = function lookupSubjects() {
+            return Promise.all(self.subjects.map(client.lookup))
+        }
+
+        /** Executes each function in order while preserving state changes. */
         this.process = function process() {
             if (this.functions.length === 0) {
                 return Promise.resolve(this.results)
