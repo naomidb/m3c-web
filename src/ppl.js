@@ -178,7 +178,7 @@ var ppl = (function module() {
         client
             .Entity(entity)
             .Link(base, "runnerOf")
-            .Link(base, "isStudyFor")
+            .Link(base, "collectedBy")
             .Link(base, "hasPI")
             .Results(renderAdditionalCollaborators)
 
