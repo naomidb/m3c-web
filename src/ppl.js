@@ -206,6 +206,11 @@ var ppl = (function module() {
             .Link(base, "developedFrom")
             .Results(renderDatasets)
 
+        client
+            .Entity(entity)
+            .Link(base, "developerOf")
+            .Results(renderTools)
+
         // Start of render functions
 
         function renderAdditionalCollaborators(collaborators) {
@@ -378,6 +383,26 @@ var ppl = (function module() {
                     .Link(rdfs, "label")
                     .Single(function renderStudyListItem(name) {
                         renderListItem(ul, "study", studyIRI, name)
+                    })
+            }
+        }
+
+        function renderTools(tools) {
+            const ul = element.querySelector("ul.tools")
+
+            if (tools.length === 0) {
+                ul.innerHTML = "<li><em>None</em></li>"
+                return
+            }
+
+            tools.forEach(renderTool)
+
+            function renderTool(toolIRI) {
+                client
+                    .Entity(toolIRI)
+                    .Link(rdfs, "label")
+                    .Single(function renderToolListItem(name) {
+                        renderListItem(ul, "tool", toolIRI, name)
                     })
             }
         }
