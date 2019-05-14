@@ -200,6 +200,12 @@ var ppl = (function module() {
             .Type(bibo, "Document")
             .Results(renderPublications)
 
+        client
+            .Entity(entity)
+            .Link(base, "runnerOf")
+            .Link(base, "developedFrom")
+            .Results(renderDatasets)
+
         // Start of render functions
 
         function renderAdditionalCollaborators(collaborators) {
@@ -219,6 +225,26 @@ var ppl = (function module() {
                     .Link(rdfs, "label")
                     .Single(function renderCollaboratorListItem(name) {
                         renderListItem(ul, "person", personIRI, name)
+                    })
+            }
+        }
+
+        function renderDatasets(datasets) {
+            const ul = element.querySelector("ul.datasets")
+
+            if (datasets.length === 0) {
+                ul.innerHTML = "<li><em>None</em></li>"
+                return
+            }
+
+            datasets.forEach(renderDataset)
+
+            function renderDataset(datasetIRI) {
+                client
+                    .Entity(datasetIRI)
+                    .Link(rdfs, "label")
+                    .Single(function renderProjectListItem(name) {
+                        renderListItem(ul, "dataset", datasetIRI, name)
                     })
             }
         }
