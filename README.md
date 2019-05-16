@@ -14,6 +14,22 @@ Open the `person.html` page in your browser and change the URL to:
     person.html?iri=https://vivo.metabolomics.info/individual/n007&endpoint=http://stage.vivo.metabolomics.info/tpf/core
 
 
+Screenshots
+-----------
+
+*Screenshot of Dashboard*
+<img src="docs/01-dashboard.png" alt="Screenshot of Dashboard"></img>
+
+*Screenshot of People Lising*
+<img src="docs/02-people.png" alt="Screenshot of People Listing"></img>
+
+*Screenshot of Person Profile*
+<img src="docs/03-bond.png" alt="Screenshot of Person Profile"></img>
+
+*Screenshot of another Person Profile*
+<img src="docs/04-alec.png" alt="Screenshot of another Person Profile"></img>
+
+
 Contributing
 ------------
 
