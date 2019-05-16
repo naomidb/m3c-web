@@ -44,7 +44,7 @@ We use [JSDoc][] for documenting the code, which allows for nice features that a
 One of the main goals of the M3C is to cultivate a Metabolomics community. To
 that end, the design of the frontend is meant to encourage novice programmers
 to contribute. Any code should support a wide-range of browsers
-(namely, Internet Explorer 9) and minimize external dependencies.
+(including, Internet Explorer 9) and minimize external dependencies.
 
 The main concepts are:
 
