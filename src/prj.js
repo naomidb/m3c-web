@@ -118,6 +118,11 @@ var prj = (function module() {
             .Entity(entity)
             .Link(base, "projectId")
             .Single(renderId)
+        
+        client
+            .Entity(entity)
+            .Link(base, "summary")
+            .Single(renderSummary)
 
         client
             .Entity(entity)
@@ -129,11 +134,11 @@ var prj = (function module() {
             .Link(base, "collectionFor")
             .Results(renderStudies)
 
-        // client
-        //     .Entity(entity)
-        //     .Link(base, "collectionFor")
-        //     .Results(parseDatasets)
-            // .Results(renderDatasets)
+        client
+            .Entity(entity)
+            .Link(base, "collectionFor")
+            .Link(base, "developedFrom")
+            .Results(renderDatasets)
 
         client
             .Entity(entity)
@@ -155,6 +160,11 @@ var prj = (function module() {
         function renderId(projid) {
             projid = projid.trim()
             element.querySelector(".idnum").innerHTML = projid
+        }
+        
+        function renderSummary(summary) {
+            summary = summary.trim()
+            element.querySelector("p.summary").innerHTML = summary
         }
 
         function renderPIs(pis) {
@@ -186,28 +196,9 @@ var prj = (function module() {
                 .Single(function renderStudyListItem(study) {
                     renderListItem(ul, "study", studyIRI, study)
                 })
-                .Results(renderDatasets)
-            }
-
-            studies.forEach(getDatasets)
-
-            function getDatasets(studyIRI){
-                client.Entity(studyIRI)
-                .Link(base, "developedFrom")
-                .Results(renderDatasets)
             }
         }
         
-        function parseDatasets(studies){
-            studies.forEach(getDatasets)
-
-            function getDatasets(studyIRI){
-                client.Entity(studyIRI)
-                .Link(base, "developedFrom")
-                .Results(renderDatasets)
-            }
-        }
-
         function renderDatasets(datasets) {
             const ul = element.querySelector("ul.datasets")
 
