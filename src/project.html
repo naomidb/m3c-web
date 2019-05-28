@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+
+    <title>M3C Profile</title>
+
+    <!-- Font Awesome for neat icons. -->
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.8.1/css/all.css" integrity="sha384-50oBUHEmvpQ+1lW4y57PTFmhCaXp0ML5d60M1M7uH2+nqUivzIebhndOJK28anvf" crossorigin="anonymous">
+
+    <link rel="stylesheet" href="m3c.css" />
+    <link rel="stylesheet" href="project.css" />
+
+    <!-- Promise polyfill to support Internet Explorer -->
+    <script crossorigin src="https://cdn.jsdelivr.net/npm/promise-polyfill@8/dist/polyfill.min.js"></script>
+    <!-- Fetch polyfill to support Internet Explorer -->
+    <script crossorigin src="https://unpkg.com/whatwg-fetch@3.0.0/dist/fetch.umd.js"></script>
+    <!-- URL polyfill to support Internet Explorer -->
+    <script crossorigin src="https://unpkg.com/@ungap/url-search-params@0.1.2/min.js"></script>
+
+</head>
+<body class="profile">
+    
+    <div id="profile">
+        <h1 class="title"></h1>
+        <h4 class="projid">Project ID: <span class="idnum"></span></h4>
+
+        <!-- <section class="summary">
+            <h2 class="summary">Project Summary</h2>
+            <p class="summary"></p>
+        </section> -->
+
+        <section class="people">
+            <h2 class="people">PI</h2>
+            <ul class="people"></ul>
+        </section>
+        
+        <section class="studies">
+            <h2 class="studies">Studies</h2>
+            <ul class="studies"></ul>
+        </section>
+
+        <section class="datasets">
+            <h2 class="datasets">Datasets</h2>
+            <ul class="datasets"></ul>
+        </section>
+
+        <section class="publications">
+            <h2 class="publications">Publications</h2>
+            <ul class="publications"></ul>
+        </section>
+
+    </div>
+
+    <!-- The order is important. -->
+    <script src="tpf.js"></script>
+    <script src="str.js"></script>
+    <script src="m3c.js"></script>
+    <script src="prj.js"></script>
+
+    <script>
+        const client = m3c.NewTPFClient()
+        const project = m3c.Subject()
+        const htmlRoot = document.getElementById("profile")
+
+        prj.RenderProject(client, project, htmlRoot)
+    </script>
+</body>
+
+</html>
