@@ -8,9 +8,9 @@ if (typeof require !== "undefined") {
 
 /**
  * Functions related to a Person or people.
- * @module prj
+ * @module proj
  */
-var prj = (function module() {
+var proj = (function module() {
     const
         base = "http://www.metabolomics.info/ontologies/2019/metabolomics-consortium#",
         bibo = "http://purl.org/ontology/bibo/",
@@ -75,14 +75,14 @@ var prj = (function module() {
             }
 
             function renderPIs(name) {
-                const ul = element.querySelector("ul.pis")
+                const ul = element.querySelector("ul.people")
                 pis.forEach(renderPI)
 
                 function renderPI(piIRI){
                     client.Entity(piIRI)
                     .Link(rdfs, "label")
                     .Single(function renderPIListItem(name) {
-                        renderListItem(ul, "pi", piIRI, name)
+                        renderListItem(ul, "person", piIRI, name)
                     })
                 }
             }
@@ -291,5 +291,5 @@ var prj = (function module() {
 })()
 
 if (typeof module !== "undefined") {
-    module.exports = prj
+    module.exports = proj
 }
