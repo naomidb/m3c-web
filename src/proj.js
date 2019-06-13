@@ -53,7 +53,7 @@ var proj = (function module() {
         
             client
                 .Entity(entity)
-                .Link(base, "projectID")
+                .Link(base, "projectId")
                 .Single(renderId)
             
             client
@@ -100,7 +100,7 @@ var proj = (function module() {
      * Fills in the HTML element for the specified entity using the TPF client.
      *
      * @param {tpf.Client} client
-     * @param {string}     entity  IRI for the person.
+     * @param {string}     entity  IRI for the project.
      * @param {Element}    element Root HTML node for this profile.
      */
     function RenderProject(client, entity, element) {
@@ -159,7 +159,7 @@ var proj = (function module() {
 
         function renderId(projid) {
             projid = projid.trim()
-            element.querySelector(".idnum").innerHTML = projid
+            element.querySelector("span.projid").innerHTML = projid
         }
         
         function renderSummary(summary) {
