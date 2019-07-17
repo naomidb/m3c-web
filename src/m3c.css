@@ -30,3 +30,21 @@ a:visited {
 
 /* Orange #bc581a
 Blue #00529b */
+
+.listing ol.results li {
+    padding: 1em;
+    line-height: 130%;
+}
+
+.listing ol.results li {
+    border-bottom: 1px solid #00529b;
+}
+
+.listing ol.results li:last-child {
+    border-bottom-color: transparent;
+}
+
+.listing .name {
+    font-size: larger;
+    margin-bottom: 0.3em;
+}
