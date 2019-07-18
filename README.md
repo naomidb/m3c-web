@@ -56,6 +56,12 @@ The main concepts are:
  + Dataset;
  + Tools.
 
+These concepts are modeled in `entity.js`. _Modeled_, in this case, means that
+the attributes of each concept have been encapsulated as member functions of an
+object. This allows an ontologist (domain expert) to deal with identifying the
+correct links for, say, a Person's name (`foaf:Person -> rdfs:label`) while the
+page designer need only know the function name (`Person.Name()`).
+
 There are three types of pages:
 
  + *Profile*, which displays information about a single entity (like a "person");
@@ -65,11 +71,8 @@ There are three types of pages:
 Each page consists of its structure (HTML), style (CSS), and code (JavaScript).
 There are also some common files shared amongst the pages.
 
-As an example, the profile page for a person uses:
-
- + [`src/person.html`](src/person.html)
- + [`src/person.css`](src/person.css)
- + [`src/ppl.js`](src/ppl.js)
+For example, a Person's profile is in `person.html`. The listing for all Persons
+is in `people.html`.
 
 
 ### Triple Pattern Fragment (TPF) Client
@@ -80,9 +83,6 @@ fetch data.
 
 The TPF Client is implemented in [`src/tpf.js`](src/tpf.js). It features a
 [fluent interface][] and caching to eliminate unnecessary calls to the server.
-
-
-
 
 [fluent interface]: https://en.wikipedia.org/wiki/Fluent_interface
 [VIVO]: https://duraspace.org/vivo/
