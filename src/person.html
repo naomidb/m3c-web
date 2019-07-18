@@ -87,7 +87,7 @@
         const uri = m3c.Subject()
         const root = document.getElementById("profile")
 
-        const person = new entity.Person(client, uri)
+        const person = entity.Person(client, uri)
         person.Name(renderName)
         person.Photo(renderPhoto)
         person.Organization(renderOrganization)
@@ -215,10 +215,10 @@
             }
         }
 
-        function renderPhoto(urls) {
+        function renderPhoto(url) {
             const img = root.querySelector(".photo")
 
-            if (urls.length === 0) {
+            if (!url) {
                 img.src = placeholder
             } else {
                 img.src = urls[0]

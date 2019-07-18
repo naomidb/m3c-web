@@ -42,26 +42,97 @@
         </ol>
     </div>
 
-    <!-- The order is important. -->
+    <!-- Order matters; all dependencies for a module must be loaded first. -->
     <script src="tpf.js"></script>
     <script src="str.js"></script>
     <script src="m3c.js"></script>
-    <script src="ppl.js"></script>
+    <script src="ui.js"></script>
+    <script src="entity.js"></script>
 
     <script>
         const client = m3c.NewTPFClient()
-        const htmlRoot = document.getElementById("listing")
+        const root = document.getElementById("listing")
+        const ol = root.querySelector("ol")
+        const ctrlReverse = root.querySelector(".reverse")
+        const template = root.querySelector("li.person.template")
 
-        const ctrlReverse = htmlRoot.querySelector(".reverse")
-        let direction = 1
+        ui.SortedList(ol, ctrlReverse, 1, listItemName)
+        entity.Persons(client, renderPerson)
 
-        ctrlReverse.addEventListener("click", function (clickEvent) {
-            clickEvent.preventDefault()
-            direction *= -1
-            ppl.Sort(htmlRoot, direction)
-        })
+        /** Extracts the name of a list item; used for sorting. */
+        function listItemName(li) {
+            return li.querySelector(".name").innerText.toUpperCase()
+        }
 
-        ppl.RenderPeople(client, htmlRoot, direction)
+        function renderPerson(personIRI) {
+            renderPersonCard(personIRI.slice(1, -1))
+        }
+
+        function renderPersonCard(iri) {
+            const li = template.cloneNode(true)
+            li.className = li.className.replace("template", "")
+
+            const link = li.querySelector("a")
+            link.href = m3c.ProfileLink("person", iri)
+
+            ol.append(li)
+
+            const person = entity.Person(client, iri)
+            person.Name(renderName)
+            person.Photo(renderPhoto)
+            person.Organization(renderOrganization)
+            person.Phones(renderPhones)
+            person.Emails(renderEmails)
+
+            const placeholder = "https://cdn.pixabay.com/photo/2016/08/08/09/17/avatar-1577909_960_720.png"
+
+            function renderEmails(emails) {
+                if (!emails || emails.length === 0) {
+                    return
+                }
+
+                li.querySelector(".email").innerHTML = str.Format(
+                    '<i class="fas fa-envelope"></i>{}',
+                    emails[0]
+                )
+            }
+
+            function renderName(name) {
+                name = name.trim()
+                link.querySelector(".name").innerHTML =
+                    '<i class="fas fa-user"></i>' + name
+                link.querySelector(".photo").alt = name
+            }
+
+            function renderOrganization(organizationIRI) {
+                entity.Name(client, organizationIRI, renderOrganizationName)
+
+                function renderOrganizationName(name) {
+                    li.querySelector(".organization").innerHTML =
+                        '<i class="fas fa-building"></i>' + name.trim()
+                }
+            }
+
+            function renderPhones(telephones) {
+                if (!telephones || telephones.length === 0) {
+                    return
+                }
+
+                li.querySelector(".phone").innerHTML = str.Format(
+                    '<i class="fas fa-phone"></i>{}',
+                    telephones[0]
+                )
+            }
+
+            function renderPhoto(url) {
+                if (!url) {
+                    url = placeholder
+                }
+
+                const img = link.querySelector(".photo")
+                img.src = url
+            }
+        }
     </script>
 </body>
 
