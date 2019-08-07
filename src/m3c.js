@@ -15,6 +15,15 @@ var m3c = (function module() {
     const params = new URLSearchParams(loc.search)
     const defaultEndpoint = loc.protocol + "//" + loc.hostname + "/tpf/core"
 
+    function DashboardLink() {
+        const endpoint = params.get("endpoint")
+        if (endpoint) {
+            return "index.html?endpoint=" + encodeURIComponent(endpoint)
+        }
+
+        return "index.html"
+    }
+
     function IRIFor(concept) {
         const
             base = "http://www.metabolomics.info/ontologies/2019/metabolomics-consortium#",
@@ -113,6 +122,7 @@ var m3c = (function module() {
 
     // Module Exports
     return {
+        DashboardLink: DashboardLink,
         IRIFor: IRIFor,
         ListingLink: ListingLink,
         NewTPFClient: NewTPFClient,

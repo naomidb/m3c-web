@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -8,7 +9,12 @@
     <title>M3C Profile</title>
 
     <!-- Font Awesome for neat icons. -->
-    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.8.1/css/all.css" integrity="sha384-50oBUHEmvpQ+1lW4y57PTFmhCaXp0ML5d60M1M7uH2+nqUivzIebhndOJK28anvf" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.8.1/css/all.css"
+        integrity="sha384-50oBUHEmvpQ+1lW4y57PTFmhCaXp0ML5d60M1M7uH2+nqUivzIebhndOJK28anvf" crossorigin="anonymous">
+
+    <!-- Roboto font -->
+    <link rel="stylesheet"
+        href="https://fonts.googleapis.com/css?family=Roboto%3A400%2C700%7CMerriweather%3A400%2C300&subset=latin%2Clatin-ext">
 
     <link rel="stylesheet" href="m3c.css" />
 
@@ -27,53 +33,154 @@
         .publications li a {
             font-style: italic;
         }
+
+        header img,
+        header h1 {
+            display: inline;
+            vertical-align: middle;
+            color: black;
+        }
+
+        header h1 {
+            font-size: 2.25em;
+            font-family: 'Roboto Light';
+            line-height: 1.2;
+        }
+
+        header h2 {
+            margin-top: 0.75em;
+            float: right;
+            font-weight: bold;
+        }
+
+        .name {
+            text-align: center;
+        }
+
+        div.photo-frame,
+        div.info-frame {
+            display: inline-block;
+        }
+
+        div.photo-frame {
+            text-align: right;
+            width: 45%;
+            margin-right: 2em;
+        }
+
+        div.info-frame {
+            vertical-align: top;
+            margin-top: 0.5em;
+        }
+
+        .emails li a {
+            margin-left: -0.25em;
+        }
+
+        @media only screen and (max-width: 430px) {
+            header {
+                text-align: center;
+            }
+
+            header h1 {
+                font-size: 2em;
+            }
+
+            header h2 {
+                float: unset;
+                margin-top: -1%;
+            }
+
+            div.photo-frame {
+                width: 100%;
+                text-align: center;
+            }
+
+            div.photo-frame,
+            div.info-frame {
+                display: block;
+            }
+        }
     </style>
 
 </head>
+
 <body class="profile">
 
-    <div id="profile">
-        <h1 class="name"></h1>
+    <div class="container">
 
-        <img class="photo" width="200" height="200"></img>
+        <header>
+            <a href="https://metabolomics.info/">
+                <img alt="Metabolomics Info logo"
+                    src="https://i2.wp.com/metabolomics.info/wp-content/uploads/2018/10/sepcc-logo-75.png?fit=60%2C60&ssl=1"
+                    width=60 height=60>
+            </a>
+            <a href="https://metabolomics.info/" class="home-link">
+                <h1>Metabolomics Info</h1>
+            </a>
+            <a href="index.html" class="dashboard-link">
+                <h2>People Portal</h2>
+            </a>
+        </header>
 
-        <div class="organization"></div>
+        <div id="profile" class="page">
+            <h1 class="name"></h1>
 
-        <!-- <h2>Emails</h2> -->
-        <ul class="emails"></ul>
+            <div class="photo-frame">
+                <img class="photo" width="200" height="200"></img>
+            </div>
+            <div class="info-frame">
 
-        <!-- <h2>Phones</h2> -->
-        <ul class="phones"></ul>
+                <div class="organization"></div>
 
-        <section class="people hidden">
-            <h2 class="people">Collaborators</h2>
-            <ul class="people"></ul>
-        </section>
+                <!-- <h2>Emails</h2> -->
+                <ul class="emails"></ul>
 
-        <section class="projects">
-            <h2 class="projects">Projects</h2>
-            <ul class="projects"></ul>
-        </section>
+                <!-- <h2>Phones</h2> -->
+                <ul class="phones"></ul>
 
-        <section class="studies">
-            <h2 class="studies">Studies</h2>
-            <ul class="studies"></ul>
-        </section>
+            </div>
 
-        <section class="publications">
-            <h2 class="publications">Publications</h2>
-            <ul class="publications"></ul>
-        </section>
+            <section class="people hidden">
+                <h2 class="people">Collaborators</h2>
+                <ul class="people"></ul>
+            </section>
 
-        <section class="datasets">
-            <h2 class="datasets">Datasets</h2>
-            <ul class="datasets"></ul>
-        </section>
+            <section class="projects">
+                <h2 class="projects">Projects</h2>
+                <ul class="projects"></ul>
+            </section>
 
-        <section class="tools">
-            <h2 class="tools">Tools</h2>
-            <ul class="tools"></ul>
-        </section>
+            <section class="studies">
+                <h2 class="studies">Studies</h2>
+                <ul class="studies"></ul>
+            </section>
+
+            <section class="publications">
+                <h2 class="publications">Publications</h2>
+                <ul class="publications"></ul>
+            </section>
+
+            <section class="datasets">
+                <h2 class="datasets">Datasets</h2>
+                <ul class="datasets"></ul>
+            </section>
+
+            <section class="tools">
+                <h2 class="tools">Tools</h2>
+                <ul class="tools"></ul>
+            </section>
+        </div>
+
+        <footer>
+            <p class="text-left">
+                Metabolomics Info is an outreach portal to support the
+                Metabolomics community.
+            </p>
+            <p class="text-right">
+                © 2019 Metabolomics Consortium Coordinating Center
+            </p>
+        </footer>
     </div>
 
     <!-- The order is important. -->
@@ -86,6 +193,11 @@
         const client = m3c.NewTPFClient()
         const uri = m3c.Subject()
         const root = document.getElementById("profile")
+
+        const links = document.getElementsByClassName("dashboard-link")
+        for (var i = 0; i < links.length; i++) {
+            links[i].href = m3c.DashboardLink()
+        }
 
         const person = entity.Person(client, uri)
         person.Name(renderName)
@@ -160,7 +272,7 @@
             function renderEmail(email) {
                 return str.Format(
                     '<li> \
-                        <i class="fas fa-envelope"></i> \
+                        <i class="fas fa-fw fa-envelope"></i> \
                         <a href="mailto:{}">{}</a> \
                     </li>',
                     email, email
@@ -194,7 +306,7 @@
             function renderOrganizationName(name) {
                 const div = root.querySelector(".organization")
                 div.innerHTML = str.Format(
-                    '<i class="fas fa-building"></i><a href="{}">{}</a>',
+                    '<i class="fas fa-fw fa-building"></i><a href="{}">{}</a>',
                     m3c.ProfileLink("organization", organizationIRI.slice(1, -1)),
                     name
                 )
@@ -209,7 +321,7 @@
 
             function renderPhone(phone) {
                 return str.Format(
-                    '<li><i class="fas fa-phone"></i>{}</li>',
+                    '<li><i class="fas fa-fw fa-phone"></i>{}</li>',
                     phone
                 )
             }
@@ -225,6 +337,7 @@
             }
         }
     </script>
+
 </body>
 
 </html>

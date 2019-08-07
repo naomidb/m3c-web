@@ -2,13 +2,75 @@
     box-sizing: border-box;
 }
 
+/* Footer stay down! https://matthewjamestaylor.com/bottom-footer */
+html,
 body {
-    font-family: -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Oxygen-Sans,Ubuntu,Cantarell,"Helvetica Neue",sans-serif;
+    margin: 0;
+    padding: 0;
+    height: 100%;
 }
+
+.container {
+    min-height: 100%;
+    position: relative;
+}
+
+#profile {
+    padding-bottom: 6em; /* Height of the footer */
+}
+
+footer {
+    height: 6em; /* Height of the footer */
+    position: absolute;
+    bottom: 0;
+    width: 100%;
+}
+/* End of Footer stay down! */
+
+body {
+    font-family: Roboto,-apple-system,BlinkMacSystemFont,"Segoe UI",Oxygen-Sans,Ubuntu,Cantarell,"Helvetica Neue",sans-serif;
+    font-size: 16px;
+    background-color: #eaeaea;
+    color: #444444;
+}
+
+header {
+    padding: 0 2%;
+    background-color: white;
+}
+
+footer {
+    background-color: #00a9e0;
+    color: white;
+    display: table;
+}
+
+footer p {
+    display: table-cell;
+    vertical-align: middle;
+    padding: 1em;
+}
+
+.text-left { text-align: left }
+.text-right { text-align: right }
+
+#profile {
+    margin: 2%;
+    margin-bottom: 0;
+    padding: 0.5% 2% 2% 2%;
+    background-color: white;
+}
+
 
 .hidden,
 .template {
     display: none;
+}
+
+h1,
+h2 {
+    font-family: 'Roboto Light';
+    font-weight: 300;
 }
 
 ol,
@@ -24,7 +86,7 @@ i.fas {
 
 a,
 a:visited {
-    color: #bc581a;
+    color: #00a9e0;
     text-decoration: none;
 }
 
@@ -48,3 +110,5 @@ Blue #00529b */
     font-size: larger;
     margin-bottom: 0.3em;
 }
+
+
