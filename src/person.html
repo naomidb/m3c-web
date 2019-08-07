@@ -34,27 +34,9 @@
             font-style: italic;
         }
 
-        header img,
-        header h1 {
-            display: inline;
-            vertical-align: middle;
-            color: black;
-        }
-
-        header h1 {
-            font-size: 2.25em;
-            font-family: 'Roboto Light';
-            line-height: 1.2;
-        }
-
-        header h2 {
-            margin-top: 0.75em;
-            float: right;
-            font-weight: bold;
-        }
-
         .name {
             text-align: center;
+            text-shadow: 1px 1px 3px gray;
         }
 
         div.photo-frame,
@@ -78,19 +60,6 @@
         }
 
         @media only screen and (max-width: 430px) {
-            header {
-                text-align: center;
-            }
-
-            header h1 {
-                font-size: 2em;
-            }
-
-            header h2 {
-                float: unset;
-                margin-top: -1%;
-            }
-
             div.photo-frame {
                 width: 100%;
                 text-align: center;
@@ -114,8 +83,6 @@
                 <img alt="Metabolomics Info logo"
                     src="https://i2.wp.com/metabolomics.info/wp-content/uploads/2018/10/sepcc-logo-75.png?fit=60%2C60&ssl=1"
                     width=60 height=60>
-            </a>
-            <a href="https://metabolomics.info/" class="home-link">
                 <h1>Metabolomics Info</h1>
             </a>
             <a href="index.html" class="dashboard-link">
@@ -173,171 +140,171 @@
         </div>
 
         <footer>
-            <p class="text-left">
+            <p>
                 Metabolomics Info is an outreach portal to support the
                 Metabolomics community.
             </p>
-            <p class="text-right">
+            <p>
                 © 2019 Metabolomics Consortium Coordinating Center
             </p>
         </footer>
-    </div>
 
-    <!-- The order is important. -->
-    <script src="tpf.js"></script>
-    <script src="str.js"></script>
-    <script src="m3c.js"></script>
-    <script src="entity.js"></script>
+        <!-- The order is important. -->
+        <script src="tpf.js"></script>
+        <script src="str.js"></script>
+        <script src="m3c.js"></script>
+        <script src="entity.js"></script>
 
-    <script>
-        const client = m3c.NewTPFClient()
-        const uri = m3c.Subject()
-        const root = document.getElementById("profile")
+        <script>
+            const client = m3c.NewTPFClient()
+            const uri = m3c.Subject()
+            const root = document.getElementById("profile")
 
-        const links = document.getElementsByClassName("dashboard-link")
-        for (var i = 0; i < links.length; i++) {
-            links[i].href = m3c.DashboardLink()
-        }
+            const links = document.getElementsByClassName("dashboard-link")
+            for (var i = 0; i < links.length; i++) {
+                links[i].href = m3c.DashboardLink()
+            }
 
-        const person = entity.Person(client, uri)
-        person.Name(renderName)
-        person.Photo(renderPhoto)
-        person.Organization(renderOrganization)
-        person.Phones(renderPhones)
-        person.Emails(renderEmails)
-        person.Collaborators(renderAdditionalCollaborators)
-        person.Projects(listRenderer("ul.projects", "project"))
-        person.Studies(listRenderer("ul.studies", "study"))
-        person.Publications(listRenderer("ul.publications", "publication"))
-        person.Datasets(listRenderer("ul.datasets", "dataset"))
-        person.Tools(listRenderer("ul.tools", "tool"))
+            const person = entity.Person(client, uri)
+            person.Name(renderName)
+            person.Photo(renderPhoto)
+            person.Organization(renderOrganization)
+            person.Phones(renderPhones)
+            person.Emails(renderEmails)
+            person.Collaborators(renderAdditionalCollaborators)
+            person.Projects(listRenderer("ul.projects", "project"))
+            person.Studies(listRenderer("ul.studies", "study"))
+            person.Publications(listRenderer("ul.publications", "publication"))
+            person.Datasets(listRenderer("ul.datasets", "dataset"))
+            person.Tools(listRenderer("ul.tools", "tool"))
 
-        const placeholder = "https://cdn.pixabay.com/photo/2016/08/08/09/17/avatar-1577909_960_720.png"
+            const placeholder = "https://cdn.pixabay.com/photo/2016/08/08/09/17/avatar-1577909_960_720.png"
 
-        /**
-         * Creates a function that accepts a list of items to render.
-         *
-         * This is used for most of the entity associations, like Publications,
-         * instead of having a separate function for each, all of which would do
-         * pretty much the same thing.
-         *
-         * @param {string} selector
-         * @param {string} type
-         */
-        function listRenderer(selector, type) {
-            return function renderList(items) {
-                const ul = root.querySelector(selector)
+            /**
+             * Creates a function that accepts a list of items to render.
+             *
+             * This is used for most of the entity associations, like Publications,
+             * instead of having a separate function for each, all of which would do
+             * pretty much the same thing.
+             *
+             * @param {string} selector
+             * @param {string} type
+             */
+            function listRenderer(selector, type) {
+                return function renderList(items) {
+                    const ul = root.querySelector(selector)
 
-                if (items.length === 0) {
-                    ul.innerHTML = "<li><em>None</em></li>"
-                    return
-                }
+                    if (items.length === 0) {
+                        ul.innerHTML = "<li><em>None</em></li>"
+                        return
+                    }
 
-                items.forEach(renderItem)
-                function renderItem(iri) {
-                    entity.Name(client, iri, renderName)
-                    function renderName(name) {
-                        renderListItem(ul, type, iri, name)
+                    items.forEach(renderItem)
+                    function renderItem(iri) {
+                        entity.Name(client, iri, renderName)
+                        function renderName(name) {
+                            renderListItem(ul, type, iri, name)
+                        }
                     }
                 }
             }
-        }
 
-        function renderAdditionalCollaborators(collaborators) {
-            if (collaborators.length === 0) {
-                return
-            }
+            function renderAdditionalCollaborators(collaborators) {
+                if (collaborators.length === 0) {
+                    return
+                }
 
-            const section = root.querySelector("section.people")
-            section.className = section.className.replace("hidden", "")
+                const section = root.querySelector("section.people")
+                section.className = section.className.replace("hidden", "")
 
-            const ul = root.querySelector("ul.people")
-            collaborators.forEach(renderCollaborator)
+                const ul = root.querySelector("ul.people")
+                collaborators.forEach(renderCollaborator)
 
-            function renderCollaborator(personIRI) {
-                entity.Name(client, personIRI, renderCollaboratorListItem)
-                function renderCollaboratorListItem(name) {
-                    renderListItem(ul, "person", personIRI, name)
+                function renderCollaborator(personIRI) {
+                    entity.Name(client, personIRI, renderCollaboratorListItem)
+                    function renderCollaboratorListItem(name) {
+                        renderListItem(ul, "person", personIRI, name)
+                    }
                 }
             }
-        }
 
-        function renderEmails(emails) {
-            const ul = root.querySelector(".emails")
+            function renderEmails(emails) {
+                const ul = root.querySelector(".emails")
 
-            ul.innerHTML = emails
-                .map(renderEmail)
-                .join("\n")
+                ul.innerHTML = emails
+                    .map(renderEmail)
+                    .join("\n")
 
-            function renderEmail(email) {
-                return str.Format(
-                    '<li> \
+                function renderEmail(email) {
+                    return str.Format(
+                        '<li> \
                         <i class="fas fa-fw fa-envelope"></i> \
                         <a href="mailto:{}">{}</a> \
                     </li>',
-                    email, email
-                )
-            }
-        }
-
-        function renderListItem(ul, type, iri, name) {
-            const li = document.createElement("li")
-            li.innerHTML = str.Format(
-                '<a href="{}">{}</a>',
-                m3c.ProfileLink(type, iri.slice(1, -1)),
-                name
-            )
-            ul.appendChild(li)
-        }
-
-        function renderName(name) {
-            if (!name) {
-                root.innerText = "Unknown person."
-                return
+                        email, email
+                    )
+                }
             }
 
-            name = name.trim()
-            root.querySelector(".name").innerHTML = name
-            root.querySelector(".photo").alt = name
-        }
-
-        function renderOrganization(organizationIRI) {
-            entity.Name(client, organizationIRI, renderOrganizationName)
-            function renderOrganizationName(name) {
-                const div = root.querySelector(".organization")
-                div.innerHTML = str.Format(
-                    '<i class="fas fa-fw fa-building"></i><a href="{}">{}</a>',
-                    m3c.ProfileLink("organization", organizationIRI.slice(1, -1)),
+            function renderListItem(ul, type, iri, name) {
+                const li = document.createElement("li")
+                li.innerHTML = str.Format(
+                    '<a href="{}">{}</a>',
+                    m3c.ProfileLink(type, iri.slice(1, -1)),
                     name
                 )
+                ul.appendChild(li)
             }
-        }
 
-        function renderPhones(phones) {
-            const ul = root.querySelector(".phones")
-            ul.innerHTML = phones
-                .map(renderPhone)
-                .join("\n")
+            function renderName(name) {
+                if (!name) {
+                    root.innerText = "Unknown person."
+                    return
+                }
 
-            function renderPhone(phone) {
-                return str.Format(
-                    '<li><i class="fas fa-fw fa-phone"></i>{}</li>',
-                    phone
-                )
+                name = name.trim()
+                root.querySelector(".name").innerHTML = name
+                root.querySelector(".photo").alt = name
             }
-        }
 
-        function renderPhoto(url) {
-            const img = root.querySelector(".photo")
-
-            if (!url) {
-                img.src = placeholder
-            } else {
-                img.src = urls[0]
+            function renderOrganization(organizationIRI) {
+                entity.Name(client, organizationIRI, renderOrganizationName)
+                function renderOrganizationName(name) {
+                    const div = root.querySelector(".organization")
+                    div.innerHTML = str.Format(
+                        '<i class="fas fa-fw fa-building"></i><a href="{}">{}</a>',
+                        m3c.ProfileLink("organization", organizationIRI.slice(1, -1)),
+                        name
+                    )
+                }
             }
-        }
-    </script>
 
+            function renderPhones(phones) {
+                const ul = root.querySelector(".phones")
+                ul.innerHTML = phones
+                    .map(renderPhone)
+                    .join("\n")
+
+                function renderPhone(phone) {
+                    return str.Format(
+                        '<li><i class="fas fa-fw fa-phone"></i>{}</li>',
+                        phone
+                    )
+                }
+            }
+
+            function renderPhoto(url) {
+                const img = root.querySelector(".photo")
+
+                if (!url) {
+                    img.src = placeholder
+                } else {
+                    img.src = urls[0]
+                }
+            }
+        </script>
+
+    </div>
 </body>
 
 </html>

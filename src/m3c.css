@@ -15,8 +15,8 @@ body {
     position: relative;
 }
 
-#profile {
-    padding-bottom: 6em; /* Height of the footer */
+.page {
+    padding-bottom: 6em !important; /* Height of the footer */
 }
 
 footer {
@@ -35,8 +35,70 @@ body {
 }
 
 header {
-    padding: 0 2%;
+    padding: 1% 2% 0 2%;
     background-color: white;
+
+    display: flex;
+    flex-wrap: wrap;
+}
+
+.page {
+    box-shadow: 1px 1px 5px gray;
+}
+
+header h1,
+header h2 {
+    vertical-align: middle;
+}
+
+header a img,
+header a h1 {
+    display: inline;
+    vertical-align: middle;
+}
+
+header h1 {
+    margin-left: 0.25em;
+}
+
+header a:last-child {
+    flex-grow: 2;
+}
+
+header h2 {
+    text-align: right;
+}
+
+@media only screen and (max-width: 430px) {
+    header h1 {
+        font-size: 2em;
+    }
+
+    header a,
+    header h2 {
+        width: 100%;
+        text-align: center;
+    }
+
+    header h2 {
+        margin-top: 0;
+        margin-bottom: 0.5em;
+    }
+
+    footer {
+        font-size: smaller;
+    }
+}
+
+header h1 {
+    font-size: 2.25em;
+    font-family: 'Roboto Light';
+    line-height: 1.2;
+    color: black
+}
+
+header a:hover h1 {
+    color: #00a9e0;
 }
 
 footer {
@@ -49,10 +111,11 @@ footer p {
     display: table-cell;
     vertical-align: middle;
     padding: 1em;
+    font-family: 'Roboto Light'
 }
 
-.text-left { text-align: left }
-.text-right { text-align: right }
+footer p:first-of-type { text-align: left }
+footer p:last-of-type { text-align: right }
 
 #profile {
     margin: 2%;
@@ -77,6 +140,10 @@ ol,
 ul {
     list-style-type: none;
     padding-left: unset;
+}
+
+section li {
+    padding-left: 0.5em;
 }
 
 i.far,
@@ -110,5 +177,3 @@ Blue #00529b */
     font-size: larger;
     margin-bottom: 0.3em;
 }
-
-
