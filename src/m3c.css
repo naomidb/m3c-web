@@ -48,9 +48,13 @@ body {
 }
 
 h1,
+header div.text p,
 h2 {
-    font-family: 'Roboto Light';
     font-weight: 300;
+}
+
+header div.text p {
+    font-size: 0.875em;
 }
 
 ol,
@@ -123,11 +127,19 @@ header h2 {
 header img,
 header h1 {
     display: inline;
-    vertical-align: middle;
+    vertical-align: top;
 }
 
-header h1 {
-    margin-left: 0.25em;
+header div.text {
+    display: inline-flex;
+    flex-direction: column;
+}
+
+header div.text h1,
+header div.text p {
+    margin: 0;
+    padding: 0;
+
 }
 
 header .spacer {
@@ -143,12 +155,12 @@ header h2 {
 
 header h1 {
     font-size: 2.25em;
-    font-family: 'Roboto Light';
     line-height: 1.2;
 }
 
 header a h1,
 header a h2,
+header a p,
 #profile section h2 a {
     color: black;
 }
@@ -165,6 +177,10 @@ header a:hover h2 {
 
 
 @media only screen and (max-width: 430px) {
+    header div.text p {
+        display: none;
+    }
+
     header h1 {
         font-size: 2em;
         margin-left: 0;
@@ -202,7 +218,6 @@ footer p {
     display: table-cell;
     vertical-align: middle;
     padding: 1em;
-    font-family: 'Roboto Light'
 }
 
 footer p:first-of-type { text-align: left }
