@@ -34,96 +34,13 @@ body {
     color: #444444;
 }
 
-header {
-    padding: 1% 2% 0 2%;
-    background-color: white;
-
-    display: flex;
-    flex-wrap: wrap;
-}
-
-.page {
-    box-shadow: 1px 1px 5px gray;
-}
-
-header h1,
-header h2 {
-    vertical-align: middle;
-}
-
-header a img,
-header a h1 {
-    display: inline;
-    vertical-align: middle;
-}
-
-header h1 {
-    margin-left: 0.25em;
-}
-
-header a:last-child {
-    flex-grow: 2;
-}
-
-header h2 {
-    text-align: right;
-}
-
-@media only screen and (max-width: 430px) {
-    header h1 {
-        font-size: 2em;
-    }
-
-    header a,
-    header h2 {
-        width: 100%;
-        text-align: center;
-    }
-
-    header h2 {
-        margin-top: 0;
-        margin-bottom: 0.5em;
-    }
-
-    footer {
-        font-size: smaller;
-    }
-}
-
-header h1 {
-    font-size: 2.25em;
-    font-family: 'Roboto Light';
-    line-height: 1.2;
-    color: black
-}
-
-header a:hover h1 {
-    color: #00a9e0;
-}
-
-footer {
-    background-color: #00a9e0;
-    color: white;
-    display: table;
-}
-
-footer p {
-    display: table-cell;
-    vertical-align: middle;
-    padding: 1em;
-    font-family: 'Roboto Light'
-}
-
-footer p:first-of-type { text-align: left }
-footer p:last-of-type { text-align: right }
 
 #profile {
     margin: 2%;
     margin-bottom: 0;
-    padding: 0.5% 2% 2% 2%;
+    padding: 0.5% 2%;
     background-color: white;
 }
-
 
 .hidden,
 .template {
@@ -177,3 +94,116 @@ Blue #00529b */
     font-size: larger;
     margin-bottom: 0.3em;
 }
+
+.disclaimer {
+    font-size: small;
+    text-align: right;
+    font-style: italic;
+    color: gray;
+    padding-right: 2%;
+}
+
+header {
+    padding: 0.5% 2% 0 2%;
+    background-color: white;
+
+    display: flex;
+    flex-wrap: wrap;
+}
+
+#profile {
+    box-shadow: 1px 1px 5px gray;
+}
+
+header h1,
+header h2 {
+    vertical-align: middle;
+}
+
+header img,
+header h1 {
+    display: inline;
+    vertical-align: middle;
+}
+
+header h1 {
+    margin-left: 0.25em;
+}
+
+header .spacer {
+    flex-grow: 2;
+}
+
+header h2 {
+    text-align: right;
+    padding: 1em;
+    margin: 0;
+    margin-bottom: 0.25em;
+}
+
+header h1 {
+    font-size: 2.25em;
+    font-family: 'Roboto Light';
+    line-height: 1.2;
+}
+
+header a h1,
+header a h2,
+#profile section h2 a {
+    color: black;
+}
+
+header a:hover h1,
+#profile section h2 a:hover {
+    color: #00a9e0;
+}
+
+header a:hover h2 {
+    background-color: #00a9e0;
+    color: white;
+}
+
+
+@media only screen and (max-width: 430px) {
+    header h1 {
+        font-size: 2em;
+        margin-left: 0;
+    }
+
+    header img {
+        width: 48px;
+        height: auto;
+    }
+
+    header a,
+    header h2 {
+        width: 100%;
+        text-align: center;
+    }
+
+    header h2 {
+        padding: 0;
+        margin: 0;
+        margin-bottom: 0.5em;
+    }
+
+    footer {
+        font-size: smaller;
+    }
+}
+
+footer {
+    background-color: #00a9e0;
+    color: white;
+    display: table;
+}
+
+footer p {
+    display: table-cell;
+    vertical-align: middle;
+    padding: 1em;
+    font-family: 'Roboto Light'
+}
+
+footer p:first-of-type { text-align: left }
+footer p:last-of-type { text-align: right }

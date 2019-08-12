@@ -44,6 +44,10 @@
             display: inline-block;
         }
 
+        div.photo-frame img {
+            border-radius: 50%;
+        }
+
         div.photo-frame {
             text-align: right;
             width: 45%;
@@ -59,6 +63,33 @@
             margin-left: -0.25em;
         }
 
+        section.people {
+            margin-top: 1em;
+            padding-top: 2em;
+            border-top: 1px solid gray;
+        }
+
+        section {
+            display: table;
+            width: 100%;
+            margin-bottom: 2em;
+        }
+
+        section h2 {
+            display: table-cell;
+            width: 45%;
+            text-align: right;
+        }
+
+        section ul {
+            padding-left: 1.5em;
+            display: table-cell;
+        }
+
+        section li {
+            line-height: 1.75em;
+        }
+
         @media only screen and (max-width: 430px) {
             div.photo-frame {
                 width: 100%;
@@ -67,6 +98,30 @@
 
             div.photo-frame,
             div.info-frame {
+                display: block;
+            }
+
+            section.people {
+                border-top: 0;
+                margin-top: 0;
+                padding-top: 0;
+            }
+
+            section {
+                display: block;
+                margin-bottom: 0;
+            }
+
+            section:last-child {
+                margin-bottom: 2em;
+            }
+
+            section h2 {
+                display: block;
+                text-align: left;
+            }
+
+            section ul {
                 display: block;
             }
         }
@@ -85,58 +140,66 @@
                     width=60 height=60>
                 <h1>Metabolomics Info</h1>
             </a>
+            <div class="spacer"></div>
             <a href="index.html" class="dashboard-link">
                 <h2>People Portal</h2>
             </a>
         </header>
 
-        <div id="profile" class="page">
-            <h1 class="name"></h1>
+        <div class="page">
+            <div id="profile">
+                <h1 class="name"></h1>
 
-            <div class="photo-frame">
-                <img class="photo" width="200" height="200"></img>
+                <div class="photo-frame">
+                    <img class="photo" width="200" height="200"></img>
+                </div>
+                <div class="info-frame">
+
+                    <div class="organization"></div>
+
+                    <!-- <h2>Emails</h2> -->
+                    <ul class="emails"></ul>
+
+                    <!-- <h2>Phones</h2> -->
+                    <ul class="phones"></ul>
+
+                </div>
+
+                <section class="people hidden">
+                    <h2 class="people">Collaborators</h2>
+                    <ul class="people"></ul>
+                </section>
+
+                <section class="projects">
+                    <h2 class="projects">Projects</h2>
+                    <ul class="projects"></ul>
+                </section>
+
+                <section class="studies">
+                    <h2 class="studies">Studies</h2>
+                    <ul class="studies"></ul>
+                </section>
+
+                <section class="publications">
+                    <h2 class="publications">Publications</h2>
+                    <ul class="publications"></ul>
+                </section>
+
+                <section class="datasets">
+                    <h2 class="datasets">Datasets</h2>
+                    <ul class="datasets"></ul>
+                </section>
+
+                <section class="tools">
+                    <h2 class="tools">Tools</h2>
+                    <ul class="tools"></ul>
+                </section>
+
             </div>
-            <div class="info-frame">
-
-                <div class="organization"></div>
-
-                <!-- <h2>Emails</h2> -->
-                <ul class="emails"></ul>
-
-                <!-- <h2>Phones</h2> -->
-                <ul class="phones"></ul>
-
-            </div>
-
-            <section class="people hidden">
-                <h2 class="people">Collaborators</h2>
-                <ul class="people"></ul>
-            </section>
-
-            <section class="projects">
-                <h2 class="projects">Projects</h2>
-                <ul class="projects"></ul>
-            </section>
-
-            <section class="studies">
-                <h2 class="studies">Studies</h2>
-                <ul class="studies"></ul>
-            </section>
-
-            <section class="publications">
-                <h2 class="publications">Publications</h2>
-                <ul class="publications"></ul>
-            </section>
-
-            <section class="datasets">
-                <h2 class="datasets">Datasets</h2>
-                <ul class="datasets"></ul>
-            </section>
-
-            <section class="tools">
-                <h2 class="tools">Tools</h2>
-                <ul class="tools"></ul>
-            </section>
+            <p class="disclaimer">
+                Data from the
+                <a href="https://www.metabolomicsworkbench.org">Metabolomics Workbench</a>.
+            </p>
         </div>
 
         <footer>
@@ -160,11 +223,6 @@
             const uri = m3c.Subject()
             const root = document.getElementById("profile")
 
-            const links = document.getElementsByClassName("dashboard-link")
-            for (var i = 0; i < links.length; i++) {
-                links[i].href = m3c.DashboardLink()
-            }
-
             const person = entity.Person(client, uri)
             person.Name(renderName)
             person.Photo(renderPhoto)
@@ -177,6 +235,26 @@
             person.Publications(listRenderer("ul.publications", "publication"))
             person.Datasets(listRenderer("ul.datasets", "dataset"))
             person.Tools(listRenderer("ul.tools", "tool"))
+
+            /* Insert links */
+            const links = document.getElementsByClassName("dashboard-link")
+            for (var i = 0; i < links.length; i++) {
+                links[i].href = m3c.DashboardLink()
+            }
+
+            const sections = [
+                "people", "projects", "studies", "publications", "datasets",
+                "tools",
+            ]
+
+            sections.forEach(function (name) {
+                const selector = str.Format("section.{} h2", name)
+                const h2 = document.querySelector(selector)
+                h2.innerHTML = str.Format(
+                    '<a href="{}">{}</a>',
+                    m3c.ListingLink(name), h2.innerHTML
+                )
+            })
 
             const placeholder = "https://cdn.pixabay.com/photo/2016/08/08/09/17/avatar-1577909_960_720.png"
 
