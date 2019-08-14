@@ -62,7 +62,7 @@ var m3c = (function module() {
      *        Entity type.
      */
     function ListingLink(type) {
-        let url = type + ".html"
+        var url = type + ".html"
 
         const endpoint = params.get("endpoint")
         if (endpoint) {
@@ -81,7 +81,7 @@ var m3c = (function module() {
      * @returns {tpf.Client}
      */
     function NewTPFClient() {
-        let endpoint = params.get("endpoint")
+        var endpoint = params.get("endpoint")
         if (!endpoint) {
             endpoint = defaultEndpoint
         }
@@ -102,7 +102,7 @@ var m3c = (function module() {
      * @param {string} iri  IRI of the entity.
      */
     function ProfileLink(type, iri) {
-        let url = type + ".html?iri=" + encodeURIComponent(iri)
+        var url = type + ".html?iri=" + encodeURIComponent(iri)
 
         const endpoint = params.get("endpoint")
         if (endpoint) {
