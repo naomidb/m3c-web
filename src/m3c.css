@@ -34,13 +34,18 @@ body {
     color: #444444;
 }
 
+#listing,
+#profile {
+    margin: 0 2%;
+    padding: 0.5% 2%;
+}
 
 #profile {
-    margin: 2%;
-    margin-bottom: 0;
-    padding: 0.5% 2%;
+    margin-top: 2%;
     background-color: white;
+    box-shadow: 3px 4px 5px gray;
 }
+
 
 .hidden,
 .template {
@@ -81,17 +86,52 @@ a:visited {
 /* Orange #bc581a
 Blue #00529b */
 
+.listing .facets {
+    background-color: white;
+    box-shadow: 3px 4px 5px gray;
+    padding: 0em 1em;
+}
+.listing .facets p {
+    font-size: larger;
+    font-weight: 300;
+    margin-bottom: 0;
+}
+
+.facets .count {
+    color: gray;
+    margin-left: 0.25em;
+}
+
+.facet input {
+    vertical-align: text-top;
+}
+.facet .name {
+    margin-left: 0.25em;
+}
+
+.listing ol.results  {
+    margin-top: 0;
+}
+
 .listing ol.results li {
     padding: 1em;
     line-height: 130%;
+    background-color: white;
+    box-shadow: 3px 4px 5px gray;
+    margin-bottom: 1em;
 }
 
-.listing ol.results li {
-    border-bottom: 1px solid #00529b;
+.listing ol.results li img {
+    clear: left;
+    float: left;
 }
 
-.listing ol.results li:last-child {
-    border-bottom-color: transparent;
+.listing ol.results li  {
+    min-height: 100px;
+}
+
+.listing ol.results li div {
+    padding-left: 80px;
 }
 
 .listing .name {
@@ -113,10 +153,6 @@ header {
 
     display: flex;
     flex-wrap: wrap;
-}
-
-#profile {
-    box-shadow: 1px 1px 5px gray;
 }
 
 header h1,
@@ -175,6 +211,33 @@ header a:hover h2 {
     color: white;
 }
 
+.listing .page h1 {
+    text-align: center;
+    text-shadow: 1px 1px 3px gray;
+    color: black;
+    margin: 0.25em;
+}
+
+.listing .controls {
+    text-align: center;
+    width: 100%;
+    margin-bottom: 1em;
+}
+
+.listing .facets {
+    width: 25%;
+}
+
+.listing .results {
+    width: 73%; /* 100 - .facets width - .margin-left - 1 */
+    margin-left: 1%;
+}
+
+.listing .facets,
+.listing .results {
+    vertical-align: top;
+    display: inline-block;
+}
 
 @media only screen and (max-width: 430px) {
     header div.text p {
