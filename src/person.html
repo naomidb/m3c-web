@@ -167,7 +167,7 @@
 
                 </div>
 
-                <section class="people hidden">
+                <section class="people">
                     <h2 class="people">Collaborators</h2>
                     <ul class="people"></ul>
                 </section>
@@ -290,14 +290,15 @@
             }
 
             function renderAdditionalCollaborators(collaborators) {
+                const ul = root.querySelector("ul.people")
                 if (collaborators.length === 0) {
+                    ul.innerHTML = "<li><em>None</em></li>"
                     return
                 }
 
                 const section = root.querySelector("section.people")
                 section.className = section.className.replace("hidden", "")
 
-                const ul = root.querySelector("ul.people")
                 collaborators.forEach(renderCollaborator)
 
                 function renderCollaborator(personIRI) {
@@ -318,9 +319,9 @@
                 function renderEmail(email) {
                     return str.Format(
                         '<li> \
-                        <i class="fas fa-fw fa-envelope"></i> \
-                        <a href="mailto:{}">{}</a> \
-                    </li>',
+                           <i class="fas fa-fw fa-envelope"></i> \
+                           <a href="mailto:{}">{}</a> \
+                         </li>',
                         email, email
                     )
                 }
