@@ -86,6 +86,12 @@ var m3c = (function module() {
             endpoint = defaultEndpoint
         }
 
+        /* Replace dashboard links */
+        const links = document.getElementsByClassName("dashboard-link")
+        for (var i = 0; i < links.length; i++) {
+            links[i].href = m3c.DashboardLink()
+        }
+
         return new tpf.Client(endpoint)
     }
 

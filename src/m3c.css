@@ -47,8 +47,8 @@ body {
 }
 
 
-.hidden,
-.template {
+.template,
+.hidden {
     display: none;
 }
 
@@ -134,7 +134,7 @@ Blue #00529b */
     padding-left: 80px;
 }
 
-.listing .name {
+.listing ol.results .name {
     font-size: larger;
     margin-bottom: 0.3em;
 }
@@ -239,6 +239,32 @@ header a:hover h2 {
     display: inline-block;
 }
 
+footer {
+    background-color: #00a9e0;
+    color: white;
+    display: table;
+}
+
+footer p {
+    display: table-cell;
+    vertical-align: middle;
+    padding: 1em;
+}
+
+footer p:first-of-type { text-align: left }
+footer p:last-of-type { text-align: right }
+
+@media only screen and (max-width: 1200px) {
+    .listing .facets {
+        width: 30%;
+    }
+
+    .listing .results {
+        width: 68%; /* 100 - .facets width - .margin-left - 1 */
+        margin-left: 1%;
+    }
+}
+
 @media only screen and (max-width: 430px) {
     header div.text p {
         display: none;
@@ -268,20 +294,30 @@ header a:hover h2 {
 
     footer {
         font-size: smaller;
+        display: inline;
+        padding: 0.5em;
+    }
+
+    footer p {
+        display: inline-block;
+        padding: 0;
+        margin: 0;
+    }
+
+    footer p:first-of-type { text-align: center; }
+    footer p:last-of-type { text-align: center; }
+
+    .listing .facets {
+        font-size: smaller;
+    }
+
+    .listing .facets,
+    .listing .results {
+        width: 100%;
+        display: block;
+        margin-left: 0;
+        margin-bottom: 0.5em;
+        padding-top: 0.25em;
+        padding-bottom: 0.25em;
     }
 }
-
-footer {
-    background-color: #00a9e0;
-    color: white;
-    display: table;
-}
-
-footer p {
-    display: table-cell;
-    vertical-align: middle;
-    padding: 1em;
-}
-
-footer p:first-of-type { text-align: left }
-footer p:last-of-type { text-align: right }
