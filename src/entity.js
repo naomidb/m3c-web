@@ -32,7 +32,7 @@ var entity = (function module() {
             client
                 .Entity(iri)
                 .Link(rdfs, "label")
-                .Single(returnName)
+                .Single(decodeString(returnName))
         })
     }
 
@@ -61,6 +61,25 @@ var entity = (function module() {
         })
     }
 
+    function decodeString(callback) {
+        return function decoder(text) {
+            callback(deleteSurroundingQuotes(text))
+        }
+    }
+
+    function decodeStrings(callback) {
+        return function decoder(strings) {
+            callback(strings.map(deleteSurroundingQuotes))
+        }
+    }
+
+    function deleteSurroundingQuotes(str) {
+        if (str[0] === '"' && str[str.length - 1] === '"') {
+            return str.slice(1, -1)
+        }
+        return str
+    }
+
     /** Creates a new array from a two-dimensional array. */
     function flatten(arr) {
         return arr.reduce(function (acc, val) {
@@ -81,7 +100,7 @@ var entity = (function module() {
                     .Link(base, "isPIFor")
                     .Link(base, "collectionFor")
                     .Link(base, "runBy")
-                    .Results(resolve)
+                    .Results(decodeStrings(resolve))
             })
 
             const investigators = new Promise(function (resolve) {
@@ -90,7 +109,7 @@ var entity = (function module() {
                     .Link(base, "runnerOf")
                     .Link(base, "collectedBy")
                     .Link(base, "hasPI")
-                    .Results(resolve)
+                    .Results(decodeStrings(resolve))
             })
 
             return Promise
@@ -105,7 +124,7 @@ var entity = (function module() {
                     .Entity(iri)
                     .Link(base, "runnerOf")
                     .Link(base, "developedFrom")
-                    .Results(returnDatasets)
+                    .Results(decodeStrings(returnDatasets))
             })
         }
 
@@ -116,7 +135,7 @@ var entity = (function module() {
                     .Link(obo, "ARG_2000028")
                     .Link(vcard, "hasEmail")
                     .Link(vcard, "email")
-                    .Results(returnEmails)
+                    .Results(decodeStrings(returnEmails))
             })
         }
 
@@ -129,7 +148,7 @@ var entity = (function module() {
                 client
                     .Entity(iri)
                     .Link(base, "associatedWith")
-                    .Single(returnOrganization)
+                    .Single(decodeString(returnOrganization))
             })
         }
 
@@ -140,7 +159,7 @@ var entity = (function module() {
                     .Link(obo, "ARG_2000028")
                     .Link(vcard, "hasTelephone")
                     .Link(vcard, "telephone")
-                    .Results(returnPhones)
+                    .Results(decodeStrings(returnPhones))
             })
         }
 
@@ -150,7 +169,7 @@ var entity = (function module() {
                     .Entity(iri)
                     .Link(vitro, "mainImage")
                     .Link(vitro, "downloadLocation")
-                    .Single(returnPhoto)
+                    .Single(decodeString(returnPhoto))
             })
         }
 
@@ -159,7 +178,7 @@ var entity = (function module() {
                 client
                     .Entity(iri)
                     .Link(base, "isPIFor")
-                    .Results(returnProjects)
+                    .Results(decodeStrings(returnProjects))
             })
         }
 
@@ -171,7 +190,7 @@ var entity = (function module() {
                     .Type(vivo, "Authorship")
                     .Link(vivo, "relates")
                     .Type(bibo, "Document")
-                    .Results(returnPublications)
+                    .Results(decodeStrings(returnPublications))
             })
         }
 
@@ -180,7 +199,7 @@ var entity = (function module() {
                 client
                     .Entity(iri)
                     .Link(base, "runnerOf")
-                    .Results(returnStudies)
+                    .Results(decodeStrings(returnStudies))
             })
         }
 
@@ -189,7 +208,7 @@ var entity = (function module() {
                 client
                     .Entity(iri)
                     .Link(base, "developerOf")
-                    .Results(returnTools)
+                    .Results(decodeStrings(returnTools))
             })
         }
     }

@@ -2,19 +2,74 @@
     box-sizing: border-box;
 }
 
+/* Footer stay down! https://matthewjamestaylor.com/bottom-footer */
+html,
 body {
-    font-family: -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Oxygen-Sans,Ubuntu,Cantarell,"Helvetica Neue",sans-serif;
+    margin: 0;
+    padding: 0;
+    height: 100%;
 }
 
-.hidden,
-.template {
+.container {
+    min-height: 100%;
+    position: relative;
+}
+
+.page {
+    padding-bottom: 6em !important; /* Height of the footer */
+}
+
+footer {
+    height: 6em; /* Height of the footer */
+    position: absolute;
+    bottom: 0;
+    width: 100%;
+}
+/* End of Footer stay down! */
+
+body {
+    font-family: Roboto,-apple-system,BlinkMacSystemFont,"Segoe UI",Oxygen-Sans,Ubuntu,Cantarell,"Helvetica Neue",sans-serif;
+    font-size: 16px;
+    background-color: #eaeaea;
+    color: #444444;
+}
+
+#listing,
+#profile {
+    margin: 0 2%;
+    padding: 0.5% 2%;
+}
+
+#profile {
+    margin-top: 2%;
+    background-color: white;
+    box-shadow: 3px 4px 5px gray;
+}
+
+
+.template,
+.hidden {
     display: none;
+}
+
+h1,
+header div.text p,
+h2 {
+    font-weight: 300;
+}
+
+header div.text p {
+    font-size: 0.875em;
 }
 
 ol,
 ul {
     list-style-type: none;
     padding-left: unset;
+}
+
+section li {
+    padding-left: 0.5em;
 }
 
 i.far,
@@ -24,27 +79,245 @@ i.fas {
 
 a,
 a:visited {
-    color: #bc581a;
+    color: #00a9e0;
     text-decoration: none;
 }
 
 /* Orange #bc581a
 Blue #00529b */
 
+.listing .facets {
+    background-color: white;
+    box-shadow: 3px 4px 5px gray;
+    padding: 0em 1em;
+}
+.listing .facets p {
+    font-size: larger;
+    font-weight: 300;
+    margin-bottom: 0;
+}
+
+.facets .count {
+    color: gray;
+    margin-left: 0.25em;
+}
+
+.facet input {
+    vertical-align: text-top;
+}
+.facet .name {
+    margin-left: 0.25em;
+}
+
+.listing ol.results  {
+    margin-top: 0;
+}
+
 .listing ol.results li {
     padding: 1em;
     line-height: 130%;
+    background-color: white;
+    box-shadow: 3px 4px 5px gray;
+    margin-bottom: 1em;
 }
 
-.listing ol.results li {
-    border-bottom: 1px solid #00529b;
+.listing ol.results li img {
+    clear: left;
+    float: left;
 }
 
-.listing ol.results li:last-child {
-    border-bottom-color: transparent;
+.listing ol.results li  {
+    min-height: 100px;
 }
 
-.listing .name {
+.listing ol.results li div {
+    padding-left: 80px;
+}
+
+.listing ol.results .name {
     font-size: larger;
     margin-bottom: 0.3em;
+}
+
+.disclaimer {
+    font-size: small;
+    text-align: right;
+    font-style: italic;
+    color: gray;
+    padding-right: 2%;
+}
+
+header {
+    padding: 0.5% 2% 0 2%;
+    background-color: white;
+
+    display: flex;
+    flex-wrap: wrap;
+}
+
+header h1,
+header h2 {
+    vertical-align: middle;
+}
+
+header img,
+header h1 {
+    display: inline;
+    vertical-align: top;
+}
+
+header div.text {
+    display: inline-flex;
+    flex-direction: column;
+}
+
+header div.text h1,
+header div.text p {
+    margin: 0;
+    padding: 0;
+
+}
+
+header .spacer {
+    flex-grow: 2;
+}
+
+header h2 {
+    text-align: right;
+    padding: 1em;
+    margin: 0;
+    margin-bottom: 0.25em;
+}
+
+header h1 {
+    font-size: 2.25em;
+    line-height: 1.2;
+}
+
+header a h1,
+header a h2,
+header a p,
+#profile section h2 a {
+    color: black;
+}
+
+header a:hover h1,
+#profile section h2 a:hover {
+    color: #00a9e0;
+}
+
+header a:hover h2 {
+    background-color: #00a9e0;
+    color: white;
+}
+
+.listing .page h1 {
+    text-align: center;
+    text-shadow: 1px 1px 3px gray;
+    color: black;
+    margin: 0.25em;
+}
+
+.listing .controls {
+    text-align: center;
+    width: 100%;
+    margin-bottom: 1em;
+}
+
+.listing .facets {
+    width: 25%;
+}
+
+.listing .results {
+    width: 73%; /* 100 - .facets width - .margin-left - 1 */
+    margin-left: 1%;
+}
+
+.listing .facets,
+.listing .results {
+    vertical-align: top;
+    display: inline-block;
+}
+
+footer {
+    background-color: #00a9e0;
+    color: white;
+    display: table;
+}
+
+footer p {
+    display: table-cell;
+    vertical-align: middle;
+    padding: 1em;
+}
+
+footer p:first-of-type { text-align: left }
+footer p:last-of-type { text-align: right }
+
+@media only screen and (max-width: 1200px) {
+    .listing .facets {
+        width: 30%;
+    }
+
+    .listing .results {
+        width: 68%; /* 100 - .facets width - .margin-left - 1 */
+        margin-left: 1%;
+    }
+}
+
+@media only screen and (max-width: 430px) {
+    header div.text p {
+        display: none;
+    }
+
+    header h1 {
+        font-size: 2em;
+        margin-left: 0;
+    }
+
+    header img {
+        width: 48px;
+        height: auto;
+    }
+
+    header a,
+    header h2 {
+        width: 100%;
+        text-align: center;
+    }
+
+    header h2 {
+        padding: 0;
+        margin: 0;
+        margin-bottom: 0.5em;
+    }
+
+    footer {
+        font-size: smaller;
+        display: inline;
+        padding: 0.5em;
+    }
+
+    footer p {
+        display: inline-block;
+        padding: 0;
+        margin: 0;
+    }
+
+    footer p:first-of-type { text-align: center; }
+    footer p:last-of-type { text-align: center; }
+
+    .listing .facets {
+        font-size: smaller;
+    }
+
+    .listing .facets,
+    .listing .results {
+        width: 100%;
+        display: block;
+        margin-left: 0;
+        margin-bottom: 0.5em;
+        padding-top: 0.25em;
+        padding-bottom: 0.25em;
+    }
 }

@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -8,7 +9,11 @@
     <title>M3C Profile</title>
 
     <!-- Font Awesome for neat icons. -->
-    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.8.1/css/all.css" integrity="sha384-50oBUHEmvpQ+1lW4y57PTFmhCaXp0ML5d60M1M7uH2+nqUivzIebhndOJK28anvf" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.8.1/css/all.css"
+        integrity="sha384-50oBUHEmvpQ+1lW4y57PTFmhCaXp0ML5d60M1M7uH2+nqUivzIebhndOJK28anvf" crossorigin="anonymous">
+
+    <!-- Roboto font -->
+    <link href="https://fonts.googleapis.com/css?family=Roboto:300,400&display=swap" rel="stylesheet">
 
     <link rel="stylesheet" href="m3c.css" />
 
@@ -27,204 +32,354 @@
         .publications li a {
             font-style: italic;
         }
+
+        .name {
+            text-align: center;
+            text-shadow: 1px 1px 3px gray;
+        }
+
+        div.photo-frame,
+        div.info-frame {
+            display: inline-block;
+        }
+
+        div.photo-frame img {
+            border-radius: 50%;
+        }
+
+        div.photo-frame {
+            text-align: right;
+            width: 45%;
+            margin-right: 2em;
+        }
+
+        div.info-frame {
+            vertical-align: top;
+            margin-top: 0.5em;
+        }
+
+        .emails li a {
+            margin-left: -0.25em;
+        }
+
+        section.people {
+            margin-top: 1em;
+            padding-top: 2em;
+            border-top: 1px solid gray;
+        }
+
+        section {
+            display: table;
+            width: 100%;
+            margin-bottom: 2em;
+        }
+
+        section h2 {
+            display: table-cell;
+            width: 45%;
+            text-align: right;
+        }
+
+        section ul {
+            padding-left: 1.5em;
+            display: table-cell;
+        }
+
+        section li {
+            line-height: 1.75em;
+        }
+
+        @media only screen and (max-width: 430px) {
+            div.photo-frame {
+                width: 100%;
+                text-align: center;
+            }
+
+            div.photo-frame,
+            div.info-frame {
+                display: block;
+            }
+
+            section.people {
+                border-top: 0;
+                margin-top: 0;
+                padding-top: 0;
+            }
+
+            section {
+                display: block;
+                margin-bottom: 0;
+            }
+
+            section:last-child {
+                margin-bottom: 2em;
+            }
+
+            section h2 {
+                display: block;
+                text-align: left;
+            }
+
+            section ul {
+                display: block;
+            }
+        }
     </style>
 
 </head>
+
 <body class="profile">
 
-    <div id="profile">
-        <h1 class="name"></h1>
+    <div class="container">
 
-        <img class="photo" width="200" height="200"></img>
+        <header>
+            <a href="https://metabolomics.info/">
+                <img alt="Metabolomics Info logo"
+                    src="https://i2.wp.com/metabolomics.info/wp-content/uploads/2018/10/sepcc-logo-75.png?fit=60%2C60&ssl=1"
+                    width=60 height=60>
+                <div class="text">
+                    <h1>Metabolomics Info</h1>
+                    <p>An international resource for news and events in metabolomics</p>
+                </div>
+            </a>
+            <div class="spacer"></div>
+            <a href="index.html" class="dashboard-link">
+                <h2>People Portal</h2>
+            </a>
+        </header>
 
-        <div class="organization"></div>
+        <div class="page">
+            <div id="profile">
+                <h1 class="name"></h1>
 
-        <!-- <h2>Emails</h2> -->
-        <ul class="emails"></ul>
+                <div class="photo-frame">
+                    <img class="photo" width="200" height="200"></img>
+                </div>
+                <div class="info-frame">
 
-        <!-- <h2>Phones</h2> -->
-        <ul class="phones"></ul>
+                    <div class="organization"></div>
 
-        <section class="people hidden">
-            <h2 class="people">Collaborators</h2>
-            <ul class="people"></ul>
-        </section>
+                    <!-- <h2>Emails</h2> -->
+                    <ul class="emails"></ul>
 
-        <section class="projects">
-            <h2 class="projects">Projects</h2>
-            <ul class="projects"></ul>
-        </section>
+                    <!-- <h2>Phones</h2> -->
+                    <ul class="phones"></ul>
 
-        <section class="studies">
-            <h2 class="studies">Studies</h2>
-            <ul class="studies"></ul>
-        </section>
+                </div>
 
-        <section class="publications">
-            <h2 class="publications">Publications</h2>
-            <ul class="publications"></ul>
-        </section>
+                <section class="people">
+                    <h2 class="people">Collaborators</h2>
+                    <ul class="people"></ul>
+                </section>
 
-        <section class="datasets">
-            <h2 class="datasets">Datasets</h2>
-            <ul class="datasets"></ul>
-        </section>
+                <section class="projects">
+                    <h2 class="projects">Projects</h2>
+                    <ul class="projects"></ul>
+                </section>
 
-        <section class="tools">
-            <h2 class="tools">Tools</h2>
-            <ul class="tools"></ul>
-        </section>
-    </div>
+                <section class="studies">
+                    <h2 class="studies">Studies</h2>
+                    <ul class="studies"></ul>
+                </section>
 
-    <!-- The order is important. -->
-    <script src="tpf.js"></script>
-    <script src="str.js"></script>
-    <script src="m3c.js"></script>
-    <script src="entity.js"></script>
+                <section class="publications">
+                    <h2 class="publications">Publications</h2>
+                    <ul class="publications"></ul>
+                </section>
 
-    <script>
-        const client = m3c.NewTPFClient()
-        const uri = m3c.Subject()
-        const root = document.getElementById("profile")
+                <section class="datasets">
+                    <h2 class="datasets">Datasets</h2>
+                    <ul class="datasets"></ul>
+                </section>
 
-        const person = entity.Person(client, uri)
-        person.Name(renderName)
-        person.Photo(renderPhoto)
-        person.Organization(renderOrganization)
-        person.Phones(renderPhones)
-        person.Emails(renderEmails)
-        person.Collaborators(renderAdditionalCollaborators)
-        person.Projects(listRenderer("ul.projects", "project"))
-        person.Studies(listRenderer("ul.studies", "study"))
-        person.Publications(listRenderer("ul.publications", "publication"))
-        person.Datasets(listRenderer("ul.datasets", "dataset"))
-        person.Tools(listRenderer("ul.tools", "tool"))
+                <section class="tools">
+                    <h2 class="tools">Tools</h2>
+                    <ul class="tools"></ul>
+                </section>
 
-        const placeholder = "https://cdn.pixabay.com/photo/2016/08/08/09/17/avatar-1577909_960_720.png"
+            </div>
+            <p class="disclaimer">
+                Data from the
+                <a href="https://www.metabolomicsworkbench.org">Metabolomics Workbench</a>.
+            </p>
+        </div>
 
-        /**
-         * Creates a function that accepts a list of items to render.
-         *
-         * This is used for most of the entity associations, like Publications,
-         * instead of having a separate function for each, all of which would do
-         * pretty much the same thing.
-         *
-         * @param {string} selector
-         * @param {string} type
-         */
-        function listRenderer(selector, type) {
-            return function renderList(items) {
-                const ul = root.querySelector(selector)
+        <footer>
+            <p>
+                Metabolomics Info is an outreach portal to support the
+                Metabolomics community.
+            </p>
+            <p>
+                © 2019 Metabolomics Consortium Coordinating Center
+            </p>
+        </footer>
 
-                if (items.length === 0) {
+        <!-- The order is important. -->
+        <script src="tpf.js"></script>
+        <script src="str.js"></script>
+        <script src="m3c.js"></script>
+        <script src="entity.js"></script>
+
+        <script>
+            const client = m3c.NewTPFClient()
+            const uri = m3c.Subject()
+            const root = document.getElementById("profile")
+
+            const person = entity.Person(client, uri)
+            person.Name(renderName)
+            person.Photo(renderPhoto)
+            person.Organization(renderOrganization)
+            person.Phones(renderPhones)
+            person.Emails(renderEmails)
+            person.Collaborators(renderAdditionalCollaborators)
+            person.Projects(listRenderer("ul.projects", "project"))
+            person.Studies(listRenderer("ul.studies", "study"))
+            person.Publications(listRenderer("ul.publications", "publication"))
+            person.Datasets(listRenderer("ul.datasets", "dataset"))
+            person.Tools(listRenderer("ul.tools", "tool"))
+
+            const sections = [
+                "people", "projects", "studies", "publications", "datasets",
+                "tools",
+            ]
+
+            sections.forEach(function (name) {
+                const selector = str.Format("section.{} h2", name)
+                const h2 = document.querySelector(selector)
+                h2.innerHTML = str.Format(
+                    '<a href="{}">{}</a>',
+                    m3c.ListingLink(name), h2.innerHTML
+                )
+            })
+
+            const placeholder = "https://cdn.pixabay.com/photo/2016/08/08/09/17/avatar-1577909_960_720.png"
+
+            /**
+             * Creates a function that accepts a list of items to render.
+             *
+             * This is used for most of the entity associations, like Publications,
+             * instead of having a separate function for each, all of which would do
+             * pretty much the same thing.
+             *
+             * @param {string} selector
+             * @param {string} type
+             */
+            function listRenderer(selector, type) {
+                return function renderList(items) {
+                    const ul = root.querySelector(selector)
+
+                    if (items.length === 0) {
+                        ul.innerHTML = "<li><em>None</em></li>"
+                        return
+                    }
+
+                    items.forEach(renderItem)
+                    function renderItem(iri) {
+                        entity.Name(client, iri, renderName)
+                        function renderName(name) {
+                            renderListItem(ul, type, iri, name)
+                        }
+                    }
+                }
+            }
+
+            function renderAdditionalCollaborators(collaborators) {
+                const ul = root.querySelector("ul.people")
+                if (collaborators.length === 0) {
                     ul.innerHTML = "<li><em>None</em></li>"
                     return
                 }
 
-                items.forEach(renderItem)
-                function renderItem(iri) {
-                    entity.Name(client, iri, renderName)
-                    function renderName(name) {
-                        renderListItem(ul, type, iri, name)
+                const section = root.querySelector("section.people")
+                section.className = section.className.replace("hidden", "")
+
+                collaborators.forEach(renderCollaborator)
+
+                function renderCollaborator(personIRI) {
+                    entity.Name(client, personIRI, renderCollaboratorListItem)
+                    function renderCollaboratorListItem(name) {
+                        renderListItem(ul, "person", personIRI, name)
                     }
                 }
             }
-        }
 
-        function renderAdditionalCollaborators(collaborators) {
-            if (collaborators.length === 0) {
-                return
-            }
+            function renderEmails(emails) {
+                const ul = root.querySelector(".emails")
 
-            const section = root.querySelector("section.people")
-            section.className = section.className.replace("hidden", "")
+                ul.innerHTML = emails
+                    .map(renderEmail)
+                    .join("\n")
 
-            const ul = root.querySelector("ul.people")
-            collaborators.forEach(renderCollaborator)
-
-            function renderCollaborator(personIRI) {
-                entity.Name(client, personIRI, renderCollaboratorListItem)
-                function renderCollaboratorListItem(name) {
-                    renderListItem(ul, "person", personIRI, name)
+                function renderEmail(email) {
+                    return str.Format(
+                        '<li> \
+                           <i class="fas fa-fw fa-envelope"></i> \
+                           <a href="mailto:{}">{}</a> \
+                         </li>',
+                        email, email
+                    )
                 }
             }
-        }
 
-        function renderEmails(emails) {
-            const ul = root.querySelector(".emails")
-
-            ul.innerHTML = emails
-                .map(renderEmail)
-                .join("\n")
-
-            function renderEmail(email) {
-                return str.Format(
-                    '<li> \
-                        <i class="fas fa-envelope"></i> \
-                        <a href="mailto:{}">{}</a> \
-                    </li>',
-                    email, email
-                )
-            }
-        }
-
-        function renderListItem(ul, type, iri, name) {
-            const li = document.createElement("li")
-            li.innerHTML = str.Format(
-                '<a href="{}">{}</a>',
-                m3c.ProfileLink(type, iri.slice(1, -1)),
-                name
-            )
-            ul.appendChild(li)
-        }
-
-        function renderName(name) {
-            if (!name) {
-                root.innerText = "Unknown person."
-                return
-            }
-
-            name = name.trim()
-            root.querySelector(".name").innerHTML = name
-            root.querySelector(".photo").alt = name
-        }
-
-        function renderOrganization(organizationIRI) {
-            entity.Name(client, organizationIRI, renderOrganizationName)
-            function renderOrganizationName(name) {
-                const div = root.querySelector(".organization")
-                div.innerHTML = str.Format(
-                    '<i class="fas fa-building"></i><a href="{}">{}</a>',
-                    m3c.ProfileLink("organization", organizationIRI.slice(1, -1)),
+            function renderListItem(ul, type, iri, name) {
+                const li = document.createElement("li")
+                li.innerHTML = str.Format(
+                    '<a href="{}">{}</a>',
+                    m3c.ProfileLink(type, iri.slice(1, -1)),
                     name
                 )
+                ul.appendChild(li)
             }
-        }
 
-        function renderPhones(phones) {
-            const ul = root.querySelector(".phones")
-            ul.innerHTML = phones
-                .map(renderPhone)
-                .join("\n")
+            function renderName(name) {
+                if (!name) {
+                    root.innerText = "Unknown person."
+                    return
+                }
 
-            function renderPhone(phone) {
-                return str.Format(
-                    '<li><i class="fas fa-phone"></i>{}</li>',
-                    phone
-                )
+                name = name.trim()
+                root.querySelector(".name").innerHTML = name
+                root.querySelector(".photo").alt = name
             }
-        }
 
-        function renderPhoto(url) {
-            const img = root.querySelector(".photo")
-
-            if (!url) {
-                img.src = placeholder
-            } else {
-                img.src = urls[0]
+            function renderOrganization(organizationIRI) {
+                entity.Name(client, organizationIRI, renderOrganizationName)
+                function renderOrganizationName(name) {
+                    const div = root.querySelector(".organization")
+                    div.innerHTML = str.Format(
+                        '<i class="fas fa-fw fa-building"></i><a href="{}">{}</a>',
+                        m3c.ProfileLink("organization", organizationIRI.slice(1, -1)),
+                        name
+                    )
+                }
             }
-        }
-    </script>
+
+            function renderPhones(phones) {
+                const ul = root.querySelector(".phones")
+                ul.innerHTML = phones
+                    .map(renderPhone)
+                    .join("\n")
+
+                function renderPhone(phone) {
+                    return str.Format(
+                        '<li><i class="fas fa-fw fa-phone"></i>{}</li>',
+                        phone
+                    )
+                }
+            }
+
+            function renderPhoto(url) {
+                const img = root.querySelector(".photo")
+
+                if (!url) {
+                    img.src = placeholder
+                } else {
+                    img.src = urls[0]
+                }
+            }
+        </script>
+
+    </div>
 </body>
 
 </html>

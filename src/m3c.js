@@ -15,6 +15,15 @@ var m3c = (function module() {
     const params = new URLSearchParams(loc.search)
     const defaultEndpoint = loc.protocol + "//" + loc.hostname + "/tpf/core"
 
+    function DashboardLink() {
+        const endpoint = params.get("endpoint")
+        if (endpoint) {
+            return "index.html?endpoint=" + encodeURIComponent(endpoint)
+        }
+
+        return "index.html"
+    }
+
     function IRIFor(concept) {
         const
             base = "http://www.metabolomics.info/ontologies/2019/metabolomics-consortium#",
@@ -53,7 +62,7 @@ var m3c = (function module() {
      *        Entity type.
      */
     function ListingLink(type) {
-        let url = type + ".html"
+        var url = type + ".html"
 
         const endpoint = params.get("endpoint")
         if (endpoint) {
@@ -72,9 +81,15 @@ var m3c = (function module() {
      * @returns {tpf.Client}
      */
     function NewTPFClient() {
-        let endpoint = params.get("endpoint")
+        var endpoint = params.get("endpoint")
         if (!endpoint) {
             endpoint = defaultEndpoint
+        }
+
+        /* Replace dashboard links */
+        const links = document.getElementsByClassName("dashboard-link")
+        for (var i = 0; i < links.length; i++) {
+            links[i].href = m3c.DashboardLink()
         }
 
         return new tpf.Client(endpoint)
@@ -93,7 +108,7 @@ var m3c = (function module() {
      * @param {string} iri  IRI of the entity.
      */
     function ProfileLink(type, iri) {
-        let url = type + ".html?iri=" + encodeURIComponent(iri)
+        var url = type + ".html?iri=" + encodeURIComponent(iri)
 
         const endpoint = params.get("endpoint")
         if (endpoint) {
@@ -113,6 +128,7 @@ var m3c = (function module() {
 
     // Module Exports
     return {
+        DashboardLink: DashboardLink,
         IRIFor: IRIFor,
         ListingLink: ListingLink,
         NewTPFClient: NewTPFClient,
