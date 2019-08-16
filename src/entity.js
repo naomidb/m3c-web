@@ -225,6 +225,10 @@ var entity = (function module() {
    * @param {string} iri IRI of the Organization
    */
   function organization(client, iri) {
+    this.Name = function name(returnName) {
+      return Name(client, iri, returnName);
+    };
+
     this.People = function People(returnCollaborators) {
       const runners = new Promise(function(resolve) {
         client
@@ -236,21 +240,6 @@ var entity = (function module() {
       return Promise.all([runners])
         .then(flatten)
         .then(returnCollaborators);
-    };
-
-    this.Name = function name(returnName) {
-      return Name(client, iri, returnName);
-    };
-
-    this.Phones = function Phones(returnPhones) {
-      return new Promise(function() {
-        client
-          .Entity(iri)
-          .Link(obo, 'ARG_2000028')
-          .Link(vcard, 'hasTelephone')
-          .Link(vcard, 'telephone')
-          .Results(decodeStrings(returnPhones));
-      });
     };
   }
 
