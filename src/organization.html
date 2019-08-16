@@ -155,6 +155,7 @@
                 <div class="info-frame">
 
                     <div class="organization"></div>
+                    <ul class="phones"></ul>
 
                 </div>
 
@@ -192,7 +193,9 @@
             const root = document.getElementById("profile")
 
             const organization = entity.Organization(client, uri)
+
             organization.Name(renderName)
+            organization.Phones(renderPhones)
             organization.People(renderAdditionalCollaborators)
 
             const sections = [
@@ -219,6 +222,20 @@
                 name = name.trim()
                 root.querySelector(".name").innerHTML = name
                 root.querySelector(".photo").alt = name
+            }
+
+            function renderPhones(phones) {
+                const ul = root.querySelector(".phones")
+                ul.innerHTML = phones
+                    .map(renderPhone)
+                    .join("\n")
+
+                function renderPhone(phone) {
+                    return str.Format(
+                        '<li><i class="fas fa-fw fa-phone"></i>{}</li>',
+                        phone
+                    )
+                }
             }
 
             function renderAdditionalCollaborators(collaborators) {

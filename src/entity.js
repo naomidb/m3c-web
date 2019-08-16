@@ -241,6 +241,17 @@ var entity = (function module() {
     this.Name = function name(returnName) {
       return Name(client, iri, returnName);
     };
+
+    this.Phones = function Phones(returnPhones) {
+      return new Promise(function() {
+        client
+          .Entity(iri)
+          .Link(obo, 'ARG_2000028')
+          .Link(vcard, 'hasTelephone')
+          .Link(vcard, 'telephone')
+          .Results(decodeStrings(returnPhones));
+      });
+    };
   }
 
   // Module Exports
