@@ -92,7 +92,14 @@ var m3c = (function module() {
             links[i].href = m3c.DashboardLink()
         }
 
-        return new tpf.Client(endpoint)
+        const client = new tpf.Client(endpoint)
+        client.Endpoint = endpoint
+        return client
+    }
+
+    function PhotoURL(client, path) {
+        const basehref = client.Endpoint.replace("/tpf/core", "")
+        return basehref + path
     }
 
     /**
@@ -132,6 +139,7 @@ var m3c = (function module() {
         IRIFor: IRIFor,
         ListingLink: ListingLink,
         NewTPFClient: NewTPFClient,
+        PhotoURL: PhotoURL,
         ProfileLink: ProfileLink,
         Subject: Subject,
     }

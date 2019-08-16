@@ -169,6 +169,19 @@ var entity = (function module() {
                     .Entity(iri)
                     .Link(vitro, "mainImage")
                     .Link(vitro, "downloadLocation")
+                    .Link(vitro, "directDownloadUrl")
+                    .Single(decodeString(returnPhoto))
+            })
+        }
+
+        this.PhotoThumbnail = function Photo(returnPhoto) {
+            return new Promise(function () {
+                client
+                    .Entity(iri)
+                    .Link(vitro, "mainImage")
+                    .Link(vitro, "thumbnailImage")
+                    .Link(vitro, "downloadLocation")
+                    .Link(vitro, "directDownloadUrl")
                     .Single(decodeString(returnPhoto))
             })
         }

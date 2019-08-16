@@ -142,7 +142,7 @@
                     name: getPersonName,
                     photo: {
                         alt: person.Name,
-                        src: person.Photo,
+                        src: getPhoto,
                     },
                     organization: getOrganizationName,
                 }
@@ -155,6 +155,18 @@
                     function renderName(name) {
                         callback(name)
                         sorted.Update()
+                    }
+                }
+
+                function getPhoto(callback) {
+                    person.PhotoThumbnail(renderPhoto)
+
+                    function renderPhoto(url) {
+                        if (!url) {
+                            return
+                        }
+                        url = m3c.PhotoURL(client.Endpoint, url)
+                        callback(url)
                     }
                 }
 
