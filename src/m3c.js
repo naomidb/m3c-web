@@ -97,8 +97,16 @@ var m3c = (function module() {
         return client
     }
 
-    function PhotoURL(client, path) {
-        const basehref = client.Endpoint.replace("/tpf/core", "")
+    /**
+     * Generates the full URL for a photo taking into account the endpoint.
+     *
+     * Example when used on the staging server *stage.x.org*
+     *
+     *    PhotoURL("http://stage.x.org/tpf/core", "/file/n007/photo.jpg")
+     *    => "http://stage.x.org/file/n007/photo.jpg"
+     */
+    function PhotoURL(endpoint, path) {
+        const basehref = endpoint.replace("/tpf/core", "")
         return basehref + path
     }
 
