@@ -1,0 +1,304 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+
+    <title>M3C Profile</title>
+
+    <!-- Font Awesome for neat icons. -->
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.8.1/css/all.css"
+        integrity="sha384-50oBUHEmvpQ+1lW4y57PTFmhCaXp0ML5d60M1M7uH2+nqUivzIebhndOJK28anvf" crossorigin="anonymous">
+
+    <!-- Roboto font -->
+    <link href="https://fonts.googleapis.com/css?family=Roboto:300,400&display=swap" rel="stylesheet">
+
+    <link rel="stylesheet" href="m3c.css" />
+
+    <!-- Promise polyfill to support Internet Explorer -->
+    <script crossorigin src="https://cdn.jsdelivr.net/npm/promise-polyfill@8/dist/polyfill.min.js"></script>
+    <!-- Fetch polyfill to support Internet Explorer -->
+    <script crossorigin src="https://unpkg.com/whatwg-fetch@3.0.0/dist/fetch.umd.js"></script>
+    <!-- URL polyfill to support Internet Explorer -->
+    <script crossorigin src="https://unpkg.com/@ungap/url-search-params@0.1.2/min.js"></script>
+
+    <style>
+        img.photo {
+            margin-bottom: 1em;
+        }
+
+        .publications li a {
+            font-style: italic;
+        }
+
+        .name {
+            text-align: center;
+            text-shadow: 1px 1px 3px gray;
+        }
+
+        div.photo-frame,
+        div.info-frame {
+            display: inline-block;
+        }
+
+        div.photo-frame img {
+            border-radius: 50%;
+        }
+
+        div.photo-frame {
+            text-align: right;
+            width: 45%;
+            margin-right: 2em;
+        }
+
+        div.info-frame {
+            vertical-align: top;
+            margin-top: 0.5em;
+        }
+
+        .emails li a {
+            margin-left: -0.25em;
+        }
+
+        section.people {
+            margin-top: 1em;
+            padding-top: 2em;
+            border-top: 1px solid gray;
+        }
+
+        section {
+            display: table;
+            width: 100%;
+            margin-bottom: 2em;
+        }
+
+        section h2 {
+            display: table-cell;
+            width: 45%;
+            text-align: right;
+        }
+
+        section ul {
+            padding-left: 1.5em;
+            display: table-cell;
+        }
+
+        section li {
+            line-height: 1.75em;
+        }
+
+        @media only screen and (max-width: 430px) {
+            div.photo-frame {
+                width: 100%;
+                text-align: center;
+            }
+
+            div.photo-frame,
+            div.info-frame {
+                display: block;
+            }
+
+            section.people {
+                border-top: 0;
+                margin-top: 0;
+                padding-top: 0;
+            }
+
+            section {
+                display: block;
+                margin-bottom: 0;
+            }
+
+            section:last-child {
+                margin-bottom: 2em;
+            }
+
+            section h2 {
+                display: block;
+                text-align: left;
+            }
+
+            section ul {
+                display: block;
+            }
+        }
+    </style>
+
+</head>
+
+<body class="profile">
+
+    <div class="container">
+
+        <header>
+            <a href="https://metabolomics.info/">
+                <img alt="Metabolomics Info logo"
+                    src="https://i2.wp.com/metabolomics.info/wp-content/uploads/2018/10/sepcc-logo-75.png?fit=60%2C60&ssl=1"
+                    width=60 height=60>
+                <div class="text">
+                    <h1>Metabolomics Info</h1>
+                    <p>An international resource for news and events in metabolomics</p>
+                </div>
+            </a>
+            <div class="spacer"></div>
+            <a href="index.html" class="dashboard-link">
+                <h2>People Portal</h2>
+            </a>
+        </header>
+
+        <div class="page">
+            <div id="profile">
+                <h1 class="name"></h1>
+
+                <div class="photo-frame">
+                    <img class="photo" width="200" height="200"></img>
+                </div>
+                <div class="info-frame">
+
+                    <div class="organization"></div>
+
+                </div>
+
+                <section class="people">
+                    <h2 class="people">Collaborators</h2>
+                    <ul class="people"></ul>
+                </section>
+
+            </div>
+            <p class="disclaimer">
+                Data from the
+                <a href="https://www.metabolomicsworkbench.org">Metabolomics Workbench</a>.
+            </p>
+        </div>
+
+        <footer>
+            <p>
+                Metabolomics Info is an outreach portal to support the
+                Metabolomics community.
+            </p>
+            <p>
+                © 2019 Metabolomics Consortium Coordinating Center
+            </p>
+        </footer>
+
+        <!-- The order is important. -->
+        <script src="tpf.js"></script>
+        <script src="str.js"></script>
+        <script src="m3c.js"></script>
+        <script src="entity.js"></script>
+
+        <script>
+            const client = m3c.NewTPFClient()
+            const uri = m3c.Subject()
+            const root = document.getElementById("profile")
+
+            const organization = entity.Organization(client, uri)
+            organization.Name(renderName)
+            organization.People(renderAdditionalCollaborators)
+
+            const sections = [
+                "people",
+            ]
+
+            sections.forEach(function (name) {
+                const selector = str.Format("section.{} h2", name)
+                const h2 = document.querySelector(selector)
+                h2.innerHTML = str.Format(
+                    '<a href="{}">{}</a>',
+                    m3c.ListingLink(name), h2.innerHTML
+                )
+            })
+
+            const placeholder = "https://cdn.pixabay.com/photo/2016/08/08/09/17/avatar-1577909_960_720.png"
+
+            /**
+             * Creates a function that accepts a list of items to render.
+             *
+             * This is used for most of the entity associations, like Publications,
+             * instead of having a separate function for each, all of which would do
+             * pretty much the same thing.
+             *
+             * @param {string} selector
+             * @param {string} type
+             */
+            function listRenderer(selector, type) {
+                return function renderList(items) {
+                    const ul = root.querySelector(selector)
+
+                    if (items.length === 0) {
+                        ul.innerHTML = "<li><em>None</em></li>"
+                        return
+                    }
+
+                    items.forEach(renderItem)
+                    function renderItem(iri) {
+                        entity.Name(client, iri, renderName)
+                        function renderName(name) {
+                            renderListItem(ul, type, iri, name)
+                        }
+                    }
+                }
+            }
+
+            function renderAdditionalCollaborators(collaborators) {
+                console.log(collaborators)
+                const ul = root.querySelector("ul.people")
+                if (collaborators.length === 0) {
+                    ul.innerHTML = "<li><em>None</em></li>"
+                    return
+                }
+
+                const section = root.querySelector("section.people")
+                section.className = section.className.replace("hidden", "")
+
+                collaborators.forEach(renderCollaborator)
+
+                function renderCollaborator(personIRI) {
+                    entity.Name(client, personIRI, renderCollaboratorListItem)
+                    function renderCollaboratorListItem(name) {
+                        renderListItem(ul, "organization", personIRI, name)
+                    }
+                }
+            }
+
+            function renderListItem(ul, type, iri, name) {
+                const li = document.createElement("li")
+                li.innerHTML = str.Format(
+                    '<a href="{}">{}</a>',
+                    m3c.ProfileLink(type, iri.slice(1, -1)),
+                    name
+                )
+                ul.appendChild(li)
+            }
+
+            function renderName(name) {
+                if (!name) {
+                    root.innerText = "Unknown Organization."
+                    return
+                }
+
+                name = name.trim()
+                root.querySelector(".name").innerHTML = name
+                root.querySelector(".photo").alt = name
+            }
+
+            function renderOrganization(organizationIRI) {
+                entity.Name(client, organizationIRI, renderOrganizationName)
+                function renderOrganizationName(name) {
+                    const div = root.querySelector(".organization")
+                    div.innerHTML = str.Format(
+                        '<i class="fas fa-fw fa-building"></i><a href="{}">{}</a>',
+                        m3c.ProfileLink("organization", organizationIRI.slice(1, -1)),
+                        name
+                    )
+                }
+            }
+
+        </script>
+
+    </div>
+</body>
+
+</html>
