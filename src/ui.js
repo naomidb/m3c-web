@@ -159,16 +159,17 @@ var ui = (function module() {
                         if (isEventListener) {
                             const event = name.slice(2)
                             placeholder.addEventListener(event, data[key][name])
-                            break;
+                            continue
                         }
 
                         const isFunction = data[key][name] instanceof Function
                         if (isFunction) {
-                            data[key][name](done)
+                            const attrib = name
+                            data[key][attrib](done)
                             function done(val) {
-                                placeholder[name] = val
+                                placeholder[attrib] = val
                             }
-                            break;
+                            continue
                         }
 
                         placeholder[name] = data[key][name]
