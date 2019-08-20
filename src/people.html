@@ -6,7 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
 
-    <title>M3C Listing</title>
+    <title>M3C People Listing</title>
 
     <!-- Font Awesome for neat icons. -->
     <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.8.1/css/all.css"
@@ -50,17 +50,25 @@
             <h1>People</h1>
             <div id="listing">
                 <div class="controls">
+                    <div class="count"></div>
                     <a href="#" class="reverse">Reverse</a>
                 </div>
 
                 <div class="facets">
                     <div class="facet organization">
                         <p>Organization</p>
+                        <div class="facet-controls">
+                            <a href="#" class="show">Show all</a>
+                            <a href="#" class="limit">Show fewer</a>
+                            <a href="#" class="reset">Uncheck all</a>
+                        </div>
                         <ul>
                             <li class="template">
-                                <input type="checkbox" class="box" />
-                                <span class="name"></span>
-                                <span class="count"></span>
+                                <label>
+                                    <input type="checkbox" class="box" />
+                                    <span class="name"></span>
+                                    <span class="count"></span>
+                                </label>
                             </li>
                         </ul>
                     </div>
@@ -111,51 +119,109 @@
             const personTemplate = root.querySelector("li.person.template")
 
             // Keep the results sorted.
-            const sorted = ui.SortedList(results, ctrlReverse, 1, sortLastFirst)
+            const sorted = ui.SortedList(results, 1, sortLastFirst)
+            ctrlReverse.addEventListener("click", onCtrlReverseClick)
 
-            // Query the TPF server for all people.
-            entity.Persons(client, renderPerson)
+            ui.SortedList(facets.querySelector(".organization ul"), -1, sortByCount)
 
-            // Setup the filters used by each facets.
+            // Query the TPF server for all people and some related data.
+            const data = {
+                person: [],
+                associatedWith: {},  // person IRI => org IRI
+                names: {},           // entity IRI => label string
+            }
+
+            const promises = [
+                entity.Persons(client),
+                entity.AssociatedWiths(client),
+                entity.Names(client),
+            ]
+
+            Promise.all(promises)
+                .then(function setData(results) {
+                    data.person = results[0]
+                    data.associatedWith = results[1]
+                    data.names = results[2]
+
+                    data.person.forEach(renderPerson)
+                })
+                .then(function automaticallyUpdateCount() {
+                    if (data.person.length > 5 + 1) {
+                        const orgfacet = root.querySelector(".facet.organization")
+                        orgfacet.className = (orgfacet.className + " limit").trim()
+                    }
+
+                    const checkboxes = document.querySelectorAll(".facet input")
+                    for (var i = 0; i < checkboxes.length; i++) {
+                        checkboxes[i].addEventListener("click", updatePersonCount)
+                    }
+
+                    function updatePersonCount() {
+                        const visible = document.querySelectorAll(".results li:not(.hidden):not(.template)")
+                        document.querySelector(".controls .count").innerText = visible.length
+                    }
+                    updatePersonCount()
+                })
+
+            // Setup the filters used by each facets. Each item should be a
+            // function whose name matches the class name of the facet's HTML
+            // element.
             const filters = [
                 function organization(selected, li) {
                     const org = li.querySelector(".organization")
                     return selected.indexOf(org.innerText) !== -1
                 },
             ]
-            const facetManager = ui.Facets(facets, results, filters)
 
-            // Extracts the name of a list item; used for sorting.
-            function sortLastFirst(li) {
-                const firstLast = li.querySelector(".name").innerText.toUpperCase()
-                const lastFirst = firstLast.split(' ').reverse().join(' ')
-                return lastFirst
+            // Use facetsManager to dynamically increment the count of an option
+            const facetsManager = ui.Facets(facets, results, filters)
+
+            /**
+             * Handle the onclick event of the Reverse link.
+             * @param {MouseEvent} clickEvent
+             */
+            function onCtrlReverseClick(clickEvent) {
+                clickEvent.preventDefault()
+                sorted.Reverse()
             }
 
+            /**
+             * Extract the actual text from a VIVO string
+             * @param {string} [text]
+             */
+            function parseVIVOString(text) {
+                if (!text || text[0] != '"') {
+                    return text
+                }
+
+                text = text.slice(1, text.lastIndexOf('"'))
+                text = JSON.parse('"' + text + '"')
+                return text
+            }
+
+            /**
+             * Render a person with the specified IRI.
+             * @param {string} personIRI
+             */
             function renderPerson(personIRI) {
-                personIRI = personIRI.slice(1, -1)
-                const person = entity.Person(client, personIRI)
-                const data = {
+                const person = entity.Person(client, personIRI.slice(1, -1))
+                const orgIRI = data.associatedWith[personIRI]
+                const bindings = {
                     link: {
                         href: m3c.ProfileLink("person", personIRI),
                     },
-                    name: getPersonName,
+                    name: parseVIVOString(data.names[personIRI]),
                     photo: {
-                        alt: person.Name,
+                        alt: data.names[personIRI],
                         src: getPhoto,
                     },
-                    organization: getOrganizationName,
+                    organization: orgIRI ? data.names[orgIRI] : null,
                 }
 
-                const li = ui.Render(personTemplate, data)
+                const li = ui.Render(personTemplate, bindings)
 
-                function getPersonName(callback) {
-                    person.Name(renderName)
-
-                    function renderName(name) {
-                        callback(name)
-                        sorted.Update()
-                    }
+                if (orgIRI) {
+                    facetsManager.Increment('organization', bindings.organization, bindings.organization)
                 }
 
                 function getPhoto(callback) {
@@ -169,21 +235,24 @@
                         callback(url)
                     }
                 }
+            }
 
-                function getOrganizationName(callback) {
-                    person.Organization(renderOrganization)
+            /**
+             * Extract the name of a list item; used for sorting.
+             * @param {HTMLLIElement} li
+             */
+            function sortLastFirst(li) {
+                const firstLast = li.querySelector(".name").innerText.toUpperCase()
+                const lastFirst = firstLast.split(' ').reverse().join(' ')
+                return lastFirst
+            }
 
-                    function renderOrganization(organizationIRI) {
-                        organizationIRI = organizationIRI.slice(1, -1)
-                        entity.Name(client, organizationIRI, renderOrganizationName)
-
-                        function renderOrganizationName(name) {
-                            name = name.trim()
-                            callback(name)
-                            facetManager.Increment('organization', organizationIRI, name)
-                        }
-                    }
-                }
+            /**
+             * Extract the count of a facet option; used for sorting.
+             * @param {HTMLLIElement} li
+             */
+            function sortByCount(li) {
+                return parseInt(li.querySelector(".count").innerText)
             }
         </script>
     </div>

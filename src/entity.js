@@ -20,6 +20,22 @@ var entity = (function module() {
         vivo = "http://vivoweb.org/ontology/core#"
 
     /**
+     * Fetches a mapping from person IRI to their associated organization's IRI.
+     * @param {tpf.Client} client
+     */
+    function AssociatedWiths(client) {
+        return client
+            .Query(null, base + "associatedWith", null)
+            .then(function (triples) {
+                const associatedWith = {}
+                triples.forEach(function (triple) {
+                    associatedWith[triple.Subject] = triple.Object
+                })
+                return associatedWith
+            })
+    }
+
+    /**
      * Fetches the name (label) of an Entity.
      *
      * @param {tpf.Client} client
@@ -37,6 +53,22 @@ var entity = (function module() {
     }
 
     /**
+     * Fetches all names.
+     * @param {tpf.Client} client
+     */
+    function Names(client) {
+        return client
+            .Query(null, rdfs + "label", null)
+            .then(function (triples) {
+                const names = {}
+                triples.forEach(function (triple) {
+                    names[triple.Subject] = parseVIVOString(triple.Object)
+                })
+                return names
+            })
+    }
+
+    /**
      *
      * @param {tpf.Client} client
      * @param {string} iri IRI of the Person
@@ -46,18 +78,14 @@ var entity = (function module() {
     }
 
     /**
-     * Fetches the name (label) of an Entity.
-     *
+     * Fetches all entities of type foaf:Person.
      * @param {tpf.Client} client
-     * @param {(name: string) => void} returnPerson
-     *        Callback function that receives each the URI of a Person. It is
-     *        called once per Person.
      */
-    function Persons(client, returnPerson) {
-        return new Promise(function () {
+    function Persons(client) {
+        return new Promise(function (resolve) {
             client
                 .List(foaf + "Person")
-                .ForEach(returnPerson)
+                .Results(resolve)
         })
     }
 
@@ -228,7 +256,9 @@ var entity = (function module() {
 
     // Module Exports
     return {
+        AssociatedWiths: AssociatedWiths,
         Name: Name,
+        Names: Names,
         Person: Person,
         Persons: Persons,
     }
