@@ -34,6 +34,16 @@ body {
     color: #444444;
 }
 
+a,
+a:visited {
+    color: #00a9e0;
+}
+
+a:hover {
+    text-shadow: 1px 1px lightgray;
+    color: rgba(0, 169, 224, 0.9);
+}
+
 #listing,
 #profile {
     margin: 0 2%;
@@ -233,11 +243,13 @@ header a p,
 header a:hover h1,
 #profile section h2 a:hover {
     color: #00a9e0;
+    text-shadow: none;
 }
 
 header a:hover h2 {
     background-color: #00a9e0;
     color: white;
+    text-shadow: none;
 }
 
 .listing .page h1 {
