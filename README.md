@@ -14,6 +14,22 @@ Open the `person.html` page in your browser and change the URL to:
     person.html?iri=https://vivo.metabolomics.info/individual/n007&endpoint=http://stage.vivo.metabolomics.info/tpf/core
 
 
+Screenshots
+-----------
+
+*Screenshot of Dashboard*
+<img src="docs/01-dashboard.png" alt="Screenshot of Dashboard"></img>
+
+*Screenshot of People Lising*
+<img src="docs/02-people.png" alt="Screenshot of People Listing"></img>
+
+*Screenshot of Person Profile*
+<img src="docs/03-bond.png" alt="Screenshot of Person Profile"></img>
+
+*Screenshot of another Person Profile*
+<img src="docs/04-alec.png" alt="Screenshot of another Person Profile"></img>
+
+
 Contributing
 ------------
 
@@ -28,7 +44,7 @@ We use [JSDoc][] for documenting the code, which allows for nice features that a
 One of the main goals of the M3C is to cultivate a Metabolomics community. To
 that end, the design of the frontend is meant to encourage novice programmers
 to contribute. Any code should support a wide-range of browsers
-(namely, Internet Explorer 9) and minimize external dependencies.
+(including, Internet Explorer 9) and minimize external dependencies.
 
 The main concepts are:
 
@@ -40,6 +56,12 @@ The main concepts are:
  + Dataset;
  + Tools.
 
+These concepts are modeled in `entity.js`. _Modeled_, in this case, means that
+the attributes of each concept have been encapsulated as member functions of an
+object. This allows an ontologist (domain expert) to deal with identifying the
+correct links for, say, a Person's name (`foaf:Person -> rdfs:label`) while the
+page designer need only know the function name (`Person.Name()`).
+
 There are three types of pages:
 
  + *Profile*, which displays information about a single entity (like a "person");
@@ -49,11 +71,8 @@ There are three types of pages:
 Each page consists of its structure (HTML), style (CSS), and code (JavaScript).
 There are also some common files shared amongst the pages.
 
-As an example, the profile page for a person uses:
-
- + [`src/person.html`](src/person.html)
- + [`src/person.css`](src/person.css)
- + [`src/ppl.js`](src/ppl.js)
+For example, a Person's profile is in `person.html`. The listing for all Persons
+is in `people.html`.
 
 
 ### Triple Pattern Fragment (TPF) Client
@@ -64,9 +83,6 @@ fetch data.
 
 The TPF Client is implemented in [`src/tpf.js`](src/tpf.js). It features a
 [fluent interface][] and caching to eliminate unnecessary calls to the server.
-
-
-
 
 [fluent interface]: https://en.wikipedia.org/wiki/Fluent_interface
 [VIVO]: https://duraspace.org/vivo/
