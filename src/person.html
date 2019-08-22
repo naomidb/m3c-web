@@ -216,6 +216,7 @@
         <script src="tpf.js"></script>
         <script src="str.js"></script>
         <script src="m3c.js"></script>
+        <script src="ui.js"></script>
         <script src="entity.js"></script>
 
         <script>
@@ -236,6 +237,8 @@
             person.Datasets(listRenderer("ul.datasets", "dataset"))
             person.Tools(listRenderer("ul.tools", "tool"))
 
+            ui.SortedList(root.querySelector("ul.people"), 1, getCollaboratorSortableName)
+
             const sections = [
                 "people", "projects", "studies", "publications", "datasets",
                 "tools",
@@ -251,6 +254,21 @@
             })
 
             const placeholder = "https://cdn.pixabay.com/photo/2016/08/08/09/17/avatar-1577909_960_720.png"
+
+            /**
+             * Extracts a collaborator's name for use by a sorting function.
+             *
+             * @param {HTMLLIElement} li
+             */
+            function getCollaboratorSortableName(li) {
+                const displayName = li.querySelector("a").innerText
+                const names = displayName.split(' ')
+                const surname = names.slice(-1)
+                const other = names.slice(0, -1)
+                const lastFirst = surname.concat(other).join(' ')
+                console.log({ displayName, lastFirst })
+                return lastFirst
+            }
 
             /**
              * Creates a function that accepts a list of items to render.
@@ -281,7 +299,7 @@
                 }
             }
 
-            function renderAdditionalCollaborators(collaborators) {
+            function renderAdditionalCollaborators(/** @type string[] */ collaborators) {
                 const ul = root.querySelector("ul.people")
                 if (collaborators.length === 0) {
                     ul.innerHTML = "<li><em>None</em></li>"
