@@ -9,7 +9,6 @@ if (typeof require !== "undefined") {
  * @module ui
  */
 var ui = (function module() {
-
     /**
      * Manage a facets and their interaction with a listing of items.
      *
@@ -50,13 +49,13 @@ var ui = (function module() {
                         onclick: onFacetClick,
                     },
                     name: optionName,
-                    count: 0
+                    count: 0,
                 }
 
                 option = Render(template, data)
             }
 
-            const count = option.querySelector('.count')
+            const count = option.querySelector(".count")
             count.innerText = parseInt(count.innerText) + 1
         }
 
@@ -67,8 +66,10 @@ var ui = (function module() {
                 items.push(lis[i])
             }
 
-            const remainingSets = filters.map(function (filter) {
-                const checked = facets.querySelectorAll(".facet." + filter.name + " input:checked")
+            const remainingSets = filters.map(function(filter) {
+                const checked = facets.querySelectorAll(
+                    ".facet." + filter.name + " input:checked"
+                )
 
                 const selected = []
                 for (var i = 0; i < checked.length; i++) {
@@ -82,7 +83,7 @@ var ui = (function module() {
                     return items
                 }
 
-                const remaining = items.filter(function (item) {
+                const remaining = items.filter(function(item) {
                     return filter(selected, item)
                 })
 
@@ -101,7 +102,7 @@ var ui = (function module() {
 
                 // Item was filtered out of all facets, hide it if necessary.
                 if (item.className.indexOf("hidden") !== -1) {
-                    continue;
+                    continue
                 }
 
                 item.className = "hidden " + item.className
@@ -159,7 +160,7 @@ var ui = (function module() {
                         if (isEventListener) {
                             const event = name.slice(2)
                             placeholder.addEventListener(event, data[key][name])
-                            break;
+                            break
                         }
 
                         const isFunction = data[key][name] instanceof Function
@@ -168,7 +169,7 @@ var ui = (function module() {
                             function done(val) {
                                 placeholder[name] = val
                             }
-                            break;
+                            break
                         }
 
                         placeholder[name] = data[key][name]
@@ -224,8 +225,8 @@ var ui = (function module() {
         }
 
         function onMutate(mutations) {
-            const mutation = mutations.find(function (mutation) {
-                return mutation.type === 'childList'
+            const mutation = mutations.find(function(mutation) {
+                return mutation.type === "childList"
             })
 
             if (!mutation) {
@@ -238,7 +239,7 @@ var ui = (function module() {
         /** Sorts an ordered list's items. */
         function sort() {
             const lis = Array.prototype.slice.call(ol.querySelectorAll("li"))
-            lis.sort(function (a, b) {
+            lis.sort(function(a, b) {
                 const name1 = listItemKey(a)
                 const name2 = listItemKey(b)
 
@@ -253,7 +254,7 @@ var ui = (function module() {
                 ol.removeChild(ol.firstChild)
             }
 
-            lis.forEach(function (li) {
+            lis.forEach(function(li) {
                 ol.append(li)
             })
         }
@@ -277,7 +278,6 @@ var ui = (function module() {
         Render: Render,
         SortedList: SortedList,
     }
-
 })()
 
 if (typeof module !== "undefined") {

@@ -155,6 +155,7 @@
                 <div class="info-frame">
 
                     <div class="organization"></div>
+                    <div class="type"></div>
 
                 </div>
 
@@ -195,6 +196,7 @@
 
             organization.Name(renderName)
             organization.People(renderAdditionalCollaborators)
+            organization.Type(renderType)
 
             const sections = [
                 "people",
@@ -223,7 +225,6 @@
             }
 
             function renderAdditionalCollaborators(collaborators) {
-                console.log(collaborators)
                 const ul = root.querySelector("ul.people")
                 if (collaborators.length === 0) {
                     ul.innerHTML = "<li><em>None</em></li>"
@@ -241,6 +242,17 @@
                         renderListItem(ul, "organization", personIRI, name)
                     }
                 }
+            }
+
+            function renderType(type) {
+                console.log(type)
+                if (!type) {
+                    root.innerText = "Unknown person."
+                    return
+                }
+
+                type = type.trim()
+                root.querySelector(".type").innerHTML = type
             }
 
             /**
