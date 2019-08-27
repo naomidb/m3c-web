@@ -251,6 +251,15 @@ var entity = (function module() {
                     .Results(decodeStrings(returnType))
             })
         }
+
+        this.Projects = function Projects(returnProjects) {
+            return new Promise(function() {
+                client
+                    .Entity(iri)
+                    .Link(base, "fundingFor")
+                    .Results(decodeStrings(returnProjects))
+            })
+        }
     }
 
     // Module Exports

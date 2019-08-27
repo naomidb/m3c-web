@@ -164,6 +164,31 @@
                     <ul class="people"></ul>
                 </section>
 
+                <section class="projects">
+                    <h2 class="projects">Projects</h2>
+                    <ul class="projects"></ul>
+                </section>
+
+                <section class="studies">
+                    <h2 class="studies">Studies</h2>
+                    <ul class="studies"></ul>
+                </section>
+
+                <section class="publications">
+                    <h2 class="publications">Publications</h2>
+                    <ul class="publications"></ul>
+                </section>
+
+                <section class="datasets">
+                    <h2 class="datasets">Datasets</h2>
+                    <ul class="datasets"></ul>
+                </section>
+
+                <section class="tools">
+                    <h2 class="tools">Tools</h2>
+                    <ul class="tools"></ul>
+                </section>
+
             </div>
             <p class="disclaimer">
                 Data from the
@@ -197,9 +222,11 @@
             organization.Name(renderName)
             organization.People(renderAdditionalCollaborators)
             organization.Type(renderType)
+            organization.Projects(listRenderer("ul.projects", "project"))
 
             const sections = [
-                "people",
+                "people", "projects", "studies", "publications", "datasets",
+                "tools",
             ]
 
             sections.forEach(function (name) {
