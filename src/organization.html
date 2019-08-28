@@ -266,7 +266,7 @@
                 function renderCollaborator(personIRI) {
                     entity.Name(client, personIRI, renderCollaboratorListItem)
                     function renderCollaboratorListItem(name) {
-                        renderListItem(ul, "organization", personIRI, name)
+                        renderListItem(ul, "person", personIRI, name)
                     }
                 }
             }
@@ -277,7 +277,7 @@
                     root.innerText = "Unknown person."
                     return
                 }
-
+                
                 type = type.trim()
                 root.querySelector(".type").innerHTML = type
             }
