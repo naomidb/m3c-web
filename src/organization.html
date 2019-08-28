@@ -248,7 +248,6 @@
 
                 name = name.trim()
                 root.querySelector(".name").innerHTML = name
-                root.querySelector(".photo").alt = name
             }
 
             function renderAdditionalCollaborators(collaborators) {
@@ -272,13 +271,25 @@
             }
 
             function renderType(type) {
-                console.log(type)
                 if (!type) {
-                    root.innerText = "Unknown person."
+                    root.innerText = "Unknown type."
                     return
                 }
-                
-                type = type.trim()
+
+                typeDict = {
+                    "<http://vivoweb.org/ontology/core#Institute>": "Institute",
+                    "<http://vivoweb.org/ontology/core#Department>": "Department",
+                    "<http://vivoweb.org/ontology/core#Laboratory>": "Laboratory"
+                }
+
+                type = "Organization"
+
+                for (var i = 0; i < type.length; i++) {
+                    if (type[i] in typeDict){
+                        type = typeDict[type[i]]
+                    }
+                }
+
                 root.querySelector(".type").innerHTML = type
             }
 
