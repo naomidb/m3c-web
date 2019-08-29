@@ -165,14 +165,6 @@ Blue #00529b */
     float: left;
 }
 
-.listing ol.results li  {
-    min-height: 100px;
-}
-
-.listing ol.results li div {
-    padding-left: 80px;
-}
-
 .listing ol.results .name {
     font-size: larger;
     margin-bottom: 0.3em;

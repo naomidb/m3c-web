@@ -35,6 +35,18 @@ var entity = (function module() {
             })
     }
 
+    function FundingOrganizations(client) {
+        return client
+            .Query(null, base + "fundedBy", null)
+            .then(function (triples) {
+                const fundedBys = {}
+                triples.forEach(function (triple) {
+                    fundedBys[triple.Subject] = triple.Object
+                })
+                return fundedBys
+            })
+    }
+
     /**
      * Fetches the name (label) of an Entity.
      *
@@ -91,6 +103,14 @@ var entity = (function module() {
 
     function Project(client, iri) {
         return new project(client, iri)
+    }
+
+    function Projects(client) {
+        return new Promise(function (resolve) {
+            client
+                .List(base + "Project")
+                .Results(resolve)
+        })
     }
 
     function decodeString(callback) {
@@ -397,11 +417,13 @@ var entity = (function module() {
     // Module Exports
     return {
         AssociatedWiths: AssociatedWiths,
+        FundingOrganizations: FundingOrganizations,
         Name: Name,
         Names: Names,
         Person: Person,
         Persons: Persons,
         Project: Project,
+        Projects: Projects,
     }
 
 })()
