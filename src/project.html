@@ -25,10 +25,12 @@
     <script crossorigin src="https://unpkg.com/@ungap/url-search-params@0.1.2/min.js"></script>
 
     <style>
+        .projects-link,
         .mwb {
             display: block;
             text-align: center;
             font-size: smaller;
+            padding: 0.25em;
         }
     </style>
 
@@ -58,9 +60,12 @@
             <div id="profile">
                 <h1 class="name"></h1>
 
-                <!-- <a href="https://www.metabolomicsworkbench.org/data/DRCCMetadata.php?Mode=Project&ProjectID=PR000016" class="mwb"> -->
                 <a href="https://www.metabolomicsworkbench.org/data/DRCCMetadata.php?Mode=Project" class="mwb">
-                   View project on Metabolomics Workbench
+                   Project page on Metabolomics Workbench
+                </a>
+
+                <a href="projects.html" class="projects-link">
+                    All projects
                 </a>
 
                 <div>
@@ -152,7 +157,8 @@
                 )
             })
 
-            const placeholder = "https://cdn.pixabay.com/photo/2016/08/08/09/17/avatar-1577909_960_720.png"
+            const allProjectsLink = root.querySelector(".projects-link")
+            allProjectsLink.href = m3c.ListingLink("projects")
 
             /**
              * Creates a function that accepts a list of items to render.
