@@ -35,6 +35,18 @@ var entity = (function module() {
             })
     }
 
+    function FundingOrganizations(client) {
+        return client
+            .Query(null, base + "fundedBy", null)
+            .then(function (triples) {
+                const fundedBys = {}
+                triples.forEach(function (triple) {
+                    fundedBys[triple.Subject] = triple.Object
+                })
+                return fundedBys
+            })
+    }
+
     /**
      * Fetches the name (label) of an Entity.
      *
@@ -85,6 +97,18 @@ var entity = (function module() {
         return new Promise(function (resolve) {
             client
                 .List(foaf + "Person")
+                .Results(resolve)
+        })
+    }
+
+    function Project(client, iri) {
+        return new project(client, iri)
+    }
+
+    function Projects(client) {
+        return new Promise(function (resolve) {
+            client
+                .List(base + "Project")
                 .Results(resolve)
         })
     }
@@ -255,6 +279,128 @@ var entity = (function module() {
         }
     }
 
+    function project(client, iri) {
+        const self = this
+
+        this.Datasets = function Datasets(returnDatasets) {
+            return new Promise(function () {
+                client
+                    .Entity(iri)
+                    .Link(base, "collectionFor")
+                    .Link(base, "developedFrom")
+                    .Results(decodeStrings(returnDatasets))
+            })
+        }
+
+        this.Department = function Department(returnDepartment) {
+            return new Promise(function () {
+                client
+                    .Entity(iri)
+                    .Link(base, "fundedBy")
+                    .Type(vivo, "Department")
+                    .Single(returnDepartment)
+            })
+        }
+
+        this.ID = function ID(returnID) {
+            return new Promise(function () {
+                client
+                    .Entity(iri)
+                    .Link(base, "projectId")
+                    .Single(decodeString(returnID))
+            })
+        }
+
+        this.Institute = function Institute(returnInstitute) {
+            return new Promise(function () {
+                client
+                    .Entity(iri)
+                    .Link(base, "fundedBy")
+                    .Type(vivo, "Institute")
+                    .Single(returnInstitute)
+            })
+        }
+
+        this.Laboratory = function Laboratory(returnLaboratory) {
+            return new Promise(function () {
+                client
+                    .Entity(iri)
+                    .Link(base, "fundedBy")
+                    .Type(vivo, "Laboratory")
+                    .Single(returnLaboratory)
+            })
+        }
+
+        this.Name = function name(returnName) {
+            return Name(client, iri, returnName)
+        }
+
+        this.People = function People(returnPeople) {
+            const runners = new Promise(function (resolve) {
+                client
+                    .Entity(iri)
+                    .Link(base, "hasPI")
+                    .Results(decodeStrings(resolve))
+            })
+
+            const investigators = new Promise(function (resolve) {
+                client
+                    .Entity(iri)
+                    .Link(base, "collectionFor")
+                    .Link(base, "runBy")
+                    .Results(decodeStrings(resolve))
+            })
+
+            return Promise
+                .all([investigators, runners])
+                .then(flatten)
+                .then(unique)
+                .then(returnPeople)
+        }
+
+        this.Publications = function Publications(returnPublications) {
+            return new Promise(function () {
+                client
+                    .Entity(iri)
+                    .Link(vivo, "relatedBy")
+                    .Type(vivo, "Authorship")
+                    .Link(vivo, "relates")
+                    .Type(bibo, "Document")
+                    .Results(decodeStrings(returnPublications))
+            })
+        }
+
+        this.Studies = function Studies(returnStudies) {
+            return new Promise(function () {
+                client
+                    .Entity(iri)
+                    .Link(base, "collectionFor")
+                    .Results(decodeStrings(returnStudies))
+            })
+        }
+
+        this.Tools = function Tools(returnTools) {
+            return new Promise(function (resolve) {
+                self.People(resolve)
+            }).then(function (people) {
+                const getToolsByPerson = people.map(function (personIRI) {
+                    return new Promise(function (resolve) {
+                        client
+                            .Entity(personIRI.slice(1, -1))
+                            .Link(base, "developerOf")
+                            .Results(decodeStrings(resolve))
+                    })
+                })
+
+                return Promise
+                    .all(getToolsByPerson)
+                    .then(flatten)
+                    .then(unique)
+                    .then(returnTools)
+            })
+        }
+    }
+
     /**
      * Returns the unique items in an array.
      * @param {(String[]|Number[])} items
@@ -271,10 +417,13 @@ var entity = (function module() {
     // Module Exports
     return {
         AssociatedWiths: AssociatedWiths,
+        FundingOrganizations: FundingOrganizations,
         Name: Name,
         Names: Names,
         Person: Person,
         Persons: Persons,
+        Project: Project,
+        Projects: Projects,
     }
 
 })()
