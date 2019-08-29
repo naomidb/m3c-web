@@ -135,7 +135,7 @@ var entity = (function module() {
                 client
                     .Entity(iri)
                     .Link(base, "runnerOf")
-                    .Link(base, "collectedBy")
+                    .Link(base, "inCollection")
                     .Link(base, "hasPI")
                     .Results(decodeStrings(resolve))
             })
@@ -143,6 +143,7 @@ var entity = (function module() {
             return Promise
                 .all([runners, investigators])
                 .then(flatten)
+                .then(unique)
                 .then(returnCollaborators)
         }
 
@@ -252,6 +253,19 @@ var entity = (function module() {
                     .Results(decodeStrings(returnTools))
             })
         }
+    }
+
+    /**
+     * Returns the unique items in an array.
+     * @param {(String[]|Number[])} items
+     */
+    function unique(items) {
+        const distinct = {}
+        for (var i = 0; i < items.length; i++) {
+            const item = items[i]
+            distinct[item] = true
+        }
+        return Object.keys(distinct)
     }
 
     // Module Exports
