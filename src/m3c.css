@@ -280,6 +280,71 @@ header a:hover h2 {
     display: inline-block;
 }
 
+/***********/
+/* Profile */
+
+body.profile .name {
+    text-align: center;
+    text-shadow: 1px 1px 3px gray;
+}
+
+body.profile section {
+    display: table;
+    width: 100%;
+    margin-bottom: 2em;
+}
+
+body.profile section:first-of-type {
+    margin-top: 2em;
+}
+
+body.profile section h2 {
+    display: table-cell;
+    width: 45%;
+    text-align: right;
+}
+
+body.profile section ul {
+    padding-left: 1.5em;
+    display: table-cell;
+}
+
+body.profile section li {
+    padding-bottom: 0.75em;
+}
+
+@media only screen and (max-width: 430px) {
+    body.profile .name {
+        font-size: 1.6em;
+    }
+
+    body.profile section.people {
+        margin-top: 0;
+        padding-top: 0;
+    }
+
+    body.profile section {
+        display: block;
+        margin-bottom: 0;
+    }
+
+    body.profile section:last-child {
+        margin-bottom: 2em;
+    }
+
+    body.profile section h2 {
+        display: block;
+        text-align: left;
+    }
+
+    body.profile section ul {
+        display: block;
+    }
+}
+
+/* Profile */
+/***********/
+
 footer {
     background-color: #00a9e0;
     color: white;
