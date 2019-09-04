@@ -260,6 +260,16 @@ var entity = (function module() {
                     .Results(decodeStrings(returnProjects))
             })
         }
+
+        this.Studies = function Studies(returnStudies) {
+            return new Promise(function() {
+                client
+                    .Entity(iri)
+                    .Link(base, "fundingFor")
+                    .Link(base, "collectionFor")
+                    .Results(decodeStrings(returnStudies))
+            })
+        }
     }
 
     // Module Exports
