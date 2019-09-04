@@ -113,6 +113,10 @@ var entity = (function module() {
         })
     }
 
+    function Publication(client, iri) {
+        return new publication(client, iri)
+    }
+
     function decodeString(callback) {
         return function decoder(text) {
             callback(deleteSurroundingQuotes(text))
@@ -401,6 +405,38 @@ var entity = (function module() {
         }
     }
 
+    function publication(client, iri) {
+        const self = this
+
+        this.PubMedLink = function PubMedLink(returnPubMedLink) {
+            const urlbase = "https://www.ncbi.nlm.nih.gov/pubmed/"
+
+            return new Promise(function () {
+                client
+                    .Entity(iri)
+                    .Link(vivo, "pmid")
+                    .Single(decodeString(makeLink))
+            })
+
+            function makeLink(pmid) {
+                if (pmid) {
+                    returnPubMedLink(urlbase + pmid)
+                    return
+                }
+
+                self.Title(makeSearchLink)
+            }
+
+            function makeSearchLink(title) {
+                returnPubMedLink(urlbase + "?term=" + encodeURIComponent(title))
+            }
+        }
+
+        this.Title = function Title(returnName) {
+            return Name(client, iri, returnName)
+        }
+    }
+
     /**
      * Returns the unique items in an array.
      * @param {(String[]|Number[])} items
@@ -424,6 +460,7 @@ var entity = (function module() {
         Persons: Persons,
         Project: Project,
         Projects: Projects,
+        Publication: Publication,
     }
 
 })()

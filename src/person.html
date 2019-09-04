@@ -65,6 +65,11 @@
             border-top: 1px solid gray;
         }
 
+        .fa-external-link-alt {
+            font-size: 0.7em;
+            color: gray;
+        }
+
         @media only screen and (max-width: 430px) {
             div.photo-frame,
             div.info-frame {
@@ -143,7 +148,13 @@
 
                 <section class="publications">
                     <h2 class="publications">Publications</h2>
-                    <ul class="publications"></ul>
+                    <ul class="publications">
+                        <li class="template">
+                            <a href="#" class="title link"
+                               target="_blank" rel="noopener noreferrer"></a>
+                            <i class="fa fa-external-link-alt"></i>
+                        </li>
+                    </ul>
                 </section>
 
                 <section class="datasets">
@@ -194,7 +205,7 @@
             person.Collaborators(renderAdditionalCollaborators)
             person.Projects(listRenderer("ul.projects", "project"))
             person.Studies(listRenderer("ul.studies", "study"))
-            person.Publications(listRenderer("ul.publications", "publication"))
+            person.Publications(renderPublications)
             person.Datasets(listRenderer("ul.datasets", "dataset"))
             person.Tools(listRenderer("ul.tools", "tool"))
 
@@ -341,6 +352,29 @@
                         '<li><i class="fas fa-fw fa-phone"></i>{}</li>',
                         phone
                     )
+                }
+            }
+
+            function renderPublications(publications) {
+                const ul = root.querySelector("ul.publications")
+                const template = ul.querySelector("li.template")
+
+                if (publications.length === 0) {
+                    ul.innerHTML = "<li><em>None</em></li>"
+                    return
+                }
+
+                publications.forEach(renderPublication)
+
+                function renderPublication(publicationIRI) {
+                    const pub = entity.Publication(client, publicationIRI)
+                    const bindings = {
+                        title: pub.Title,
+                        link: {
+                            href: pub.PubMedLink
+                        },
+                    }
+                    ui.Render(template, bindings)
                 }
             }
 
