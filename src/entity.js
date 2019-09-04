@@ -200,12 +200,12 @@ var entity = (function module() {
             return Name(client, iri, returnName)
         }
 
-        this.Organization = function Organization(returnOrganization) {
+        this.Organizations = function Organizations(returnOrganizations) {
             return new Promise(function () {
                 client
                     .Entity(iri)
                     .Link(base, "associatedWith")
-                    .Single(decodeString(returnOrganization))
+                    .Results(decodeString(returnOrganizations))
             })
         }
 

@@ -29,10 +29,6 @@
             margin-bottom: 1em;
         }
 
-        .name {
-            text-shadow: 1px 1px 3px gray;
-        }
-
         div.photo-frame,
         div.info-frame {
             display: inline-block;
@@ -47,7 +43,7 @@
         div.photo-frame {
             text-align: right;
             width: 45%;
-            margin-right: 4%;
+            margin-right: 1em;
         }
 
         div.info-frame {
@@ -56,9 +52,8 @@
             width: 50%;
         }
 
-        .emails li a {
-            margin-left: -0.25em;
-        }
+        div.info-frame { padding-left: 2em; }
+        i.fas, i.far   { margin-left: -1.5em; }
 
         section.people {
             padding-top: 2em;
@@ -70,7 +65,7 @@
             color: gray;
         }
 
-        @media only screen and (max-width: 430px) {
+        @media only screen and (max-width: 450px) {
             div.photo-frame,
             div.info-frame {
                 width: 100%;
@@ -80,6 +75,13 @@
             div.photo-frame,
             div.info-frame {
                 display: block;
+            }
+
+            .info-frame ul {
+                text-align: left;
+            }
+            .info-frame li {
+                padding-bottom: 0.75em;
             }
 
             section.people {
@@ -120,34 +122,61 @@
                     <img class="photo"></img>
                 </div>
                 <div class="info-frame">
+                    <ul class="organizations">
+                        <li class="template institute">
+                            <i class="fas fa-fw fa-city"></i>
+                            <a href="#" class="name link"></a>
+                        </li>
+                        <li class="template department">
+                            <i class="fas fa-fw fa-building"></i>
+                            <a href="#" class="name link"></a>
+                        </li>
+                        <li class="template laboratory">
+                            <i class="fas fa-fw fa-flask"></i>
+                            <a href="#" class="name link"></a>
+                        </li>
+                    </ul>
 
-                    <div class="organization"></div>
+                    <ul class="emails">
+                        <li class="template">
+                            <i class="fas fa-fw fa-envelope"></i>
+                            <a href="#" class="email link"></a>
+                        </li>
+                    </ul>
 
-                    <!-- <h2>Emails</h2> -->
-                    <ul class="emails"></ul>
-
-                    <!-- <h2>Phones</h2> -->
-                    <ul class="phones"></ul>
-
+                    <ul class="phones">
+                        <li class="template">
+                            <i class="fas fa-fw fa-phone"></i>
+                            <span class="phone"></span>
+                        </li>
+                    </ul>
                 </div>
 
                 <section class="people">
-                    <h2 class="people">Collaborators</h2>
+                    <h2 class="people">
+                        <a href="people.html">Collaborators</a>
+                    </h2>
                     <ul class="people"></ul>
                 </section>
 
                 <section class="projects">
-                    <h2 class="projects">Projects</h2>
+                    <h2 class="projects">
+                        <a href="projects.html">Projects</a>
+                    </h2>
                     <ul class="projects"></ul>
                 </section>
 
                 <section class="studies">
-                    <h2 class="studies">Studies</h2>
+                    <h2 class="studies">
+                        <a href="studies.html">Studies</a>
+                    </h2>
                     <ul class="studies"></ul>
                 </section>
 
                 <section class="publications">
-                    <h2 class="publications">Publications</h2>
+                    <h2 class="publications">
+                        <a href="publications.html">Publications</a>
+                    </h2>
                     <ul class="publications">
                         <li class="template">
                             <a href="#" class="title link"
@@ -158,12 +187,16 @@
                 </section>
 
                 <section class="datasets">
-                    <h2 class="datasets">Datasets</h2>
+                    <h2 class="datasets">
+                        <a href="datasets.html">Datasets</a>
+                    </h2>
                     <ul class="datasets"></ul>
                 </section>
 
                 <section class="tools">
-                    <h2 class="tools">Tools</h2>
+                    <h2 class="tools">
+                        <a href="tools.html">Tools</a>
+                    </h2>
                     <ul class="tools"></ul>
                 </section>
 
@@ -180,7 +213,7 @@
                 Metabolomics community.
             </p>
             <p>
-                © 2019 Metabolomics Consortium Coordinating Center
+                © 2019 Metabolomics&nbsp;Consortium Coordinating&nbsp;Center
             </p>
         </footer>
 
@@ -199,7 +232,7 @@
             const person = entity.Person(client, uri)
             person.Name(renderName)
             person.Photo(renderPhoto)
-            person.Organization(renderOrganization)
+            person.Organizations(renderOrganizations)
             person.Phones(renderPhones)
             person.Emails(renderEmails)
             person.Collaborators(renderAdditionalCollaborators)
@@ -216,16 +249,13 @@
                 "tools",
             ]
 
-            sections.forEach(function (name) {
-                const selector = str.Format("section.{} h2", name)
-                const h2 = document.querySelector(selector)
-                h2.innerHTML = str.Format(
-                    '<a href="{}">{}</a>',
-                    m3c.ListingLink(name), h2.innerHTML
-                )
-            })
+            sections.forEach(fixLink)
 
-            const placeholder = "https://cdn.pixabay.com/photo/2016/08/08/09/17/avatar-1577909_960_720.png"
+            function fixLink(name) {
+                const selector = str.Format("section.{} h2 a", name)
+                const link = root.querySelector(selector)
+                link.href = m3c.ListingLink(name)
+            }
 
             /**
              * Extracts a collaborator's name for use by a sorting function.
@@ -292,19 +322,17 @@
 
             function renderEmails(emails) {
                 const ul = root.querySelector(".emails")
+                const template = ul.querySelector("li.template")
 
-                ul.innerHTML = emails
-                    .map(renderEmail)
-                    .join("\n")
+                emails.map(renderEmail)
 
                 function renderEmail(email) {
-                    return str.Format(
-                        '<li> \
-                           <i class="fas fa-fw fa-envelope"></i> \
-                           <a href="mailto:{}">{}</a> \
-                         </li>',
-                        email, email
-                    )
+                    ui.Render(template, {
+                        email: email,
+                        link: {
+                            href: "mailto:" + email,
+                        },
+                    })
                 }
             }
 
@@ -329,29 +357,40 @@
                 root.querySelector(".photo").alt = name
             }
 
-            function renderOrganization(organizationIRI) {
-                entity.Name(client, organizationIRI, renderOrganizationName)
-                function renderOrganizationName(name) {
-                    const div = root.querySelector(".organization")
-                    div.innerHTML = str.Format(
-                        '<i class="fas fa-fw fa-building"></i><a href="{}">{}</a>',
-                        m3c.ProfileLink("organization", organizationIRI.slice(1, -1)),
-                        name
-                    )
+            function renderOrganizations(organizations) {
+                const list = root.querySelector("ul.organizations")
+                const templates = {
+                    institute: list.querySelector("li.template.institute"),
+                    department: list.querySelector("li.template.department"),
+                    laboratory: list.querySelector("li.template.laboratory"),
+                }
+
+                organizations.forEach(renderOrganization)
+
+                function renderOrganization(organizationIRI) {
+                    organizationIRI = organizationIRI.slice(1, -1) // strip < >
+
+                    const bindings = {
+                        name: entity.Name.bind(null, client, organizationIRI),
+                        link: {
+                            href: m3c.ProfileLink("organization", organizationIRI),
+                        },
+                    }
+
+                    ui.Render(templates.department, bindings)
                 }
             }
 
             function renderPhones(phones) {
                 const ul = root.querySelector(".phones")
-                ul.innerHTML = phones
-                    .map(renderPhone)
-                    .join("\n")
+                const template = ul.querySelector("li.template")
+
+                phones.forEach(renderPhone)
 
                 function renderPhone(phone) {
-                    return str.Format(
-                        '<li><i class="fas fa-fw fa-phone"></i>{}</li>',
-                        phone
-                    )
+                    ui.Render(template, {
+                        phone: phone,
+                    })
                 }
             }
 
@@ -382,6 +421,7 @@
                 const img = root.querySelector(".photo")
 
                 if (!url) {
+                    const placeholder = "https://cdn.pixabay.com/photo/2016/08/08/09/17/avatar-1577909_960_720.png"
                     img.src = placeholder
                 } else {
                     img.src = m3c.PhotoURL(client.Endpoint, url)
