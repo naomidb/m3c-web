@@ -270,6 +270,18 @@ var entity = (function module() {
                     .Results(decodeStrings(returnStudies))
             })
         }
+
+        this.Publications = function Publications(returnPublications) {
+            return new Promise(function() {
+                client
+                    .Entity(iri)
+                    .Link(vivo, "relatedBy")
+                    .Type(vivo, "Authorship")
+                    .Link(vivo, "relates")
+                    .Type(bibo, "Document")
+                    .Results(decodeStrings(returnPublications))
+            })
+        }
     }
 
     // Module Exports
