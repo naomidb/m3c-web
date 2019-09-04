@@ -179,16 +179,6 @@
                     <ul class="publications"></ul>
                 </section>
 
-                <section class="datasets">
-                    <h2 class="datasets">Datasets</h2>
-                    <ul class="datasets"></ul>
-                </section>
-
-                <section class="tools">
-                    <h2 class="tools">Tools</h2>
-                    <ul class="tools"></ul>
-                </section>
-
             </div>
             <p class="disclaimer">
                 Data from the
@@ -225,8 +215,7 @@
             organization.Projects(listRenderer("ul.projects", "project"))
             organization.Studies(listRenderer("ul.studies", "study"))
             organization.Publications(listRenderer("ul.publications", "publication"))
-
-
+            
             const sections = [
                 "people", "projects", "studies", "publications", "datasets",
                 "tools",
