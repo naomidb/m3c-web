@@ -6,7 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
 
-    <title>M3C Projects Listing</title>
+    <title>M3C Studies Listing</title>
 
     <!-- Font Awesome for neat icons. -->
     <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.8.1/css/all.css"
@@ -47,7 +47,7 @@
         </header>
 
         <div class="page">
-            <h1>Projects</h1>
+            <h1>Studies</h1>
             <div id="listing">
                 <div class="controls">
                     <div class="count"></div>
@@ -55,8 +55,8 @@
                 </div>
 
                 <div class="facets">
-                    <div class="facet organization">
-                        <p>Organization</p>
+                    <div class="facet submitted">
+                        <p>Year Submitted</p>
                         <div class="facet-controls">
                             <a href="#" class="show">Show all</a>
                             <a href="#" class="limit">Show fewer</a>
@@ -76,11 +76,11 @@
 
                 <ol class="results">
                     <!-- Templates aren't visible, but their clones are filled out with real data. -->
-                    <li class="project template">
+                    <li class="study template">
                         <a href="#" class="link">
                             <div class="name"></div>
                         </a>
-                        <div class="organization"></div>
+                        <div class="submitted"></div>
                     </li>
                 </ol>
             </div>
@@ -111,38 +111,38 @@
             const results = root.querySelector(".results")
             const facets = root.querySelector(".facets")
             const ctrlReverse = root.querySelector(".reverse")
-            const projectTemplate = root.querySelector("li.project.template")
+            const template = root.querySelector("li.study.template")
 
             // Keep the results sorted.
             const sorted = ui.SortedList(results, 1, sortByName)
             ctrlReverse.addEventListener("click", onCtrlReverseClick)
 
-            ui.SortedList(facets.querySelector(".organization ul"), -1, sortByCount)
+            ui.SortedList(facets.querySelector(".submitted ul"), -1, sortByCount)
 
-            // Query the TPF server for all projects and some related data.
+            // Query the TPF server for all studies and some related data.
             const data = {
-                projects: [],
-                names: {},    // entity IRI => label string
-                funding: {},  // project IRI => list of org IRIs
+                studies: [],
+                names: {},     // entity IRI => label string
+                submitted: {}, // study IRI => list of submitted Date
             }
 
             const promises = [
-                entity.Projects(client),
+                entity.Studies(client),
                 entity.Names(client),
-                entity.FundingOrganizations(client),
+                entity.SubmissionDates(client),
             ]
 
             Promise.all(promises)
                 .then(function setData(results) {
-                    data.projects = results[0]
+                    data.studies = results[0]
                     data.names = results[1]
-                    data.funding = results[2]
+                    data.submitted = results[2]
 
-                    data.projects.forEach(renderProject)
+                    data.studies.forEach(renderStudy)
                 })
                 .then(function automaticallyUpdateCount() {
-                    if (data.projects.length > 5 + 1) {
-                        const orgfacet = root.querySelector(".facet.organization")
+                    if (data.studies.length > 5 + 1) {
+                        const orgfacet = root.querySelector(".facet.submitted")
                         orgfacet.className = (orgfacet.className + " limit").trim()
                     }
 
@@ -162,8 +162,8 @@
             // function whose name matches the class name of the facet's HTML
             // element.
             const filters = [
-                function organization(selected, li) {
-                    const org = li.querySelector(".organization")
+                function submitted(selected, li) {
+                    const org = li.querySelector(".submitted")
                     return selected.indexOf(org.innerText) !== -1
                 },
             ]
@@ -195,24 +195,24 @@
             }
 
             /**
-             * Render a project with the specified IRI.
-             * @param {string} projectIRI
+             * Render a study with the specified IRI.
+             * @param {string} studyIRI
              */
-            function renderProject(projectIRI) {
-                // const project = entity.Project(client, projectIRI.slice(1, -1))
-                const orgIRI = data.funding[projectIRI]
+            function renderStudy(studyIRI) {
+                const submitted = data.submitted[studyIRI]
+
                 const bindings = {
                     link: {
-                        href: m3c.ProfileLink("project", projectIRI),
+                        href: m3c.ProfileLink("study", studyIRI.slice(1, -1)),
                     },
-                    name: parseVIVOString(data.names[projectIRI]),
-                    organization: orgIRI ? data.names[orgIRI] : null,
+                    name: parseVIVOString(data.names[studyIRI]),
+                    submitted: submitted ? submitted.getFullYear(): null,
                 }
 
-                const li = ui.Render(projectTemplate, bindings)
+                const li = ui.Render(template, bindings)
 
-                if (orgIRI) {
-                    facetsManager.Increment('organization', bindings.organization, bindings.organization)
+                if (submitted) {
+                    facetsManager.Increment('submitted', bindings.submitted, bindings.submitted)
                 }
             }
 

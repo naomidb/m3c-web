@@ -117,6 +117,30 @@ var entity = (function module() {
         return new publication(client, iri)
     }
 
+    function Studies(client) {
+        return new Promise(function (resolve) {
+            client
+                .List(base + "Study")
+                .Results(resolve)
+        })
+    }
+
+    function Study(client, iri) {
+        return new study(client, iri)
+    }
+
+    function SubmissionDates(client) {
+        return client
+            .Query(null, base + "submitted", null)
+            .then(function (triples) {
+                const submitted = {}
+                triples.forEach(function (triple) {
+                    submitted[triple.Subject] = parseDate(triple.Object)
+                })
+                return submitted
+            })
+    }
+
     function decodeString(callback) {
         return function decoder(text) {
             callback(deleteSurroundingQuotes(text))
@@ -141,6 +165,16 @@ var entity = (function module() {
         return arr.reduce(function (acc, val) {
             return acc.concat(val)
         }, [])
+    }
+
+    /**
+     * Parses a Date object from an xsd:dateTime string.
+     *
+     * Ex: "2015-07-16T00:00:00"^^<http://www.w3.org/2001/XMLSchema#dateTime>
+     */
+    function parseDate(dt) {
+        const dateTime = dt.substring(1, dt.lastIndexOf('"'))
+        return new Date(dateTime)
     }
 
     /**
@@ -437,6 +471,130 @@ var entity = (function module() {
         }
     }
 
+    function study(client, iri) {
+        self = this
+
+        this.Datasets = function Datasets(returnDatasets) {
+            return new Promise(function () {
+                client
+                    .Entity(iri)
+                    .Link(base, "developedFrom")
+                    .Results(decodeStrings(returnDatasets))
+            })
+        }
+
+        this.Department = function Department(returnDepartment) {
+            return new Promise(function () {
+                client
+                    .Entity(iri)
+                    .Link(base, "inCollection")
+                    .Link(base, "fundedBy")
+                    .Type(vivo, "Department")
+                    .Single(returnDepartment)
+            })
+        }
+
+        this.ID = function ID(returnID) {
+            return new Promise(function () {
+                client
+                    .Entity(iri)
+                    .Link(base, "studyId")
+                    .Single(decodeString(returnID))
+            })
+        }
+
+        this.Institute = function Institute(returnInstitute) {
+            return new Promise(function () {
+                client
+                    .Entity(iri)
+                    .Link(base, "inCollection")
+                    .Link(base, "fundedBy")
+                    .Type(vivo, "Institute")
+                    .Single(returnInstitute)
+            })
+        }
+
+        this.Laboratory = function Laboratory(returnLaboratory) {
+            return new Promise(function () {
+                client
+                    .Entity(iri)
+                    .Link(base, "inCollection")
+                    .Link(base, "fundedBy")
+                    .Type(vivo, "Laboratory")
+                    .Single(returnLaboratory)
+            })
+        }
+
+        this.Name = function name(returnName) {
+            return Name(client, iri, returnName)
+        }
+
+        this.People = function People(returnPeople) {
+            const runners = new Promise(function (resolve) {
+                client
+                    .Entity(iri)
+                    .Link(base, "runBy")
+                    .Results(decodeStrings(resolve))
+            })
+
+            const investigators = new Promise(function (resolve) {
+                client
+                    .Entity(iri)
+                    .Link(base, "inCollection")
+                    .Link(base, "isPIFor")
+                    .Results(decodeStrings(resolve))
+            })
+
+            return Promise
+                .all([investigators, runners])
+                .then(flatten)
+                .then(unique)
+                .then(returnPeople)
+        }
+
+        this.Project = function Project(returnProject) {
+            return new Promise(function () {
+                client
+                    .Entity(iri)
+                    .Link(base, "inCollection")
+                    .Single(decodeString(returnProject))
+            })
+        }
+
+        this.Studies = function Studies(returnStudies) {
+            return new Promise(function (resolve) {
+                client
+                    .Entity(iri)
+                    .Link(base, "inCollection")
+                    .Link(base, "collectionFor")
+                    .Results(decodeStrings(resolve))
+            })
+            .then(filterOutSelf)
+            .then(returnStudies)
+
+            function filterOutSelf(studies) {
+                return studies.filter(function (study) {
+                    return iri !== study.slice(1, -1)
+                })
+            }
+        }
+
+        this.Submitted = function Submitted(returnSubmitted) {
+            return new Promise(function () {
+            return client
+                .Query(iri, base + "submitted", null)
+                .then(function (triples) {
+                    if (triples.length === 0) {
+                        return
+                    }
+
+                    const date = parseDate(triple.Object)
+                    returnSubmitted(date)
+                })
+            })
+        }
+    }
+
     /**
      * Returns the unique items in an array.
      * @param {(String[]|Number[])} items
@@ -461,6 +619,9 @@ var entity = (function module() {
         Project: Project,
         Projects: Projects,
         Publication: Publication,
+        Studies: Studies,
+        Study: Study,
+        SubmissionDates: SubmissionDates,
     }
 
 })()
