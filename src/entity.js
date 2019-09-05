@@ -588,7 +588,7 @@ var entity = (function module() {
                         return
                     }
 
-                    const date = parseDate(triple.Object)
+                    const date = parseDate(triples[0].Object)
                     returnSubmitted(date)
                 })
             })

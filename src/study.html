@@ -294,10 +294,11 @@
                 }
 
                 const node = root.querySelector(".submitted")
+                console.log({submitted})
                 node.innerText =
                     str.Format("{}-{}-{}",
                         submitted.getUTCFullYear(),
-                        pad(submitted.getUTCMonth()),
+                        pad(submitted.getUTCMonth()+1),
                         pad(submitted.getUTCDate()),
                     )
 
