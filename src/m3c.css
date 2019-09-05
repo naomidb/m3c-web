@@ -335,6 +335,11 @@ body.profile section li {
 /* Profile */
 /***********/
 
+.fa-external-link-alt {
+    font-size: 0.7em;
+    color: gray;
+}
+
 footer {
     background-color: #00a9e0;
     color: white;
