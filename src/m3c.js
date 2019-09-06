@@ -92,7 +92,22 @@ var m3c = (function module() {
             links[i].href = m3c.DashboardLink()
         }
 
-        return new tpf.Client(endpoint)
+        const client = new tpf.Client(endpoint)
+        client.Endpoint = endpoint
+        return client
+    }
+
+    /**
+     * Generates the full URL for a photo taking into account the endpoint.
+     *
+     * Example when used on the staging server *stage.x.org*
+     *
+     *    PhotoURL("http://stage.x.org/tpf/core", "/file/n007/photo.jpg")
+     *    => "http://stage.x.org/file/n007/photo.jpg"
+     */
+    function PhotoURL(endpoint, path) {
+        const basehref = endpoint.replace("/tpf/core", "")
+        return basehref + path
     }
 
     /**
@@ -132,6 +147,7 @@ var m3c = (function module() {
         IRIFor: IRIFor,
         ListingLink: ListingLink,
         NewTPFClient: NewTPFClient,
+        PhotoURL: PhotoURL,
         ProfileLink: ProfileLink,
         Subject: Subject,
     }
