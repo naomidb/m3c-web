@@ -9,10 +9,11 @@ if (typeof require !== "undefined") {
  * @module entity
  */
 var entity = (function module() {
-    const
-        base = "http://www.metabolomics.info/ontologies/2019/metabolomics-consortium#",
+    const base =
+            "http://www.metabolomics.info/ontologies/2019/metabolomics-consortium#",
         bibo = "http://purl.org/ontology/bibo/",
         foaf = "http://xmlns.com/foaf/0.1/",
+        rdf = "http://www.w3.org/1999/02/22-rdf-syntax-ns#",
         obo = "http://purl.obolibrary.org/obo/",
         rdfs = "http://www.w3.org/2000/01/rdf-schema#",
         vcard = "http://www.w3.org/2006/vcard/ns#",
@@ -26,9 +27,9 @@ var entity = (function module() {
     function AssociatedWiths(client) {
         return client
             .Query(null, base + "associatedWith", null)
-            .then(function (triples) {
+            .then(function(triples) {
                 const associatedWith = {}
-                triples.forEach(function (triple) {
+                triples.forEach(function(triple) {
                     associatedWith[triple.Subject] = triple.Object
                 })
                 return associatedWith
@@ -38,9 +39,9 @@ var entity = (function module() {
     function FundingOrganizations(client) {
         return client
             .Query(null, base + "fundedBy", null)
-            .then(function (triples) {
+            .then(function(triples) {
                 const fundedBys = {}
-                triples.forEach(function (triple) {
+                triples.forEach(function(triple) {
                     fundedBys[triple.Subject] = triple.Object
                 })
                 return fundedBys
@@ -56,7 +57,7 @@ var entity = (function module() {
      *        Callback function that receives the name.
      */
     function Name(client, iri, returnName) {
-        return new Promise(function () {
+        return new Promise(function() {
             client
                 .Entity(iri)
                 .Link(rdfs, "label")
@@ -69,15 +70,22 @@ var entity = (function module() {
      * @param {tpf.Client} client
      */
     function Names(client) {
-        return client
-            .Query(null, rdfs + "label", null)
-            .then(function (triples) {
-                const names = {}
-                triples.forEach(function (triple) {
-                    names[triple.Subject] = parseVIVOString(triple.Object)
-                })
-                return names
+        return client.Query(null, rdfs + "label", null).then(function(triples) {
+            const names = {}
+            triples.forEach(function(triple) {
+                names[triple.Subject] = parseVIVOString(triple.Object)
             })
+            return names
+        })
+    }
+
+    /**
+     *
+     * @param {tpf.Client} client
+     * @param {string} iri IRI of the Organization
+     */
+    function Organization(client, iri) {
+        return new organization(client, iri)
     }
 
     /**
@@ -94,10 +102,8 @@ var entity = (function module() {
      * @param {tpf.Client} client
      */
     function Persons(client) {
-        return new Promise(function (resolve) {
-            client
-                .List(foaf + "Person")
-                .Results(resolve)
+        return new Promise(function(resolve) {
+            client.List(foaf + "Person").Results(resolve)
         })
     }
 
@@ -106,10 +112,8 @@ var entity = (function module() {
     }
 
     function Projects(client) {
-        return new Promise(function (resolve) {
-            client
-                .List(base + "Project")
-                .Results(resolve)
+        return new Promise(function(resolve) {
+            client.List(base + "Project").Results(resolve)
         })
     }
 
@@ -118,10 +122,8 @@ var entity = (function module() {
     }
 
     function Studies(client) {
-        return new Promise(function (resolve) {
-            client
-                .List(base + "Study")
-                .Results(resolve)
+        return new Promise(function(resolve) {
+            client.List(base + "Study").Results(resolve)
         })
     }
 
@@ -132,9 +134,9 @@ var entity = (function module() {
     function SubmissionDates(client) {
         return client
             .Query(null, base + "submitted", null)
-            .then(function (triples) {
+            .then(function(triples) {
                 const submitted = {}
-                triples.forEach(function (triple) {
+                triples.forEach(function(triple) {
                     submitted[triple.Subject] = parseDate(triple.Object)
                 })
                 return submitted
@@ -162,7 +164,7 @@ var entity = (function module() {
 
     /** Creates a new array from a two-dimensional array. */
     function flatten(arr) {
-        return arr.reduce(function (acc, val) {
+        return arr.reduce(function(acc, val) {
             return acc.concat(val)
         }, [])
     }
@@ -184,7 +186,7 @@ var entity = (function module() {
      */
     function person(client, iri) {
         this.Collaborators = function Collaborators(returnCollaborators) {
-            const runners = new Promise(function (resolve) {
+            const runners = new Promise(function(resolve) {
                 client
                     .Entity(iri)
                     .Link(base, "isPIFor")
@@ -193,7 +195,7 @@ var entity = (function module() {
                     .Results(decodeStrings(resolve))
             })
 
-            const investigators = new Promise(function (resolve) {
+            const investigators = new Promise(function(resolve) {
                 client
                     .Entity(iri)
                     .Link(base, "runnerOf")
@@ -202,15 +204,14 @@ var entity = (function module() {
                     .Results(decodeStrings(resolve))
             })
 
-            return Promise
-                .all([runners, investigators])
+            return Promise.all([runners, investigators])
                 .then(flatten)
                 .then(unique)
                 .then(returnCollaborators)
         }
 
         this.Datasets = function Datasets(returnDatasets) {
-            return new Promise(function () {
+            return new Promise(function() {
                 client
                     .Entity(iri)
                     .Link(base, "runnerOf")
@@ -220,7 +221,7 @@ var entity = (function module() {
         }
 
         this.Emails = function Emails(returnEmails) {
-            return new Promise(function () {
+            return new Promise(function() {
                 client
                     .Entity(iri)
                     .Link(obo, "ARG_2000028")
@@ -235,7 +236,7 @@ var entity = (function module() {
         }
 
         this.Organizations = function Organizations(returnOrganizations) {
-            return new Promise(function () {
+            return new Promise(function() {
                 client
                     .Entity(iri)
                     .Link(base, "associatedWith")
@@ -244,7 +245,7 @@ var entity = (function module() {
         }
 
         this.Phones = function Phones(returnPhones) {
-            return new Promise(function () {
+            return new Promise(function() {
                 client
                     .Entity(iri)
                     .Link(obo, "ARG_2000028")
@@ -255,7 +256,7 @@ var entity = (function module() {
         }
 
         this.Photo = function Photo(returnPhoto) {
-            return new Promise(function () {
+            return new Promise(function() {
                 client
                     .Entity(iri)
                     .Link(vitro, "mainImage")
@@ -266,7 +267,7 @@ var entity = (function module() {
         }
 
         this.PhotoThumbnail = function Photo(returnPhoto) {
-            return new Promise(function () {
+            return new Promise(function() {
                 client
                     .Entity(iri)
                     .Link(vitro, "mainImage")
@@ -278,7 +279,7 @@ var entity = (function module() {
         }
 
         this.Projects = function Projects(returnProjects) {
-            return new Promise(function () {
+            return new Promise(function() {
                 client
                     .Entity(iri)
                     .Link(base, "isPIFor")
@@ -287,7 +288,7 @@ var entity = (function module() {
         }
 
         this.Publications = function Publications(returnPublications) {
-            return new Promise(function () {
+            return new Promise(function() {
                 client
                     .Entity(iri)
                     .Link(vivo, "relatedBy")
@@ -299,7 +300,7 @@ var entity = (function module() {
         }
 
         this.Studies = function Studies(returnStudies) {
-            return new Promise(function () {
+            return new Promise(function() {
                 client
                     .Entity(iri)
                     .Link(base, "runnerOf")
@@ -308,7 +309,7 @@ var entity = (function module() {
         }
 
         this.Tools = function Tools(returnTools) {
-            return new Promise(function () {
+            return new Promise(function() {
                 client
                     .Entity(iri)
                     .Link(base, "developerOf")
@@ -317,11 +318,75 @@ var entity = (function module() {
         }
     }
 
+    /**
+     * @class
+     * @param {tpf.Client} client
+     * @param {string} iri IRI of the Organization
+     */
+    function organization(client, iri) {
+        this.Name = function name(returnName) {
+            return Name(client, iri, returnName)
+        }
+
+        this.People = function People(returnCollaborators) {
+            const runners = new Promise(function(resolve) {
+                client
+                    .Entity(iri)
+                    .Link(base, "associationFor")
+                    .Results(decodeStrings(resolve))
+            })
+
+            return Promise.all([runners])
+                .then(flatten)
+                .then(returnCollaborators)
+        }
+
+        this.Type = function Type(returnType) {
+            return new Promise(function() {
+                client
+                    .Entity(iri)
+                    .Link(rdf, "type")
+                    .Results(decodeStrings(returnType))
+            })
+        }
+
+        this.Projects = function Projects(returnProjects) {
+            return new Promise(function() {
+                client
+                    .Entity(iri)
+                    .Link(base, "fundingFor")
+                    .Results(decodeStrings(returnProjects))
+            })
+        }
+
+        this.Studies = function Studies(returnStudies) {
+            return new Promise(function() {
+                client
+                    .Entity(iri)
+                    .Link(base, "fundingFor")
+                    .Link(base, "collectionFor")
+                    .Results(decodeStrings(returnStudies))
+            })
+        }
+
+        this.Publications = function Publications(returnPublications) {
+            return new Promise(function() {
+                client
+                    .Entity(iri)
+                    .Link(vivo, "relatedBy")
+                    .Type(vivo, "Authorship")
+                    .Link(vivo, "relates")
+                    .Type(bibo, "Document")
+                    .Results(decodeStrings(returnPublications))
+            })
+        }
+    }
+
     function project(client, iri) {
         const self = this
 
         this.Datasets = function Datasets(returnDatasets) {
-            return new Promise(function () {
+            return new Promise(function() {
                 client
                     .Entity(iri)
                     .Link(base, "collectionFor")
@@ -331,7 +396,7 @@ var entity = (function module() {
         }
 
         this.Department = function Department(returnDepartment) {
-            return new Promise(function () {
+            return new Promise(function() {
                 client
                     .Entity(iri)
                     .Link(base, "fundedBy")
@@ -341,7 +406,7 @@ var entity = (function module() {
         }
 
         this.ID = function ID(returnID) {
-            return new Promise(function () {
+            return new Promise(function() {
                 client
                     .Entity(iri)
                     .Link(base, "projectId")
@@ -350,7 +415,7 @@ var entity = (function module() {
         }
 
         this.Institute = function Institute(returnInstitute) {
-            return new Promise(function () {
+            return new Promise(function() {
                 client
                     .Entity(iri)
                     .Link(base, "fundedBy")
@@ -360,7 +425,7 @@ var entity = (function module() {
         }
 
         this.Laboratory = function Laboratory(returnLaboratory) {
-            return new Promise(function () {
+            return new Promise(function() {
                 client
                     .Entity(iri)
                     .Link(base, "fundedBy")
@@ -374,14 +439,14 @@ var entity = (function module() {
         }
 
         this.People = function People(returnPeople) {
-            const runners = new Promise(function (resolve) {
+            const runners = new Promise(function(resolve) {
                 client
                     .Entity(iri)
                     .Link(base, "hasPI")
                     .Results(decodeStrings(resolve))
             })
 
-            const investigators = new Promise(function (resolve) {
+            const investigators = new Promise(function(resolve) {
                 client
                     .Entity(iri)
                     .Link(base, "collectionFor")
@@ -389,15 +454,14 @@ var entity = (function module() {
                     .Results(decodeStrings(resolve))
             })
 
-            return Promise
-                .all([investigators, runners])
+            return Promise.all([investigators, runners])
                 .then(flatten)
                 .then(unique)
                 .then(returnPeople)
         }
 
         this.Publications = function Publications(returnPublications) {
-            return new Promise(function () {
+            return new Promise(function() {
                 client
                     .Entity(iri)
                     .Link(vivo, "relatedBy")
@@ -409,7 +473,7 @@ var entity = (function module() {
         }
 
         this.Studies = function Studies(returnStudies) {
-            return new Promise(function () {
+            return new Promise(function() {
                 client
                     .Entity(iri)
                     .Link(base, "collectionFor")
@@ -418,11 +482,11 @@ var entity = (function module() {
         }
 
         this.Tools = function Tools(returnTools) {
-            return new Promise(function (resolve) {
+            return new Promise(function(resolve) {
                 self.People(resolve)
-            }).then(function (people) {
-                const getToolsByPerson = people.map(function (personIRI) {
-                    return new Promise(function (resolve) {
+            }).then(function(people) {
+                const getToolsByPerson = people.map(function(personIRI) {
+                    return new Promise(function(resolve) {
                         client
                             .Entity(personIRI.slice(1, -1))
                             .Link(base, "developerOf")
@@ -430,8 +494,7 @@ var entity = (function module() {
                     })
                 })
 
-                return Promise
-                    .all(getToolsByPerson)
+                return Promise.all(getToolsByPerson)
                     .then(flatten)
                     .then(unique)
                     .then(returnTools)
@@ -445,7 +508,7 @@ var entity = (function module() {
         this.PubMedLink = function PubMedLink(returnPubMedLink) {
             const urlbase = "https://www.ncbi.nlm.nih.gov/pubmed/"
 
-            return new Promise(function () {
+            return new Promise(function() {
                 client
                     .Entity(iri)
                     .Link(vivo, "pmid")
@@ -475,7 +538,7 @@ var entity = (function module() {
         self = this
 
         this.Datasets = function Datasets(returnDatasets) {
-            return new Promise(function () {
+            return new Promise(function() {
                 client
                     .Entity(iri)
                     .Link(base, "developedFrom")
@@ -484,7 +547,7 @@ var entity = (function module() {
         }
 
         this.Department = function Department(returnDepartment) {
-            return new Promise(function () {
+            return new Promise(function() {
                 client
                     .Entity(iri)
                     .Link(base, "inCollection")
@@ -495,7 +558,7 @@ var entity = (function module() {
         }
 
         this.ID = function ID(returnID) {
-            return new Promise(function () {
+            return new Promise(function() {
                 client
                     .Entity(iri)
                     .Link(base, "studyId")
@@ -504,7 +567,7 @@ var entity = (function module() {
         }
 
         this.Institute = function Institute(returnInstitute) {
-            return new Promise(function () {
+            return new Promise(function() {
                 client
                     .Entity(iri)
                     .Link(base, "inCollection")
@@ -515,7 +578,7 @@ var entity = (function module() {
         }
 
         this.Laboratory = function Laboratory(returnLaboratory) {
-            return new Promise(function () {
+            return new Promise(function() {
                 client
                     .Entity(iri)
                     .Link(base, "inCollection")
@@ -530,14 +593,14 @@ var entity = (function module() {
         }
 
         this.People = function People(returnPeople) {
-            const runners = new Promise(function (resolve) {
+            const runners = new Promise(function(resolve) {
                 client
                     .Entity(iri)
                     .Link(base, "runBy")
                     .Results(decodeStrings(resolve))
             })
 
-            const investigators = new Promise(function (resolve) {
+            const investigators = new Promise(function(resolve) {
                 client
                     .Entity(iri)
                     .Link(base, "inCollection")
@@ -545,15 +608,14 @@ var entity = (function module() {
                     .Results(decodeStrings(resolve))
             })
 
-            return Promise
-                .all([investigators, runners])
+            return Promise.all([investigators, runners])
                 .then(flatten)
                 .then(unique)
                 .then(returnPeople)
         }
 
         this.Project = function Project(returnProject) {
-            return new Promise(function () {
+            return new Promise(function() {
                 client
                     .Entity(iri)
                     .Link(base, "inCollection")
@@ -562,35 +624,35 @@ var entity = (function module() {
         }
 
         this.Studies = function Studies(returnStudies) {
-            return new Promise(function (resolve) {
+            return new Promise(function(resolve) {
                 client
                     .Entity(iri)
                     .Link(base, "inCollection")
                     .Link(base, "collectionFor")
                     .Results(decodeStrings(resolve))
             })
-            .then(filterOutSelf)
-            .then(returnStudies)
+                .then(filterOutSelf)
+                .then(returnStudies)
 
             function filterOutSelf(studies) {
-                return studies.filter(function (study) {
+                return studies.filter(function(study) {
                     return iri !== study.slice(1, -1)
                 })
             }
         }
 
         this.Submitted = function Submitted(returnSubmitted) {
-            return new Promise(function () {
-            return client
-                .Query(iri, base + "submitted", null)
-                .then(function (triples) {
-                    if (triples.length === 0) {
-                        return
-                    }
+            return new Promise(function() {
+                return client
+                    .Query(iri, base + "submitted", null)
+                    .then(function(triples) {
+                        if (triples.length === 0) {
+                            return
+                        }
 
-                    const date = parseDate(triples[0].Object)
-                    returnSubmitted(date)
-                })
+                        const date = parseDate(triples[0].Object)
+                        returnSubmitted(date)
+                    })
             })
         }
     }
@@ -616,6 +678,7 @@ var entity = (function module() {
         Names: Names,
         Person: Person,
         Persons: Persons,
+        Organization: Organization,
         Project: Project,
         Projects: Projects,
         Publication: Publication,
@@ -623,7 +686,6 @@ var entity = (function module() {
         Study: Study,
         SubmissionDates: SubmissionDates,
     }
-
 })()
 
 if (typeof module !== "undefined") {
