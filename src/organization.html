@@ -25,6 +25,14 @@
     <script crossorigin src="https://unpkg.com/@ungap/url-search-params@0.1.2/min.js"></script>
 
     <style>
+        .type {
+            position: absolute;
+            left: 50%;
+            -moz-transform: translateX(-50%) translateY(-50%);
+            -webkit-transform: translateX(-50%) translateY(-50%);
+            transform: translateX(-50%) translateY(-50%);
+        }
+
         img.photo {
             margin-bottom: 1em;
         }
@@ -215,7 +223,7 @@
             organization.Projects(listRenderer("ul.projects", "project"))
             organization.Studies(listRenderer("ul.studies", "study"))
             organization.Publications(listRenderer("ul.publications", "publication"))
-            
+
             const sections = [
                 "people", "projects", "studies", "publications", "datasets",
                 "tools",
