@@ -34,6 +34,17 @@ body {
     color: #444444;
 }
 
+a,
+a:visited {
+    color: #00a9e0;
+}
+
+a:focus,
+a:hover {
+    text-shadow: 1px 1px lightgray;
+    color: rgba(0, 169, 224, 0.9);
+}
+
 #listing,
 #profile {
     margin: 0 2%;
@@ -72,11 +83,6 @@ section li {
     padding-left: 0.5em;
 }
 
-i.far,
-i.fas {
-    margin-right: 0.5em;
-}
-
 a,
 a:visited {
     color: #00a9e0;
@@ -102,9 +108,38 @@ Blue #00529b */
     margin-left: 0.25em;
 }
 
-.facet input {
-    vertical-align: text-top;
+.facet li {
+    margin-bottom: 0.25em;
+    margin-left: 2em;
 }
+.facet input {
+    margin-left: -2em;
+}
+
+ /* nth-child(n+7) shows the top 6 items, but first should be the template. */
+.facet.limit li:nth-child(n+7) {
+    display: none;
+}
+
+.facet a.show,
+.facet.limit a.limit {
+    display: none
+}
+
+.facet-controls {
+    text-align: center;
+    padding-top: 0.5em;
+}
+
+.facet-controls .reset {
+    margin-left: 0.5em;
+}
+
+.facet a.limit,
+.facet.limit a.show {
+    display: inline;
+}
+
 .facet .name {
     margin-left: 0.25em;
 }
@@ -124,14 +159,6 @@ Blue #00529b */
 .listing ol.results li img {
     clear: left;
     float: left;
-}
-
-.listing ol.results li  {
-    min-height: 100px;
-}
-
-.listing ol.results li div {
-    padding-left: 80px;
 }
 
 .listing ol.results .name {
@@ -186,7 +213,6 @@ header h2 {
     text-align: right;
     padding: 1em;
     margin: 0;
-    margin-bottom: 0.25em;
 }
 
 header h1 {
@@ -202,13 +228,18 @@ header a p,
 }
 
 header a:hover h1,
+header a:focus h1,
+#profile section h2 a:focus,
 #profile section h2 a:hover {
     color: #00a9e0;
+    text-shadow: none;
 }
 
+header a:focus h2,
 header a:hover h2 {
     background-color: #00a9e0;
     color: white;
+    text-shadow: none;
 }
 
 .listing .page h1 {
@@ -239,6 +270,71 @@ header a:hover h2 {
     display: inline-block;
 }
 
+/***********/
+/* Profile */
+
+body.profile h1.name {
+    text-align: center;
+    text-shadow: 1px 1px 3px gray;
+}
+
+body.profile section {
+    display: table;
+    width: 100%;
+    margin-bottom: 2em;
+}
+
+body.profile section:first-of-type {
+    margin-top: 2em;
+}
+
+body.profile section h2 {
+    display: table-cell;
+    width: 45%;
+    text-align: right;
+}
+
+body.profile section ul {
+    padding-left: 1.5em;
+    display: table-cell;
+}
+
+body.profile section li {
+    padding-bottom: 0.75em;
+}
+
+@media only screen and (max-width: 450px) {
+    body.profile h1.name {
+        font-size: 1.6em;
+    }
+
+    body.profile section.people {
+        margin-top: 0;
+        padding-top: 0;
+    }
+
+    body.profile section {
+        display: block;
+        margin-bottom: 0;
+    }
+
+    body.profile section:last-child {
+        margin-bottom: 2em;
+    }
+
+    body.profile section h2 {
+        display: block;
+        text-align: left;
+    }
+
+    body.profile section ul {
+        display: block;
+    }
+}
+
+/* Profile */
+/***********/
+
 footer {
     background-color: #00a9e0;
     color: white;
@@ -257,6 +353,7 @@ footer p:last-of-type { text-align: right }
 @media only screen and (max-width: 1200px) {
     .listing .facets {
         width: 30%;
+        font-size: smaller;
     }
 
     .listing .results {
@@ -265,19 +362,29 @@ footer p:last-of-type { text-align: right }
     }
 }
 
-@media only screen and (max-width: 430px) {
+@media only screen and (max-width: 680px) {
+    header div.text {
+        display: unset;
+    }
+
     header div.text p {
         display: none;
     }
 
     header h1 {
-        font-size: 2em;
+        font-size: 1.9em;
         margin-left: 0;
+        vertical-align: unset;
     }
 
     header img {
         width: 48px;
         height: auto;
+    }
+
+    header img,
+    header h1 {
+        vertical-align: middle;
     }
 
     header a,
@@ -293,19 +400,22 @@ footer p:last-of-type { text-align: right }
     }
 
     footer {
-        font-size: smaller;
         display: inline;
         padding: 0.5em;
     }
 
     footer p {
-        display: inline-block;
+        display: block;
         padding: 0;
         margin: 0;
     }
 
-    footer p:first-of-type { text-align: center; }
-    footer p:last-of-type { text-align: center; }
+    footer p:first-of-type { text-align: center }
+    footer p:last-of-type { text-align: center }
+    p.disclaimer {
+        text-align: center;
+        padding-right: 0;
+    }
 
     .listing .facets {
         font-size: smaller;
@@ -319,5 +429,18 @@ footer p:last-of-type { text-align: right }
         margin-bottom: 0.5em;
         padding-top: 0.25em;
         padding-bottom: 0.25em;
+    }
+}
+
+@media only screen and (max-width: 320px) {
+    header img,
+    header h1 {
+        display: block;
+        text-align: center;
+        margin: auto;
+    }
+
+    footer {
+        font-size: smaller;
     }
 }

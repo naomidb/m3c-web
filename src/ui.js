@@ -12,13 +12,18 @@ var ui = (function module() {
     /**
      * Manage a facets and their interaction with a listing of items.
      *
-     * @param {Node} facets HTML Element containing the facets.
-     * @param {Node} results HTML Element containing the listed items.
+     * @param {HTMLElement} facets HTML Element containing the facets.
+     * @param {HTMLElement} results HTML Element containing the listed items.
      * @param {Array.<(selected: string[], item: Node)>} filters
      *        Filter functions that are called whenever there is a change to the
      *        selected facets. There should be one per facet.
      */
     function Facets(facets, results, filters) {
+        const facetElements = facets.querySelectorAll(".facet")
+        for (var i = 0; i < facetElements.length; i++) {
+            addFacetEventListeners(facetElements[i])
+        }
+
         /**
          * Increment the count of a facet option.
          *
@@ -160,16 +165,17 @@ var ui = (function module() {
                         if (isEventListener) {
                             const event = name.slice(2)
                             placeholder.addEventListener(event, data[key][name])
-                            break
+                            continue
                         }
 
                         const isFunction = data[key][name] instanceof Function
                         if (isFunction) {
-                            data[key][name](done)
+                            const attrib = name
+                            data[key][attrib](done)
                             function done(val) {
-                                placeholder[name] = val
+                                placeholder[attrib] = val
                             }
-                            break
+                            continue
                         }
 
                         placeholder[name] = data[key][name]
@@ -197,17 +203,14 @@ var ui = (function module() {
      * Maintains a list's order and allows it to be reversed.
      *
      * @param {HTMLElement} ol Ordered list element.
-     * @param {HTMLElement} ctrlReverse Reverse button or link.
      * @param {number} direction Initial order: 1 for normal, -1 for reverse.
      * @param {(li: HTMLLIElement) => string} listItemKey
      *        Callback function to get the sorting key for a list item.
      */
-    function SortedList(ol, ctrlReverse, direction, listItemKey) {
+    function SortedList(ol, direction, listItemKey) {
         if (!direction) {
             direction = 1
         }
-
-        ctrlReverse.addEventListener("click", onClick)
 
         // This observer is responsible for resorting the list whenever items
         // are added or remove.
@@ -216,12 +219,6 @@ var ui = (function module() {
 
         function observe() {
             observer.observe(ol, { childList: true })
-        }
-
-        function onClick(clickEvent) {
-            clickEvent.preventDefault()
-            direction *= -1
-            sort(ol, direction)
         }
 
         function onMutate(mutations) {
@@ -233,6 +230,11 @@ var ui = (function module() {
                 return
             }
 
+            update()
+        }
+
+        function reverse() {
+            direction *= -1
             update()
         }
 
@@ -263,12 +265,47 @@ var ui = (function module() {
             // Stop observing changes until after sorting is complete, otherwise
             // each change during sorting will trigger onMutate forever.
             observer.disconnect()
-            sort(ol, direction)
+            sort()
             observe()
         }
 
         return {
+            Reverse: reverse,
             Update: update,
+        }
+    }
+
+    /**
+     * Add event listeners for facet controls: show, limit, reset.
+     * @param {HTMLElement} facet
+     */
+    function addFacetEventListeners(facet) {
+        const show = facet.querySelector(".show")
+        const limit = facet.querySelector(".limit")
+        const reset = facet.querySelector(".reset")
+
+        show.addEventListener("click", showFacet)
+        limit.addEventListener("click", hideFacet)
+        reset.addEventListener("click", resetFacet)
+
+        function showFacet(clickEvent) {
+            clickEvent.preventDefault()
+            facet.className = facet.className.replace("limit", "").trim()
+        }
+
+        function hideFacet(clickEvent) {
+            clickEvent.preventDefault()
+            facet.className = (facet.className + " limit").trim()
+        }
+
+        function resetFacet(clickEvent) {
+            clickEvent.preventDefault()
+            const checkboxes = facet.querySelectorAll("input")
+            for (var j = 0; j < checkboxes.length; j++) {
+                if (checkboxes[j].checked) {
+                    checkboxes[j].click()
+                }
+            }
         }
     }
 
