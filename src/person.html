@@ -367,14 +367,37 @@
                 function renderOrganization(organizationIRI) {
                     organizationIRI = organizationIRI.slice(1, -1) // strip < >
 
-                    const bindings = {
-                        name: entity.Name.bind(null, client, organizationIRI),
-                        link: {
-                            href: m3c.ProfileLink("organization", organizationIRI),
-                        },
-                    }
+                    entity.Organization(client, organizationIRI).Type(render)
 
-                    ui.Render(templates.department, bindings)
+                    function render(types) {
+                        const bindings = {
+                            name: entity.Name.bind(null, client, organizationIRI),
+                            link: {
+                                href: m3c.ProfileLink("organization", organizationIRI),
+                            },
+                        }
+
+                        const isInstitute =
+                            types.indexOf("<http://vivoweb.org/ontology/core#Institute>") !== -1
+                        if (isInstitute) {
+                            ui.Render(templates.institute, bindings)
+                            return
+                        }
+
+                        const isDepartment =
+                            types.indexOf("<http://vivoweb.org/ontology/core#Department>") !== -1
+                        if (isDepartment) {
+                            ui.Render(templates.department, bindings)
+                            return
+                        }
+
+                        const isLaboratory =
+                            types.indexOf("<http://vivoweb.org/ontology/core#Laboratory>") !== -1
+                        if (isLaboratory) {
+                            ui.Render(templates.laboratory, bindings)
+                            return
+                        }
+                    }
                 }
             }
 
