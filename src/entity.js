@@ -9,8 +9,8 @@ if (typeof require !== "undefined") {
  * @module entity
  */
 var entity = (function module() {
-    const base =
-            "http://www.metabolomics.info/ontologies/2019/metabolomics-consortium#",
+    const
+        base = "http://www.metabolomics.info/ontologies/2019/metabolomics-consortium#",
         bibo = "http://purl.org/ontology/bibo/",
         foaf = "http://xmlns.com/foaf/0.1/",
         rdf = "http://www.w3.org/1999/02/22-rdf-syntax-ns#",
@@ -41,7 +41,7 @@ var entity = (function module() {
     }
 
     /**
-     * Fetches a mapping from person IRI to their associated organization's IRI.
+     * Fetches a mapping from person IRI to their associated organizations' IRI.
      * @param {tpf.Client} client
      */
     function AssociatedWiths(client) {
@@ -50,7 +50,10 @@ var entity = (function module() {
             .then(function(triples) {
                 const associatedWith = {}
                 triples.forEach(function(triple) {
-                    associatedWith[triple.Subject] = triple.Object
+                    if (!associatedWith[triple.Subject]) {
+                        associatedWith[triple.Subject] = []
+                    }
+                    associatedWith[triple.Subject].push(triple.Object)
                 })
                 return associatedWith
             })
@@ -66,6 +69,14 @@ var entity = (function module() {
                 })
                 return fundedBys
             })
+    }
+
+    function Institutes(client) {
+        return new Promise(function (resolve) {
+            client
+                .List(vivo + "Institute")
+                .Results(resolve)
+        })
     }
 
     /**
@@ -703,6 +714,7 @@ var entity = (function module() {
         Authorships: Authorships,
         AssociatedWiths: AssociatedWiths,
         FundingOrganizations: FundingOrganizations,
+        Institutes: Institutes,
         Name: Name,
         Names: Names,
         Person: Person,
