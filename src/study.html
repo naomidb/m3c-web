@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -24,7 +25,17 @@
     <script crossorigin src="https://unpkg.com/@ungap/url-search-params@0.1.2/min.js"></script>
 
     <style>
-        .projects-link,
+        .properties {
+            text-align: center;
+            margin-bottom: 1em;
+        }
+
+        .properties a,
+        .properties div {
+            display: block;
+        }
+
+        .studies-link,
         .mwb {
             display: block;
             text-align: center;
@@ -59,12 +70,17 @@
             <div id="profile">
                 <h1 class="name"></h1>
 
-                <a href="https://www.metabolomicsworkbench.org/data/DRCCMetadata.php?Mode=Project" class="mwb">
-                   Project page on Metabolomics Workbench
+                <div class="properties">
+                    <a class="project"></a>
+                    <div class="submitted"></div>
+                </div>
+
+                <a href="https://www.metabolomicsworkbench.org/data/DRCCMetadata.php?Mode=Study" class="mwb">
+                   Study page on Metabolomics Workbench
                 </a>
 
-                <a href="projects.html" class="projects-link">
-                    All projects
+                <a href="studies.html" class="studies-link">
+                    All studies
                 </a>
 
                 <div>
@@ -99,12 +115,12 @@
                     <h2 class="datasets">Datasets</h2>
                     <ul class="datasets"></ul>
                 </section>
-
+<!--
                 <section class="tools">
                     <h2 class="tools">Tools</h2>
                     <ul class="tools"></ul>
                 </section>
-
+ -->
             </div>
             <p class="disclaimer">
                 Data from the
@@ -133,19 +149,19 @@
             const uri = m3c.Subject()
             const root = document.getElementById("profile")
 
-            const project = entity.Project(client, uri)
-            project.ID(renderID)
-            project.Name(renderName)
-            project.Institute(renderInstitute)
-            project.Department(renderDepartment)
-            project.Laboratory(renderLaboratory)
-            project.People(listRenderer("ul.people", "person"))
-            project.Studies(listRenderer("ul.studies", "study"))
-            // project.Publications(listRenderer("ul.publications", "publication"))
-            project.Datasets(listRenderer("ul.datasets", "dataset"))
-            project.Tools(listRenderer("ul.tools", "tool"))
+            const study = entity.Study(client, uri)
+            study.ID(renderID)
+            study.Name(renderName)
+            study.Project(renderProject)
+            study.Submitted(renderSubmitted)
+            study.Institute(renderInstitute)
+            study.Department(renderDepartment)
+            study.Laboratory(renderLaboratory)
+            study.People(listRenderer("ul.people", "person"))
+            study.Studies(listRenderer("ul.studies", "study"))
+            study.Datasets(listRenderer("ul.datasets", "dataset"))
 
-            const sections = ["people", "studies", "datasets", "tools"]
+            const sections = ["people", "studies", "datasets"]
 
             sections.forEach(function (name) {
                 const selector = str.Format("section.{} h2", name)
@@ -156,8 +172,8 @@
                 )
             })
 
-            const allProjectsLink = root.querySelector(".projects-link")
-            allProjectsLink.href = m3c.ListingLink("projects")
+            const allStudiesLink = root.querySelector(".studies-link")
+            allStudiesLink.href = m3c.ListingLink("studies")
 
             /**
              * Creates a function that accepts a list of items to render.
@@ -188,13 +204,13 @@
                 }
             }
 
-            function renderID(projectID) {
+            function renderID(studyID) {
                 const a = root.querySelector(".mwb")
-                if (!projectID) {
+                if (!studyID) {
                     a.parentElement.parentElement.removeChild(a.parentElement)
                 }
 
-                a.href += "&ProjectID=" + projectID
+                a.href += "&StudyID=" + studyID
             }
 
             function renderListItem(ul, type, iri, name) {
@@ -256,6 +272,42 @@
                 function renderName(name) {
                     a.href = m3c.ProfileLink("organization", instituteIRI.slice(1, -1))
                     a.innerText = name
+                }
+            }
+
+            function renderProject(projectIRI) {
+                const a = root.querySelector("a.project")
+                if (!projectIRI) {
+                    a.parentElement.parentElement.removeChild(a.parentElement)
+                }
+
+                entity.Name(client, projectIRI, renderName)
+                function renderName(name) {
+                    a.href = m3c.ProfileLink("project", projectIRI.slice(1, -1))
+                    a.innerText = name
+                }
+            }
+
+            function renderSubmitted(submitted) {
+                if (!submitted) {
+                    return
+                }
+
+                const node = root.querySelector(".submitted")
+                console.log({submitted})
+                node.innerText =
+                    str.Format("{}-{}-{}",
+                        submitted.getUTCFullYear(),
+                        pad(submitted.getUTCMonth()+1),
+                        pad(submitted.getUTCDate()),
+                    )
+
+                function pad(x) {
+                    if (0 < x && x < 10) {
+                        return "0" + x
+                    }
+
+                    return "" + x
                 }
             }
         </script>
