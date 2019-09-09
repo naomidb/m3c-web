@@ -224,10 +224,7 @@
             organization.Studies(listRenderer("ul.studies", "study"))
             organization.Publications(listRenderer("ul.publications", "publication"))
 
-            const sections = [
-                "people", "projects", "studies", "publications", "datasets",
-                "tools",
-            ]
+            const sections = ["people", "projects", "studies", "publications"]
 
             sections.forEach(function (name) {
                 const selector = str.Format("section.{} h2", name)
