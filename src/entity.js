@@ -21,6 +21,26 @@ var entity = (function module() {
         vivo = "http://vivoweb.org/ontology/core#"
 
     /**
+     * Fetches all Authorships, the link between authors and publications.
+     * @param {tpf.Client} client
+     */
+    function Authorships(client) {
+        return client
+            .Query(null, vivo + "relates", null)
+            .then(function (triples) {
+                const authorships = {}
+                triples.forEach(function (triple) {
+                    if (!authorships[triple.Subject]) {
+                        authorships[triple.Subject] = []
+                    }
+
+                    authorships[triple.Subject].push(triple.Object)
+                })
+                return authorships
+            })
+    }
+
+    /**
      * Fetches a mapping from person IRI to their associated organization's IRI.
      * @param {tpf.Client} client
      */
@@ -119,6 +139,14 @@ var entity = (function module() {
 
     function Publication(client, iri) {
         return new publication(client, iri)
+    }
+
+    function Publications(client) {
+        return new Promise(function (resolve) {
+            client
+                .List(bibo + "Document")
+                .Results(resolve)
+        })
     }
 
     function Studies(client) {
@@ -672,6 +700,7 @@ var entity = (function module() {
 
     // Module Exports
     return {
+        Authorships: Authorships,
         AssociatedWiths: AssociatedWiths,
         FundingOrganizations: FundingOrganizations,
         Name: Name,
@@ -682,6 +711,7 @@ var entity = (function module() {
         Project: Project,
         Projects: Projects,
         Publication: Publication,
+        Publications: Publications,
         Studies: Studies,
         Study: Study,
         SubmissionDates: SubmissionDates,

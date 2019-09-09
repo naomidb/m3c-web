@@ -1,0 +1,303 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+
+    <title>M3C Publications Listing</title>
+
+    <!-- Font Awesome for neat icons. -->
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.8.1/css/all.css"
+        integrity="sha384-50oBUHEmvpQ+1lW4y57PTFmhCaXp0ML5d60M1M7uH2+nqUivzIebhndOJK28anvf" crossorigin="anonymous">
+
+    <!-- Roboto font -->
+    <link href="https://fonts.googleapis.com/css?family=Roboto:300,400&display=swap" rel="stylesheet">
+
+    <link rel="stylesheet" href="m3c.css" />
+
+    <!-- Promise polyfill to support Internet Explorer -->
+    <script crossorigin src="https://cdn.jsdelivr.net/npm/promise-polyfill@8/dist/polyfill.min.js"></script>
+    <!-- Fetch polyfill to support Internet Explorer -->
+    <script crossorigin src="https://unpkg.com/whatwg-fetch@3.0.0/dist/fetch.umd.js"></script>
+    <!-- URL polyfill to support Internet Explorer -->
+    <script crossorigin src="https://unpkg.com/@ungap/url-search-params@0.1.2/min.js"></script>
+
+</head>
+
+<body class="listing">
+
+    <div class="container">
+
+        <header>
+            <a href="https://metabolomics.info/">
+                <img alt="Metabolomics Info logo"
+                    src="https://i2.wp.com/metabolomics.info/wp-content/uploads/2018/10/sepcc-logo-75.png?fit=60%2C60&ssl=1"
+                    width=60 height=60>
+                <div class="text">
+                    <h1>Metabolomics Info</h1>
+                    <p>An international resource for news and events in metabolomics</p>
+                </div>
+            </a>
+            <div class="spacer"></div>
+            <a href="index.html" class="dashboard-link">
+                <h2>People Portal</h2>
+            </a>
+        </header>
+
+        <div class="page">
+            <h1>Publications</h1>
+            <div id="listing">
+                <div class="controls">
+                    <div class="count"></div>
+                    <a href="#" class="reverse">Reverse</a>
+                </div>
+
+                <div class="facets">
+                    <div class="facet author">
+                        <p>Author</p>
+                        <div class="facet-controls">
+                            <a href="#" class="show">Show all</a>
+                            <a href="#" class="limit">Show fewer</a>
+                            <a href="#" class="reset">Uncheck all</a>
+                        </div>
+                        <ul>
+                            <li class="template">
+                                <label>
+                                    <input type="checkbox" class="box" />
+                                    <span class="name"></span>
+                                    <span class="count"></span>
+                                </label>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+
+                <ol class="results">
+                    <!-- Templates aren't visible, but their clones are filled out with real data. -->
+                    <li class="publication template">
+                        <a href="#" class="link">
+                            <div class="name"></div>
+                        </a>
+                        <div class="authors"></div>
+                    </li>
+                </ol>
+            </div>
+        </div>
+
+        <footer>
+            <p>
+                Metabolomics Info is an outreach portal to support the
+                Metabolomics community.
+            </p>
+            <p>
+                © 2019 Metabolomics&nbsp;Consortium Coordinating&nbsp;Center
+            </p>
+        </footer>
+
+        <!-- Order matters; all dependencies for a module must be loaded first. -->
+        <script src="tpf.js"></script>
+        <script src="str.js"></script>
+        <script src="m3c.js"></script>
+        <script src="ui.js"></script>
+        <script src="entity.js"></script>
+
+        <script>
+            const client = m3c.NewTPFClient()
+
+            // Aliases for certain HTML elements
+            const root = document.getElementById("listing")
+            const results = root.querySelector(".results")
+            const facets = root.querySelector(".facets")
+            const ctrlReverse = root.querySelector(".reverse")
+            const template = root.querySelector("li.publication.template")
+
+            // Keep the results sorted.
+            const sorted = ui.SortedList(results, 1, sortByName)
+            ctrlReverse.addEventListener("click", onCtrlReverseClick)
+
+            ui.SortedList(facets.querySelector(".author ul"), -1, sortByCount)
+
+            // Query the TPF server for all publications and some related data.
+            const data = {
+                publications: [],
+                names: {},        // entity IRI => label string
+                authors: {},
+            }
+
+            const promises = [
+                entity.Publications(client),
+                entity.Names(client),
+                entity.Authorships(client),
+            ]
+
+            Promise.all(promises)
+                .then(function setData(results) {
+                    data.publications = results[0]
+                    data.names = results[1]
+                    data.authors = {}
+
+                    // authorship IRI => list of author and pub
+                    const authorships = results[2]
+
+                    for (var i = 0; i < data.publications.length; i++) {
+                        const pub = data.publications[i]
+                        const authors = []
+
+                        Object.keys(authorships)
+                            .forEach(function (iri) {
+                                const relates = authorships[iri]
+                                if (relates.length !== 2) {
+                                    console.warn(
+                                        "Unexpected number of authors and " +
+                                        "publications on authorship: " + iri
+                                    )
+                                    return
+                                }
+
+                                if (relates[0] === pub) {
+                                    authors.push(relates[1])
+                                    return
+                                }
+
+                                if (relates[1] === pub) {
+                                    authors.push(relates[0])
+                                    return
+                                }
+                            })
+
+                        data.authors[pub] = authors
+                    }
+
+                    data.publications.forEach(renderPublication)
+                })
+                .then(function automaticallyUpdateCount() {
+                    if (data.publications.length > 5 + 1) {
+                        const orgfacet = root.querySelector(".facet.author")
+                        orgfacet.className = (orgfacet.className + " limit").trim()
+                    }
+
+                    const checkboxes = document.querySelectorAll(".facet input")
+                    for (var i = 0; i < checkboxes.length; i++) {
+                        checkboxes[i].addEventListener("click", updateCount)
+                    }
+
+                    function updateCount() {
+                        const visible = document.querySelectorAll(".results li:not(.hidden):not(.template)")
+                        document.querySelector(".controls .count").innerText = visible.length
+                    }
+                    updateCount()
+                })
+
+            // Setup the filters used by each facets. Each item should be a
+            // function whose name matches the class name of the facet's HTML
+            // element.
+            const filters = [
+                function author(selected, li) {
+                    const authors = li.querySelector(".authors").innerText
+                    for (var i = 0; i < selected.length; i++) {
+                        if (authors.indexOf(selected[i]) !== -1) {
+                            return true
+                        }
+                    }
+                    return false
+                },
+            ]
+
+            // Use facetsManager to dynamically increment the count of an option
+            const facetsManager = ui.Facets(facets, results, filters)
+
+            /**
+             * Handle the onclick event of the Reverse link.
+             * @param {MouseEvent} clickEvent
+             */
+            function onCtrlReverseClick(clickEvent) {
+                clickEvent.preventDefault()
+                sorted.Reverse()
+            }
+
+            /**
+             * Extract the actual text from a VIVO string
+             * @param {string} [text]
+             */
+            function parseVIVOString(text) {
+                if (!text || text[0] != '"') {
+                    return text
+                }
+
+                text = text.slice(1, text.lastIndexOf('"'))
+                text = JSON.parse('"' + text + '"')
+                return text
+            }
+
+            /**
+             * Render a publication with the specified IRI.
+             * @param {string} publicationIRI
+             */
+            function renderPublication(publicationIRI) {
+                const authors = data.authors[publicationIRI]
+                    .map(function (authorIRI) {
+                        return data.names[authorIRI]
+                    })
+
+                authors.sort(function (a, b) {
+                    const aname = sortLastFirst(a)
+                    const bname = sortLastFirst(b)
+                    if (aname < bname) {
+                        return -1
+                    }
+
+                    if (aname > bname) {
+                        return +1
+                    }
+
+                    return 0
+                })
+
+                const bindings = {
+                    link: {
+                        href: m3c.ProfileLink("publication", publicationIRI.slice(1, -1)),
+                    },
+                    name: parseVIVOString(data.names[publicationIRI]),
+                    authors: authors ? authors.join(", ") : ""
+                }
+
+                const li = ui.Render(template, bindings)
+
+                for (var i = 0; i < authors.length; i++) {
+                    facetsManager.Increment('author', authors[i], authors[i])
+                }
+            }
+
+
+            /**
+             * @param {string} name
+             */
+            function sortLastFirst(name) {
+                const firstLast = name.toUpperCase()
+                const lastFirst = firstLast.split(' ').reverse().join(' ')
+                return lastFirst
+            }
+
+            /**
+             * Extract the name of a list item; used for sorting.
+             * @param {HTMLLIElement} li
+             */
+            function sortByName(li) {
+                const name = li.querySelector(".name").innerText.toUpperCase()
+                return name
+            }
+
+            /**
+             * Extract the count of a facet option; used for sorting.
+             * @param {HTMLLIElement} li
+             */
+            function sortByCount(li) {
+                return parseInt(li.querySelector(".count").innerText)
+            }
+        </script>
+    </div>
+</body>
+
+</html>
