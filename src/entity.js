@@ -59,6 +59,14 @@ var entity = (function module() {
             })
     }
 
+    function Departments(client) {
+        return new Promise(function (resolve) {
+            client
+                .List(vivo + "Department")
+                .Results(resolve)
+        })
+    }
+
     function FundingOrganizations(client) {
         return client
             .Query(null, base + "fundedBy", null)
@@ -75,6 +83,14 @@ var entity = (function module() {
         return new Promise(function (resolve) {
             client
                 .List(vivo + "Institute")
+                .Results(resolve)
+        })
+    }
+
+    function Laboratories(client) {
+        return new Promise(function (resolve) {
+            client
+                .List(vivo + "Laboratory")
                 .Results(resolve)
         })
     }
@@ -713,8 +729,10 @@ var entity = (function module() {
     return {
         Authorships: Authorships,
         AssociatedWiths: AssociatedWiths,
+        Departments: Departments,
         FundingOrganizations: FundingOrganizations,
         Institutes: Institutes,
+        Laboratories: Laboratories,
         Name: Name,
         Names: Names,
         Person: Person,
