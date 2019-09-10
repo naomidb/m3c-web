@@ -396,12 +396,28 @@ var entity = (function module() {
                 .then(returnCollaborators)
         }
 
+        const typeNames = {
+            "<http://vivoweb.org/ontology/core#Institute>": "Institute",
+            "<http://vivoweb.org/ontology/core#Department>": "Department",
+            "<http://vivoweb.org/ontology/core#Laboratory>": "Laboratory"
+        }
+
         this.Type = function Type(returnType) {
-            return new Promise(function() {
+            return new Promise(function (resolve) {
                 client
                     .Entity(iri)
                     .Link(rdf, "type")
-                    .Results(decodeStrings(returnType))
+                    .Results(decodeStrings(resolve))
+            })
+            .then(function (types) {
+                for (var i = 0; i < types.length; i++) {
+                    const type = types[i]
+                    if (typeNames[type]) {
+                        returnType(typeNames[type])
+                        return
+                    }
+                }
+                returnType("Organization")
             })
         }
 

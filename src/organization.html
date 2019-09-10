@@ -226,13 +226,7 @@
                 }
             }
 
-            function renderType(types) {
-                const names = {
-                    "<http://vivoweb.org/ontology/core#Institute>": "Institute",
-                    "<http://vivoweb.org/ontology/core#Department>": "Department",
-                    "<http://vivoweb.org/ontology/core#Laboratory>": "Laboratory"
-                }
-
+            function renderType(type) {
                 const icons = {
                     "Institute": "city",
                     "Department": "building",
@@ -240,23 +234,10 @@
                     "Organization": "building",
                 }
 
-                if (!types) {
-                    types = []
-                }
-
-                var name = "Organization"
-                for (var i = 0; i < types.length; i++) {
-                    const type = types[i]
-                    if (names[type]) {
-                        name = names[type]
-                        break
-                    }
-                }
-
                 const t = root.querySelector(".type")
-                t.querySelector("i.fas").className = "fas fa-" + icons[name]
+                t.querySelector("i.fas").className = "fas fa-" + icons[type]
                 t.querySelector(".link").href = m3c.ListingLink("organizations")
-                t.querySelector(".typename").innerText = name
+                t.querySelector(".typename").innerText = type
             }
 
             /**
