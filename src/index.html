@@ -241,13 +241,48 @@
 
             <nav>
                 <ul id="links">
-                    <li class="People"></li>
-                    <li class="Publications"></li>
-                    <li class="Projects"></li>
-                    <li class="Studies"></li>
-                    <li class="Organizations"></li>
-                    <li class="Datasets"></li>
-                    <li class="Tools"></li>
+                    <li class="People">
+                        <a href="people.html">
+                            People
+                            <span class="count"></span>
+                        </a>
+                    </li>
+                    <li class="Publications">
+                        <a href="people.html">
+                            Publications
+                            <span class="count"></span>
+                        </a>
+                    </li>
+                    <li class="Projects">
+                        <a href="people.html">
+                            Projects
+                            <span class="count"></span>
+                        </a>
+                    </li>
+                    <li class="Studies">
+                        <a href="people.html">
+                            Studies
+                            <span class="count"></span>
+                        </a>
+                    </li>
+                    <li class="Organizations">
+                        <a href="people.html">
+                            Organizations
+                            <span class="count"></span>
+                        </a>
+                    </li>
+                    <li class="Datasets">
+                        <a href="people.html">
+                            Datasets
+                            <span class="count"></span>
+                        </a>
+                    </li>
+                    <li class="Tools">
+                        <a href="people.html">
+                            Tools
+                            <span class="count"></span>
+                        </a>
+                    </li>
                 </ul>
             </nav>
 
@@ -286,9 +321,7 @@
                 const lowered = concept.toLowerCase()
                 const type = m3c.IRIFor(concept)
 
-                tpf.Query(client.Endpoint, null, rdf + "type", type, 1)
-                    .then(findTotalItems)
-                    .then(renderCount)
+                m3c.Count(client, type, renderCount)
 
                 function findTotalItems(triples) {
                     for (var i = 0; i < triples.length; i++) {
@@ -309,10 +342,8 @@
                 }
 
                 function renderCount(count) {
-                    li.innerHTML = str.Format(
-                        '<a href="{}">{} <span class="count">{}</span></a>',
-                        m3c.ListingLink(lowered), concept, count
-                    )
+                    li.querySelector("a").href = m3c.ListingLink(lowered)
+                    li.querySelector(".count").innerText = count
                 }
             }
 
