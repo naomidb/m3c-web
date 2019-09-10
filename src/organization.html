@@ -25,18 +25,6 @@
     <script crossorigin src="https://unpkg.com/@ungap/url-search-params@0.1.2/min.js"></script>
 
     <style>
-        .type {
-            position: absolute;
-            left: 50%;
-            -moz-transform: translateX(-50%) translateY(-50%);
-            -webkit-transform: translateX(-50%) translateY(-50%);
-            transform: translateX(-50%) translateY(-50%);
-        }
-
-        img.photo {
-            margin-bottom: 1em;
-        }
-
         .publications li a {
             font-style: italic;
         }
@@ -46,28 +34,9 @@
             text-shadow: 1px 1px 3px gray;
         }
 
-        div.photo-frame,
         div.info-frame {
-            display: inline-block;
-        }
-
-        div.photo-frame img {
-            border-radius: 50%;
-        }
-
-        div.photo-frame {
-            text-align: right;
-            width: 45%;
-            margin-right: 2em;
-        }
-
-        div.info-frame {
-            vertical-align: top;
+            text-align: center;
             margin-top: 0.5em;
-        }
-
-        .emails li a {
-            margin-left: -0.25em;
         }
 
         section.people {
@@ -98,16 +67,6 @@
         }
 
         @media only screen and (max-width: 430px) {
-            div.photo-frame {
-                width: 100%;
-                text-align: center;
-            }
-
-            div.photo-frame,
-            div.info-frame {
-                display: block;
-            }
-
             section.people {
                 border-top: 0;
                 margin-top: 0;
@@ -163,8 +122,10 @@
                 <div class="info-frame">
 
                     <div class="organization"></div>
-                    <div class="type"></div>
-
+                    <div class="type">
+                        <i class="fas fa-building"></i>
+                        <a href="organizations.html" class="link typename"></a>
+                    </div>
                 </div>
 
                 <section class="people">
@@ -235,8 +196,6 @@
                 )
             })
 
-            const placeholder = "https://cdn.pixabay.com/photo/2016/08/08/09/17/avatar-1577909_960_720.png"
-
             function renderName(name) {
                 if (!name) {
                     root.innerText = "Unknown Organization."
@@ -267,27 +226,37 @@
                 }
             }
 
-            function renderType(type) {
-                if (!type) {
-                    root.innerText = "Unknown type."
-                    return
-                }
-
-                typeDict = {
+            function renderType(types) {
+                const names = {
                     "<http://vivoweb.org/ontology/core#Institute>": "Institute",
                     "<http://vivoweb.org/ontology/core#Department>": "Department",
                     "<http://vivoweb.org/ontology/core#Laboratory>": "Laboratory"
                 }
 
-                type = "Organization"
+                const icons = {
+                    "Institute": "city",
+                    "Department": "building",
+                    "Laboratory": "flask",
+                    "Organization": "building",
+                }
 
-                for (var i = 0; i < type.length; i++) {
-                    if (type[i] in typeDict){
-                        type = typeDict[type[i]]
+                if (!types) {
+                    types = []
+                }
+
+                var name = "Organization"
+                for (var i = 0; i < types.length; i++) {
+                    const type = types[i]
+                    if (names[type]) {
+                        name = names[type]
+                        break
                     }
                 }
 
-                root.querySelector(".type").innerHTML = type
+                const t = root.querySelector(".type")
+                t.querySelector("i.fas").className = "fas fa-" + icons[name]
+                t.querySelector(".link").href = m3c.ListingLink("organizations")
+                t.querySelector(".typename").innerText = name
             }
 
             /**
@@ -329,7 +298,6 @@
                 )
                 ul.appendChild(li)
             }
-
 
         </script>
 
