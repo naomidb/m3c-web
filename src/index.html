@@ -304,10 +304,6 @@
         <script src="m3c.js"></script>
 
         <script>
-            const rdf = "http://www.w3.org/1999/02/22-rdf-syntax-ns#"
-            const totalItems = "<http://www.w3.org/ns/hydra/core#totalItems>"
-            const xsdInteger = "^^<http://www.w3.org/2001/XMLSchema#integer>"
-
             const client = m3c.NewTPFClient()
             const links = document.getElementById("links")
             links.querySelectorAll("li").forEach(addLink)
@@ -322,24 +318,6 @@
                 const type = m3c.IRIFor(concept)
 
                 m3c.Count(client, type, renderCount)
-
-                function findTotalItems(triples) {
-                    for (var i = 0; i < triples.length; i++) {
-                        const triple = triples[i]
-
-                        if (triple.Predicate !== totalItems) {
-                            continue
-                        }
-
-                        var cnt = triple.Object
-                        cnt = cnt.replace(xsdInteger, "")
-                        cnt = cnt.slice(1, -1)
-                        cnt = parseInt(cnt)
-
-                        return cnt
-                    }
-                    return -1
-                }
 
                 function renderCount(count) {
                     li.querySelector("a").href = m3c.ListingLink(lowered)
