@@ -69,7 +69,7 @@ var entity = (function module() {
 
     function FundingOrganizations(client) {
         return client
-            .Query(null, base + "fundedBy", null)
+            .Query(null, base + "managedBy", null)
             .then(function(triples) {
                 const fundedBys = {}
                 triples.forEach(function(triple) {
@@ -425,7 +425,7 @@ var entity = (function module() {
             return new Promise(function() {
                 client
                     .Entity(iri)
-                    .Link(base, "fundingFor")
+                    .Link(base, "manages")
                     .Results(decodeStrings(returnProjects))
             })
         }
@@ -434,7 +434,7 @@ var entity = (function module() {
             return new Promise(function() {
                 client
                     .Entity(iri)
-                    .Link(base, "fundingFor")
+                    .Link(base, "managedBy")
                     .Link(base, "collectionFor")
                     .Results(decodeStrings(returnStudies))
             })
@@ -470,7 +470,7 @@ var entity = (function module() {
             return new Promise(function() {
                 client
                     .Entity(iri)
-                    .Link(base, "fundedBy")
+                    .Link(base, "managedBy")
                     .Type(vivo, "Department")
                     .Single(returnDepartment)
             })
@@ -489,7 +489,7 @@ var entity = (function module() {
             return new Promise(function() {
                 client
                     .Entity(iri)
-                    .Link(base, "fundedBy")
+                    .Link(base, "managedBy")
                     .Type(vivo, "Institute")
                     .Single(returnInstitute)
             })
@@ -499,7 +499,7 @@ var entity = (function module() {
             return new Promise(function() {
                 client
                     .Entity(iri)
-                    .Link(base, "fundedBy")
+                    .Link(base, "managedBy")
                     .Type(vivo, "Laboratory")
                     .Single(returnLaboratory)
             })
@@ -622,7 +622,7 @@ var entity = (function module() {
                 client
                     .Entity(iri)
                     .Link(base, "inCollection")
-                    .Link(base, "fundedBy")
+                    .Link(base, "managedBy")
                     .Type(vivo, "Department")
                     .Single(returnDepartment)
             })
@@ -642,7 +642,7 @@ var entity = (function module() {
                 client
                     .Entity(iri)
                     .Link(base, "inCollection")
-                    .Link(base, "fundedBy")
+                    .Link(base, "managedBy")
                     .Type(vivo, "Institute")
                     .Single(returnInstitute)
             })
@@ -653,7 +653,7 @@ var entity = (function module() {
                 client
                     .Entity(iri)
                     .Link(base, "inCollection")
-                    .Link(base, "fundedBy")
+                    .Link(base, "managedBy")
                     .Type(vivo, "Laboratory")
                     .Single(returnLaboratory)
             })
