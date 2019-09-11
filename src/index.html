@@ -116,6 +116,10 @@
             height: auto;
         }
 
+        .wordcloud img {
+            padding-top: 1.5em;
+        }
+
         .about p {
             text-align: left;
             padding: 0 1em;
@@ -160,6 +164,13 @@
                 text-align: center;
                 margin-top: 0;
             }
+        }
+
+
+        @media only screen and (max-width: 690px) {
+           .wordcloud img {
+               padding-top: 0.5em;
+           }
         }
     </style>
 
@@ -215,8 +226,8 @@
             </div>
 
             <div class="visuals">
-                <div>
-                    <h3>Word Cloud</h3>
+                <div class="wordcloud">
+                    <img src="wordcloud.gif" alt="Word Cloud showing common terms relating to Metabolomics" />
                 </div>
                 <div>
                     <a href="projects_by_year.png">
