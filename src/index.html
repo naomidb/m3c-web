@@ -84,6 +84,8 @@
             border-radius: 50%;
             border: 5px solid white;
             box-shadow: 0 0 3px gray;
+            max-width: 300px;
+            height: 200px;
         }
 
         .hero-item.person p {
@@ -202,8 +204,7 @@
                 <div class="hero-item person">
                     <a class="photo-frame" data-iri="https://vivo.metabolomics.info/individual/160"
                         href="people.html?iri=https://vivo.metabolomics.info/individual/160">
-                        <img class="photo" src="http://stage.vivo.metabolomics.info/file/n423/s200_richard.yost.jpg"
-                            alt="Rick Yost" />
+                        <img class="photo" alt="Rick Yost" src="https://cdn.pixabay.com/photo/2016/08/08/09/17/avatar-1577909_960_720.png" />
                         <div class="name">Rick Yost</div>
                     </a>
 
@@ -313,6 +314,7 @@
         <script src="tpf.js"></script>
         <script src="str.js"></script>
         <script src="m3c.js"></script>
+        <script src="entity.js"></script>
 
         <script>
             const client = m3c.NewTPFClient()
@@ -322,6 +324,9 @@
             const featuredPersonLink = document.querySelector(".hero-item.person a")
             const featuredPersonIRI = featuredPersonLink.getAttribute("data-iri")
             featuredPersonLink.href = m3c.ProfileLink("person", featuredPersonIRI)
+
+            const person = entity.Person(client, featuredPersonIRI)
+            person.Photo(renderPhoto)
 
             function addLink(li) {
                 const concept = li.className
@@ -336,6 +341,10 @@
                 }
             }
 
+            function renderPhoto(url) {
+                featuredPersonLink.querySelector(".photo").src =
+                    m3c.PhotoURL(client.Endpoint, url)
+            }
         </script>
 
     </div> <!-- div.container -->
