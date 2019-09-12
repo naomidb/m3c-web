@@ -1,0 +1,283 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+
+    <title>M3C Organizations Listing</title>
+
+    <!-- Font Awesome for neat icons. -->
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.8.1/css/all.css"
+        integrity="sha384-50oBUHEmvpQ+1lW4y57PTFmhCaXp0ML5d60M1M7uH2+nqUivzIebhndOJK28anvf" crossorigin="anonymous">
+
+    <!-- Roboto font -->
+    <link href="https://fonts.googleapis.com/css?family=Roboto:300,400&display=swap" rel="stylesheet">
+
+    <link rel="stylesheet" href="m3c.css" />
+
+    <!-- Promise polyfill to support Internet Explorer -->
+    <script crossorigin src="https://cdn.jsdelivr.net/npm/promise-polyfill@8/dist/polyfill.min.js"></script>
+    <!-- Fetch polyfill to support Internet Explorer -->
+    <script crossorigin src="https://unpkg.com/whatwg-fetch@3.0.0/dist/fetch.umd.js"></script>
+    <!-- URL polyfill to support Internet Explorer -->
+    <script crossorigin src="https://unpkg.com/@ungap/url-search-params@0.1.2/min.js"></script>
+
+    <style>
+        .type .show,
+        .type .limit {
+            display: none;
+        }
+
+        .listing ol.results li div {
+            padding-left: 80px;
+        }
+
+        .listing ol.results li  {
+            min-height: 100px;
+        }
+
+        span.parent,
+        span.grandparent {
+            display: block;
+            color: gray;
+        }
+    </style>
+
+</head>
+
+<body class="listing">
+
+    <div class="container">
+
+        <header>
+            <a href="https://metabolomics.info/">
+                <img alt="Metabolomics Info logo"
+                    src="https://i2.wp.com/metabolomics.info/wp-content/uploads/2018/10/sepcc-logo-75.png?fit=60%2C60&ssl=1"
+                    width=60 height=60>
+                <div class="text">
+                    <h1>Metabolomics Info</h1>
+                    <p>An international resource for news and events in metabolomics</p>
+                </div>
+            </a>
+            <div class="spacer"></div>
+            <a href="index.html" class="dashboard-link">
+                <h2>People Portal</h2>
+            </a>
+        </header>
+
+        <div class="page">
+            <h1>Organizations</h1>
+            <div id="listing">
+                <div class="controls">
+                    <div class="count"></div>
+                    <a href="#" class="reverse">Reverse</a>
+                </div>
+
+                <div class="facets">
+                    <div class="facet type">
+                        <p>Type</p>
+                        <div class="facet-controls">
+                            <a href="#" class="show">Show all</a>
+                            <a href="#" class="limit">Show fewer</a>
+                            <a href="#" class="reset">Uncheck all</a>
+                        </div>
+                        <ul>
+                            <li class="template">
+                                <label>
+                                    <input type="checkbox" class="box" />
+                                    <span class="name"></span>
+                                    <span class="count"></span>
+                                </label>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+
+                <ol class="results">
+                    <!-- Templates aren't visible, but their clones are filled out with real data. -->
+                    <li class="organization template">
+                        <a href="#" class="link">
+                            <img class="photo" width="64" height="64"
+                                src="https://cdn.pixabay.com/photo/2016/08/08/09/17/avatar-1577909_960_720.png" />
+                            <div class="name"></div>
+                        </a>
+                        <div class="type">
+                            <i class="fas fa-city"></i>
+                            <span class="typename"></span>
+                        </div>
+                        <div class="ancestry">
+                            <span class="parent"></span>
+                            <span class="grandparent"></span>
+                        </div>
+                    </li>
+                </ol>
+            </div>
+        </div>
+
+        <footer>
+            <p>
+                Metabolomics Info is an outreach portal to support the
+                Metabolomics community.
+            </p>
+            <p>
+                © 2019 Metabolomics&nbsp;Consortium Coordinating&nbsp;Center
+            </p>
+        </footer>
+
+        <!-- Order matters; all dependencies for a module must be loaded first. -->
+        <script src="tpf.js"></script>
+        <script src="str.js"></script>
+        <script src="m3c.js"></script>
+        <script src="ui.js"></script>
+        <script src="entity.js"></script>
+
+        <script>
+            const client = m3c.NewTPFClient()
+
+            // Aliases for certain HTML elements
+            const root = document.getElementById("listing")
+            const results = root.querySelector(".results")
+            const facets = root.querySelector(".facets")
+            const ctrlReverse = root.querySelector(".reverse")
+            const organizationType = root.querySelector("li.organization.template")
+
+            // Keep the results sorted.
+            const sorted = ui.SortedList(results, 1, sortByName)
+            ctrlReverse.addEventListener("click", onCtrlReverseClick)
+
+            ui.SortedList(facets.querySelector(".type ul"), -1, sortByCount)
+
+            // Query the TPF server for all organizations and some related data.
+            const data = {
+                institutes: [],    // list of institute IRIs
+                departments: [],
+                laboratories: [],
+                names: {},         // entity IRI => label string
+                parents: {},
+            }
+
+            const promises = [
+                entity.Institutes(client),
+                entity.Departments(client),
+                entity.Laboratories(client),
+                entity.Names(client),
+                entity.Parents(client),
+            ]
+
+            Promise.all(promises)
+                .then(function setData(results) {
+                    data.institutes = results[0]
+                    data.departments = results[1]
+                    data.laboratories = results[2]
+                    data.names = results[3]
+                    data.parents = results[4]
+
+                    data.institutes.forEach(function (i) { renderOrganization(i, "Institute") })
+                    data.departments.forEach(function (i) { renderOrganization(i, "Department") })
+                    data.laboratories.forEach(function (i) { renderOrganization(i, "Laboratory") })
+                })
+                .then(function automaticallyUpdateCount() {
+                    const checkboxes = document.querySelectorAll(".facet input")
+                    for (var i = 0; i < checkboxes.length; i++) {
+                        checkboxes[i].addEventListener("click", updateOrganizationCount)
+                    }
+
+                    function updateOrganizationCount() {
+                        const visible = document.querySelectorAll(".results li:not(.hidden):not(.template)")
+                        document.querySelector(".controls .count").innerText = visible.length
+                    }
+                    updateOrganizationCount()
+                })
+
+            // Setup the filters used by each facets. Each item should be a
+            // function whose name matches the class name of the facet's HTML
+            // element.
+            const filters = [
+                function type(selected, li) {
+                    const org = li.querySelector(".typename")
+                    return selected.indexOf(org.innerText) !== -1
+                },
+            ]
+
+            // Use facetsManager to dynamically increment the count of an option
+            const facetsManager = ui.Facets(facets, results, filters)
+
+            /**
+             * Handle the onclick event of the Reverse link.
+             * @param {MouseEvent} clickEvent
+             */
+            function onCtrlReverseClick(clickEvent) {
+                clickEvent.preventDefault()
+                sorted.Reverse()
+            }
+
+            /**
+             * Extract the actual text from a VIVO string
+             * @param {string} [text]
+             */
+            function parseVIVOString(text) {
+                if (!text || text[0] != '"') {
+                    return text
+                }
+
+                text = text.slice(1, text.lastIndexOf('"'))
+                text = JSON.parse('"' + text + '"')
+                return text
+            }
+
+            /**
+             * Render an organization of type with the specified IRI.
+             * @param {string} organizationIRI
+             * @param {"Institute"|"Department"|"Laboratory"} type
+             */
+            function renderOrganization(organizationIRI, type) {
+                const org = entity.Organization(client, organizationIRI.slice(1, -1))
+                const parentIRI = data.parents[organizationIRI]
+                const grandparentIRI = parentIRI ? data.parents[parentIRI] : null
+
+                const icons = {
+                    "Institute": "city",
+                    "Department": "building",
+                    "Laboratory": "flask",
+                }
+
+                const bindings = {
+                    link: {
+                        href: m3c.ProfileLink("organization", organizationIRI.slice(1,-1)),
+                    },
+                    name: parseVIVOString(data.names[organizationIRI]),
+                    typename: type,
+                    fas: {
+                        className: "fas fa-"+ icons[type],
+                    },
+                    parent: parentIRI ? data.names[parentIRI] : "",
+                    grandparent: grandparentIRI ? data.names[grandparentIRI] : "",
+                }
+
+                const li = ui.Render(organizationType, bindings)
+
+                facetsManager.Increment('type', type, type)
+            }
+
+            /**
+             * Extract the name of a list item; used for sorting.
+             * @param {HTMLLIElement} li
+             */
+            function sortByName(li) {
+                return li.querySelector(".name").innerText.toUpperCase()
+            }
+
+            /**
+             * Extract the count of a facet option; used for sorting.
+             * @param {HTMLLIElement} li
+             */
+            function sortByCount(li) {
+                return parseInt(li.querySelector(".count").innerText)
+            }
+        </script>
+    </div>
+</body>
+
+</html>
