@@ -39,6 +39,11 @@
             margin-top: 0.5em;
         }
 
+        .info-frame > div.type {
+            padding-bottom: 1em;
+            font-size: larger;
+        }
+
         section.people {
             margin-top: 1em;
             padding-top: 2em;
@@ -120,31 +125,53 @@
                 <h1 class="name"></h1>
 
                 <div class="info-frame">
-
                     <div class="organization"></div>
                     <div class="type">
-                        <i class="fas fa-building"></i>
+                        <i class="fas"></i>
                         <a href="organizations.html" class="link typename"></a>
+                    </div>
+                    <div class="parent">
+                        <i class="fas"></i>
+                        <a href="#" class="link typename"></a>
+                    </div>
+                     <div class="grandparent">
+                        <i class="fas"></i>
+                        <a href="#" class="link typename"></a>
                     </div>
                 </div>
 
                 <section class="people">
-                    <h2 class="people">Collaborators</h2>
+                    <h2 class="people">
+                        <a href="people.html">People</a>
+                    </h2>
                     <ul class="people"></ul>
                 </section>
 
+                <section class="organizations">
+                    <h2 class="organizations">
+                        <a href="organizations.html">Sub-organizations</a>
+                    </h2>
+                    <ul class="organizations"></ul>
+                </section>
+
                 <section class="projects">
-                    <h2 class="projects">Projects</h2>
+                    <h2 class="projects">
+                        <a href="projects.html">Projects</a>
+                    </h2>
                     <ul class="projects"></ul>
                 </section>
 
                 <section class="studies">
-                    <h2 class="studies">Studies</h2>
+                    <h2 class="studies">
+                        <a href="studies.html">Studies</a>
+                    </h2>
                     <ul class="studies"></ul>
                 </section>
 
                 <section class="publications">
-                    <h2 class="publications">Publications</h2>
+                    <h2 class="publications">
+                        <a href="publications.html">Publications</a>
+                    </h2>
                     <ul class="publications"></ul>
                 </section>
 
@@ -170,6 +197,7 @@
         <script src="str.js"></script>
         <script src="m3c.js"></script>
         <script src="entity.js"></script>
+        <script src="ui.js"></script>
 
         <script>
             const client = m3c.NewTPFClient()
@@ -177,24 +205,64 @@
             const root = document.getElementById("profile")
 
             const organization = entity.Organization(client, uri)
-
             organization.Name(renderName)
-            organization.People(renderAdditionalCollaborators)
             organization.Type(renderType)
+            organization.Parent(renderParent)
+            organization.Grandparent(renderGrandparent)
+            organization.People(listRenderer("ul.people", "person"))
+            organization.Children(listRenderer("ul.organizations", "organization"))
             organization.Projects(listRenderer("ul.projects", "project"))
             organization.Studies(listRenderer("ul.studies", "study"))
             organization.Publications(listRenderer("ul.publications", "publication"))
 
-            const sections = ["people", "projects", "studies", "publications"]
+            keepSorted("ul.people", getCollaboratorSortableName)
+            keepSorted("ul.organizations", getName)
+            keepSorted("ul.projects", getName)
+            keepSorted("ul.studies", getName)
+            keepSorted("ul.publications", getName)
 
-            sections.forEach(function (name) {
-                const selector = str.Format("section.{} h2", name)
-                const h2 = document.querySelector(selector)
-                h2.innerHTML = str.Format(
-                    '<a href="{}">{}</a>',
-                    m3c.ListingLink(name), h2.innerHTML
-                )
-            })
+            const sections = [
+                "people", "projects", "studies", "publications", "organizations"
+            ]
+
+            sections.forEach(fixLink)
+
+            function fixLink(name) {
+                const selector = str.Format("section.{} h2 a", name)
+                const link = root.querySelector(selector)
+                link.href = m3c.ListingLink(name)
+            }
+
+            /**
+             * Extracts a collaborator's name for use by a sorting function.
+             *
+             * @param {HTMLLIElement} li
+             */
+            function getCollaboratorSortableName(li) {
+                const link = li.querySelector("a")
+                if (!link) {
+                    return ""
+                }
+                const displayName = link.innerText
+                const names = displayName.split(' ')
+                const surname = names.slice(-1)
+                const other = names.slice(0, -1)
+                const lastFirst = surname.concat(other).join(' ')
+                return lastFirst
+            }
+
+            function getName(li) {
+                const link = li.querySelector("a")
+                if (!link) {
+                    return ""
+                }
+                return link.innerText
+            }
+
+            function keepSorted(selector, keyFunc) {
+                const node = root.querySelector(selector)
+                ui.SortedList(node, 1, keyFunc)
+            }
 
             function renderName(name) {
                 if (!name) {
@@ -206,34 +274,60 @@
                 root.querySelector(".name").innerHTML = name
             }
 
-            function renderAdditionalCollaborators(collaborators) {
-                const ul = root.querySelector("ul.people")
-                if (collaborators.length === 0) {
-                    ul.innerHTML = "<li><em>None</em></li>"
+            const icons = {
+                "Institute": "city",
+                "Department": "building",
+                "Laboratory": "flask",
+                "Organization": "building",
+            }
+
+            function renderGrandparent(grandparentIRI) {
+                const t = root.querySelector(".grandparent")
+                if (!grandparentIRI) {
+                    t.remove()
                     return
                 }
 
-                const section = root.querySelector("section.people")
-                section.className = section.className.replace("hidden", "")
+                grandparentIRI = grandparentIRI.slice(1, -1)
+                const gp = entity.Organization(client, grandparentIRI)
 
-                collaborators.forEach(renderCollaborator)
+                gp.Name(renderName)
+                gp.Type(renderType)
 
-                function renderCollaborator(personIRI) {
-                    entity.Name(client, personIRI, renderCollaboratorListItem)
-                    function renderCollaboratorListItem(name) {
-                        renderListItem(ul, "person", personIRI, name)
-                    }
+                function renderName(name) {
+                    t.querySelector(".typename").innerText = name
+                }
+
+                function renderType(type) {
+                    t.querySelector("i.fas").className = "fas fa-" + icons[type]
+                    t.querySelector(".link").href = m3c.ProfileLink("organization", grandparentIRI)
+                }
+            }
+
+            function renderParent(parentIRI) {
+                const t = root.querySelector(".parent")
+                if (!parentIRI) {
+                    t.remove()
+                    return
+                }
+
+                parentIRI = parentIRI.slice(1, -1)
+                const p = entity.Organization(client, parentIRI)
+
+                p.Name(renderName)
+                p.Type(renderType)
+
+                function renderName(name) {
+                    t.querySelector(".typename").innerText = name
+                }
+
+                function renderType(type) {
+                    t.querySelector("i.fas").className = "fas fa-" + icons[type]
+                    t.querySelector(".link").href = m3c.ProfileLink("organization", parentIRI)
                 }
             }
 
             function renderType(type) {
-                const icons = {
-                    "Institute": "city",
-                    "Department": "building",
-                    "Laboratory": "flask",
-                    "Organization": "building",
-                }
-
                 const t = root.querySelector(".type")
                 t.querySelector("i.fas").className = "fas fa-" + icons[type]
                 t.querySelector(".link").href = m3c.ListingLink("organizations")
@@ -268,7 +362,6 @@
                     }
                 }
             }
-
 
             function renderListItem(ul, type, iri, name) {
                 const li = document.createElement("li")

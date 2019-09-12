@@ -37,6 +37,12 @@
         .listing ol.results li  {
             min-height: 100px;
         }
+
+        span.parent,
+        span.grandparent {
+            display: block;
+            color: gray;
+        }
     </style>
 
 </head>
@@ -97,9 +103,13 @@
                                 src="https://cdn.pixabay.com/photo/2016/08/08/09/17/avatar-1577909_960_720.png" />
                             <div class="name"></div>
                         </a>
-                        <div>
+                        <div class="type">
                             <i class="fas fa-city"></i>
-                            <span class="type"></span>
+                            <span class="typename"></span>
+                        </div>
+                        <div class="ancestry">
+                            <span class="parent"></span>
+                            <span class="grandparent"></span>
                         </div>
                     </li>
                 </ol>
@@ -153,7 +163,7 @@
                 entity.Departments(client),
                 entity.Laboratories(client),
                 entity.Names(client),
-                // entity.Parents(client),
+                entity.Parents(client),
             ]
 
             Promise.all(promises)
@@ -162,7 +172,7 @@
                     data.departments = results[1]
                     data.laboratories = results[2]
                     data.names = results[3]
-                    // data.parents = results[4]
+                    data.parents = results[4]
 
                     data.institutes.forEach(function (i) { renderOrganization(i, "Institute") })
                     data.departments.forEach(function (i) { renderOrganization(i, "Department") })
@@ -186,7 +196,7 @@
             // element.
             const filters = [
                 function type(selected, li) {
-                    const org = li.querySelector(".type")
+                    const org = li.querySelector(".typename")
                     return selected.indexOf(org.innerText) !== -1
                 },
             ]
@@ -224,6 +234,8 @@
              */
             function renderOrganization(organizationIRI, type) {
                 const org = entity.Organization(client, organizationIRI.slice(1, -1))
+                const parentIRI = data.parents[organizationIRI]
+                const grandparentIRI = parentIRI ? data.parents[parentIRI] : null
 
                 const icons = {
                     "Institute": "city",
@@ -236,10 +248,12 @@
                         href: m3c.ProfileLink("organization", organizationIRI.slice(1,-1)),
                     },
                     name: parseVIVOString(data.names[organizationIRI]),
-                    type: type,
+                    typename: type,
                     fas: {
                         className: "fas fa-"+ icons[type],
                     },
+                    parent: parentIRI ? data.names[parentIRI] : "",
+                    grandparent: grandparentIRI ? data.names[grandparentIRI] : "",
                 }
 
                 const li = ui.Render(organizationType, bindings)

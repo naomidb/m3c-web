@@ -120,16 +120,8 @@
                 </div>
                 <div class="info-frame">
                     <ul class="organizations">
-                        <li class="template institute">
-                            <i class="fas fa-fw fa-city"></i>
-                            <a href="#" class="name link"></a>
-                        </li>
-                        <li class="template department">
-                            <i class="fas fa-fw fa-building"></i>
-                            <a href="#" class="name link"></a>
-                        </li>
-                        <li class="template laboratory">
-                            <i class="fas fa-fw fa-flask"></i>
+                        <li class="template">
+                            <i class="fas fa-fw"></i>
                             <a href="#" class="name link"></a>
                         </li>
                     </ul>
@@ -356,47 +348,32 @@
 
             function renderOrganizations(organizations) {
                 const list = root.querySelector("ul.organizations")
-                const templates = {
-                    institute: list.querySelector("li.template.institute"),
-                    department: list.querySelector("li.template.department"),
-                    laboratory: list.querySelector("li.template.laboratory"),
-                }
+                const template = list.querySelector("li.template")
 
                 organizations.forEach(renderOrganization)
 
+                const icons = {
+                    "Institute": "city",
+                    "Department": "building",
+                    "Laboratory": "flask",
+                    "Organization": "building",
+                }
+
                 function renderOrganization(organizationIRI) {
                     organizationIRI = organizationIRI.slice(1, -1) // strip < >
-
                     entity.Organization(client, organizationIRI).Type(render)
 
-                    function render(types) {
+                    function render(type) {
                         const bindings = {
                             name: entity.Name.bind(null, client, organizationIRI),
                             link: {
                                 href: m3c.ProfileLink("organization", organizationIRI),
                             },
+                            fas: {
+                                className: "fas fa-fw fa-" + icons[type]
+                            },
                         }
-
-                        const isInstitute =
-                            types.indexOf("<http://vivoweb.org/ontology/core#Institute>") !== -1
-                        if (isInstitute) {
-                            ui.Render(templates.institute, bindings)
-                            return
-                        }
-
-                        const isDepartment =
-                            types.indexOf("<http://vivoweb.org/ontology/core#Department>") !== -1
-                        if (isDepartment) {
-                            ui.Render(templates.department, bindings)
-                            return
-                        }
-
-                        const isLaboratory =
-                            types.indexOf("<http://vivoweb.org/ontology/core#Laboratory>") !== -1
-                        if (isLaboratory) {
-                            ui.Render(templates.laboratory, bindings)
-                            return
-                        }
+                        ui.Render(template, bindings)
                     }
                 }
             }

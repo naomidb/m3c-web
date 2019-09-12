@@ -292,9 +292,11 @@ body.profile section h2 {
     display: table-cell;
     width: 45%;
     text-align: right;
+    vertical-align: top;
 }
 
 body.profile section ul {
+    padding-top: 0.25em;
     padding-left: 1.5em;
     display: table-cell;
 }
