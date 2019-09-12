@@ -88,7 +88,7 @@ var tpf = (function module() {
                 return Promise.resolve(cache[iri].triples)
             }
 
-            return Query(endpoint, iri)
+            return self.Query(iri)
                 .then(function (triples) {
                     cache[iri] = {
                         triples: triples,
