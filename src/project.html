@@ -125,11 +125,18 @@
                     <h2 class="datasets">
                         <a href="datasets.html">Datasets</a>
                     </h2>
-                    <ul class="datasets"></ul>
+                    <ul class="datasets">
+                        <li class="template">
+                            <a href="#" class="link name" target="_blank"></a>
+                            <i class="fa fa-external-link-alt"></i>
+                        </li>
+                    </ul>
                 </section>
 
                 <section class="tools">
-                    <h2 class="tools">Tools</h2>
+                    <h2 class="tools">
+                        <a href="tools.html">Tools</a>
+                    </h2>
                     <ul class="tools"></ul>
                 </section>
 
@@ -155,6 +162,7 @@
         <script src="str.js"></script>
         <script src="m3c.js"></script>
         <script src="entity.js"></script>
+        <script src="ui.js"></script>
 
         <script>
             const client = m3c.NewTPFClient()
@@ -179,9 +187,37 @@
             const sections = ["people", "studies", "datasets", "tools"]
             sections.forEach(fixLink)
 
-
             const listingLink = root.querySelector(".projects-link")
             listingLink.href = m3c.ListingLink("projects")
+
+            function fixLink(name) {
+                const selector = str.Format("section.{} h2 a", name)
+                const link = root.querySelector(selector)
+                link.href = m3c.ListingLink(name)
+            }
+
+            /**
+             * Extracts a person's name for use by a sorting function.
+             *
+             * @param {HTMLLIElement} li
+             */
+            function getNameLastFirst(li) {
+                const link = li.querySelector("a")
+                if (!link) {
+                    return ""
+                }
+                const displayName = link.innerText
+                const names = displayName.split(' ')
+                const surname = names.slice(-1)
+                const other = names.slice(0, -1)
+                const lastFirst = surname.concat(other).join(' ')
+                return lastFirst
+            }
+
+            function keepSorted(selector, keyFunc) {
+                const node = root.querySelector(selector)
+                ui.SortedList(node, 1, keyFunc)
+            }
 
             /**
              * Creates a function that accepts a list of items to render.
@@ -220,13 +256,23 @@
                     return
                 }
 
-                datasets.forEach(renderItem)
+                datasets.forEach(renderDataset)
 
-                function renderItem(iri) {
-                    const name = iri
+                function renderDataset(iri) {
+                    const template = ul.querySelector("li.template")
+
+                    const sampleID = iri
                         .replace("https://vivo.metabolomics.info/individual/", "")
                         .slice(1, -1)
-                    renderListItem(ul, "study", iri, name)
+
+                    const bindings = {
+                        link: {
+                            href: m3c.ProfileLink("dataset", iri.slice(1, -1))
+                        },
+                        name: sampleID,
+                    }
+
+                    ui.Render(template, bindings)
                 }
             }
 

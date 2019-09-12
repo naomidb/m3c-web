@@ -136,7 +136,12 @@
                     <h2 class="datasets">
                         <a href="datasets.html">Datasets</a>
                     </h2>
-                    <ul class="datasets"></ul>
+                    <ul class="datasets">
+                        <li class="template">
+                            <a href="#" class="link name" target="_blank"></a>
+                            <i class="fa fa-external-link-alt"></i>
+                        </li>
+                    </ul>
                 </section>
 <!--
                 <section class="tools">
@@ -277,13 +282,23 @@
                     return
                 }
 
-                datasets.forEach(renderItem)
+                datasets.forEach(renderDataset)
 
-                function renderItem(iri) {
-                    const name = iri
+                function renderDataset(iri) {
+                    const template = ul.querySelector("li.template")
+
+                    const sampleID = iri
                         .replace("https://vivo.metabolomics.info/individual/", "")
                         .slice(1, -1)
-                    renderListItem(ul, "study", iri, name)
+
+                    const bindings = {
+                        link: {
+                            href: m3c.ProfileLink("dataset", iri.slice(1, -1))
+                        },
+                        name: sampleID,
+                    }
+
+                    ui.Render(template, bindings)
                 }
             }
 
