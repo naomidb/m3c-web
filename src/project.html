@@ -25,12 +25,25 @@
     <script crossorigin src="https://unpkg.com/@ungap/url-search-params@0.1.2/min.js"></script>
 
     <style>
-        .projects-link,
-        .mwb {
-            display: block;
+        .properties > * {
             text-align: center;
+            display: block;
+            padding-top: 0.25em;
+            padding-bottom: 0.25em;
+        }
+
+        .projects-link {
+            font-size: larger;
+            padding-top: 0;
+            padding-bottom: 1em;
+        }
+
+        #profile > h1.name {
+            margin-bottom: 0;
+        }
+
+        .mwb {
             font-size: smaller;
-            padding: 0.25em;
         }
     </style>
 
@@ -60,35 +73,46 @@
             <div id="profile">
                 <h1 class="name"></h1>
 
-                <a href="https://www.metabolomicsworkbench.org/data/DRCCMetadata.php?Mode=Project" class="mwb">
-                   Project page on Metabolomics Workbench
-                   <i class="fa fa-external-link-alt"></i>
-                </a>
+                <div class="properties">
+                    <a href="projects.html" class="projects-link">Project</a>
 
-                <a href="projects.html" class="projects-link">
-                    All projects
-                </a>
+                    <a href="https://www.metabolomicsworkbench.org/data/DRCCMetadata.php?Mode=Project" class="mwb" target="_blank">
+                    View project on Metabolomics Workbench
+                    <i class="fa fa-external-link-alt"></i>
+                    </a>
+                </div>
 
-                <div>
-                    <i class="fas fa-fw fa-city"></i>
-                    <a class="institute"></a>
-                </div>
-                <div>
-                    <i class="fas fa-fw fa-building"></i>
-                    <a class="department"></a>
-                </div>
-                <div>
-                    <i class="fas fa-fw fa-flask"></i>
-                    <a class="laboratory"></a>
-                </div>
+                <section class="organizations">
+                    <h2 class="organizations">
+                        <a href="organizations.html">Organizations</a>
+                    </h2>
+                    <ul class="organizations">
+                        <li>
+                            <i class="fas fa-fw fa-city"></i>
+                            <a class="institute"></a>
+                        </li>
+                        <li>
+                            <i class="fas fa-fw fa-building"></i>
+                            <a class="department"></a>
+                        </li>
+                        <li>
+                            <i class="fas fa-fw fa-flask"></i>
+                            <a class="laboratory"></a>
+                        </li>
+                    </ul>
+                </section>
 
                 <section class="people">
-                    <h2 class="people">People</h2>
+                    <h2 class="people">
+                        <a href="people.html">People</a>
+                    </h2>
                     <ul class="people"></ul>
                 </section>
 
                 <section class="studies">
-                    <h2 class="studies">Studies</h2>
+                    <h2 class="studies">
+                        <a href="studies.html">Studies</a>
+                    </h2>
                     <ul class="studies"></ul>
                 </section>
 <!--
@@ -98,7 +122,9 @@
                 </section>
  -->
                 <section class="datasets">
-                    <h2 class="datasets">Datasets</h2>
+                    <h2 class="datasets">
+                        <a href="datasets.html">Datasets</a>
+                    </h2>
                     <ul class="datasets"></ul>
                 </section>
 
@@ -143,23 +169,19 @@
             project.Laboratory(renderLaboratory)
             project.People(listRenderer("ul.people", "person"))
             project.Studies(listRenderer("ul.studies", "study"))
-            // project.Publications(listRenderer("ul.publications", "publication"))
-            project.Datasets(listRenderer("ul.datasets", "dataset"))
+            project.Datasets(renderDatasets)
             project.Tools(listRenderer("ul.tools", "tool"))
 
+            keepSorted("ul.people", getNameLastFirst)
+            keepSorted("ul.studies")
+            keepSorted("ul.datasets")
+
             const sections = ["people", "studies", "datasets", "tools"]
+            sections.forEach(fixLink)
 
-            sections.forEach(function (name) {
-                const selector = str.Format("section.{} h2", name)
-                const h2 = document.querySelector(selector)
-                h2.innerHTML = str.Format(
-                    '<a href="{}">{}</a>',
-                    m3c.ListingLink(name), h2.innerHTML
-                )
-            })
 
-            const allProjectsLink = root.querySelector(".projects-link")
-            allProjectsLink.href = m3c.ListingLink("projects")
+            const listingLink = root.querySelector(".projects-link")
+            listingLink.href = m3c.ListingLink("projects")
 
             /**
              * Creates a function that accepts a list of items to render.
@@ -190,6 +212,38 @@
                 }
             }
 
+            function renderDatasets(datasets) {
+                const ul = root.querySelector("ul.datasets")
+
+                if (datasets.length === 0) {
+                    ul.innerHTML = "<li><em>None</em></li>"
+                    return
+                }
+
+                datasets.forEach(renderItem)
+
+                function renderItem(iri) {
+                    const name = iri
+                        .replace("https://vivo.metabolomics.info/individual/", "")
+                        .slice(1, -1)
+                    renderListItem(ul, "study", iri, name)
+                }
+            }
+
+            function renderDepartment(departmentIRI) {
+                const a = root.querySelector(".department")
+                if (!departmentIRI) {
+                    a.parentElement.parentElement.removeChild(a.parentElement)
+                }
+
+                entity.Name(client, departmentIRI, renderName)
+
+                function renderName(name) {
+                    a.href = m3c.ProfileLink("organization", departmentIRI.slice(1, -1))
+                    a.innerText = name
+                }
+            }
+
             function renderID(projectID) {
                 const a = root.querySelector(".mwb")
                 if (!projectID) {
@@ -197,6 +251,34 @@
                 }
 
                 a.href += "&ProjectID=" + projectID
+            }
+
+            function renderInstitute(instituteIRI) {
+                const a = root.querySelector(".institute")
+                if (!instituteIRI) {
+                    a.parentElement.parentElement.removeChild(a.parentElement)
+                }
+
+                entity.Name(client, instituteIRI, renderName)
+
+                function renderName(name) {
+                    a.href = m3c.ProfileLink("organization", instituteIRI.slice(1, -1))
+                    a.innerText = name
+                }
+            }
+
+            function renderLaboratory(laboratoryIRI) {
+                const a = root.querySelector(".laboratory")
+                if (!laboratoryIRI) {
+                    a.parentElement.parentElement.removeChild(a.parentElement)
+                }
+
+                entity.Name(client, laboratoryIRI, renderName)
+
+                function renderName(name) {
+                    a.href = m3c.ProfileLink("organization", laboratoryIRI.slice(1, -1))
+                    a.innerText = name
+                }
             }
 
             function renderListItem(ul, type, iri, name) {
@@ -217,48 +299,6 @@
 
                 name = name.trim()
                 root.querySelector(".name").innerHTML = name
-            }
-
-            function renderDepartment(departmentIRI) {
-                const a = root.querySelector(".department")
-                if (!departmentIRI) {
-                    a.parentElement.parentElement.removeChild(a.parentElement)
-                }
-
-                entity.Name(client, departmentIRI, renderName)
-
-                function renderName(name) {
-                    a.href = m3c.ProfileLink("organization", departmentIRI.slice(1, -1))
-                    a.innerText = name
-                }
-            }
-
-            function renderLaboratory(laboratoryIRI) {
-                const a = root.querySelector(".laboratory")
-                if (!laboratoryIRI) {
-                    a.parentElement.parentElement.removeChild(a.parentElement)
-                }
-
-                entity.Name(client, laboratoryIRI, renderName)
-
-                function renderName(name) {
-                    a.href = m3c.ProfileLink("organization", laboratoryIRI.slice(1, -1))
-                    a.innerText = name
-                }
-            }
-
-            function renderInstitute(instituteIRI) {
-                const a = root.querySelector(".institute")
-                if (!instituteIRI) {
-                    a.parentElement.parentElement.removeChild(a.parentElement)
-                }
-
-                entity.Name(client, instituteIRI, renderName)
-
-                function renderName(name) {
-                    a.href = m3c.ProfileLink("organization", instituteIRI.slice(1, -1))
-                    a.innerText = name
-                }
             }
         </script>
 

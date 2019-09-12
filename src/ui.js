@@ -204,18 +204,31 @@ var ui = (function module() {
      *
      * @param {HTMLElement} ol Ordered list element.
      * @param {number} direction Initial order: 1 for normal, -1 for reverse.
-     * @param {(li: HTMLLIElement) => string} listItemKey
+     * @param {(li: HTMLLIElement) => string} [listItemKey]
      *        Callback function to get the sorting key for a list item.
+     *        Defaults to a alphabetical ordering of the list item's innerText.
      */
     function SortedList(ol, direction, listItemKey) {
         if (!direction) {
             direction = 1
         }
 
+        if (!listItemKey) {
+            listItemKey = getText
+        }
+
         // This observer is responsible for resorting the list whenever items
         // are added or remove.
         const observer = new MutationObserver(onMutate)
         observe()
+
+        function getText(li) {
+            const link = li.querySelector("a")
+            if (!link) {
+                return ""
+            }
+            return link.innerText
+        }
 
         function observe() {
             observer.observe(ol, { childList: true })

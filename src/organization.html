@@ -44,12 +44,6 @@
             font-size: larger;
         }
 
-        section.people {
-            margin-top: 1em;
-            padding-top: 2em;
-            border-top: 1px solid gray;
-        }
-
         section {
             display: table;
             width: 100%;
@@ -215,11 +209,11 @@
             organization.Studies(listRenderer("ul.studies", "study"))
             organization.Publications(listRenderer("ul.publications", "publication"))
 
-            keepSorted("ul.people", getCollaboratorSortableName)
-            keepSorted("ul.organizations", getName)
-            keepSorted("ul.projects", getName)
-            keepSorted("ul.studies", getName)
-            keepSorted("ul.publications", getName)
+            keepSorted("ul.people", getNameLastFirst)
+            keepSorted("ul.organizations")
+            keepSorted("ul.projects")
+            keepSorted("ul.studies")
+            keepSorted("ul.publications")
 
             const sections = [
                 "people", "projects", "studies", "publications", "organizations"
@@ -234,11 +228,11 @@
             }
 
             /**
-             * Extracts a collaborator's name for use by a sorting function.
+             * Extracts a person's name for use by a sorting function.
              *
              * @param {HTMLLIElement} li
              */
-            function getCollaboratorSortableName(li) {
+            function getNameLastFirst(li) {
                 const link = li.querySelector("a")
                 if (!link) {
                     return ""
@@ -249,14 +243,6 @@
                 const other = names.slice(0, -1)
                 const lastFirst = surname.concat(other).join(' ')
                 return lastFirst
-            }
-
-            function getName(li) {
-                const link = li.querySelector("a")
-                if (!link) {
-                    return ""
-                }
-                return link.innerText
             }
 
             function keepSorted(selector, keyFunc) {
