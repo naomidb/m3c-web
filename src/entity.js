@@ -214,6 +214,29 @@ var entity = (function module() {
             })
     }
 
+    function Tags(client) {
+        return client
+            .Query(null, base + "tag", null)
+            .then(function (triples) {
+                const tags = {}
+                triples.forEach(function (triple) {
+                    if (!tags[triple.Subject]) {
+                        tags[triple.Subject] = []
+                    }
+
+                    const tag = deleteSurroundingQuotes(triple.Object)
+                    tags[triple.Subject].push(tag)
+                })
+                return tags
+            })
+    }
+
+    function Tools(client) {
+        return new Promise(function(resolve) {
+            client.List(base + "Tool").Results(resolve)
+        })
+    }
+
     function decodeString(callback) {
         return function decoder(text) {
             callback(deleteSurroundingQuotes(text))
@@ -823,6 +846,8 @@ var entity = (function module() {
         Studies: Studies,
         Study: Study,
         SubmissionDates: SubmissionDates,
+        Tags: Tags,
+        Tools: Tools,
     }
 })()
 
