@@ -275,10 +275,26 @@ var entity = (function module() {
                     .Results(decodeStrings(resolve))
             })
 
-            return Promise.all([runners, investigators])
+            const developers = new Promise(function(resolve) {
+                client
+                    .Entity(iri)
+                    .Link(base, "developerOf")
+                    .Link(base, "developedBy")
+                    .Results(decodeStrings(resolve))
+            })
+
+            return Promise.all([runners, investigators, developers])
                 .then(flatten)
                 .then(unique)
+                .then(excludeSelf)
                 .then(returnCollaborators)
+
+            function excludeSelf(collaborators) {
+                const person = '<' + iri + '>'
+                return collaborators.filter(function (collaborator) {
+                    return collaborator !== person
+                })
+            }
         }
 
         this.Datasets = function Datasets(returnDatasets) {
