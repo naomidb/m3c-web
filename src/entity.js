@@ -231,6 +231,10 @@ var entity = (function module() {
             })
     }
 
+    function Tool(client, iri) {
+        return new tool(client, iri)
+    }
+
     function Tools(client) {
         return new Promise(function(resolve) {
             client.List(base + "Tool").Results(resolve)
@@ -812,6 +816,65 @@ var entity = (function module() {
         }
     }
 
+    function tool(client, iri) {
+        this.License = function License(returnLicense) {
+            const name = new Promise(function (resolve) {
+                client
+                    .Entity(iri)
+                    .Link(base, "licenseType")
+                    .Single(decodeString(resolve))
+            })
+
+            const url = new Promise(function (resolve) {
+                client
+                    .Entity(iri)
+                    .Link(base, "licenseUrl")
+                    .Single(decodeString(resolve))
+            })
+
+            return Promise.all([name, url])
+                .then(function (results) {
+                    const license = {
+                        name: results[0],
+                        url: results[1],
+                    }
+                    returnLicense(license)
+                    return license
+                })
+        }
+
+        this.Name = function name(returnName) {
+            return Name(client, iri, returnName)
+        }
+
+        this.People = function People(returnPeople) {
+            return new Promise(function () {
+                client
+                    .Entity(iri)
+                    .Link(base, "developedBy")
+                    .Results(decodeStrings(returnPeople))
+            })
+        }
+
+        this.Tags = function Tags(returnTags) {
+            return new Promise(function () {
+                client
+                    .Entity(iri)
+                    .Link(base, "tag")
+                    .Results(decodeStrings(returnTags))
+            })
+        }
+
+        this.Website = function Website(returnWebsite) {
+            return new Promise(function () {
+                client
+                    .Entity(iri)
+                    .Link(base, "homepage")
+                    .Single(decodeString(returnWebsite))
+            })
+        }
+    }
+
     /**
      * Returns the unique items in an array.
      * @param {(String[]|Number[])} items
@@ -847,6 +910,7 @@ var entity = (function module() {
         Study: Study,
         SubmissionDates: SubmissionDates,
         Tags: Tags,
+        Tool: Tool,
         Tools: Tools,
     }
 })()
