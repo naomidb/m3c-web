@@ -175,13 +175,6 @@
                     </ul>
                 </section>
 
-                <section class="datasets">
-                    <h2 class="datasets">
-                        <a href="datasets.html">Datasets</a>
-                    </h2>
-                    <ul class="datasets"></ul>
-                </section>
-
                 <section class="tools">
                     <h2 class="tools">
                         <a href="tools.html">Tools</a>
@@ -189,6 +182,18 @@
                     <ul class="tools"></ul>
                 </section>
 
+                <section class="datasets">
+                    <h2 class="datasets">
+                        <a href="datasets.html">Datasets</a>
+                    </h2>
+                    <ul class="datasets">
+                        <li class="template">
+                            <a href="#" class="link name" target="_blank"></a>
+                            <i class="fa fa-external-link-alt"></i>
+                        </li>
+                    </ul>
+                </section>
+k
             </div>
             <p class="disclaimer">
                 Data from the
@@ -228,7 +233,7 @@
             person.Projects(listRenderer("ul.projects", "project"))
             person.Studies(listRenderer("ul.studies", "study"))
             person.Publications(renderPublications)
-            person.Datasets(listRenderer("ul.datasets", "dataset"))
+            person.Datasets(renderDatasets)
             person.Tools(listRenderer("ul.tools", "tool"))
 
             ui.SortedList(root.querySelector("ul.people"), 1, getCollaboratorSortableName)
@@ -306,6 +311,34 @@
                     function renderCollaboratorListItem(name) {
                         renderListItem(ul, "person", personIRI, name)
                     }
+                }
+            }
+
+            function renderDatasets(datasets) {
+                const ul = root.querySelector("ul.datasets")
+
+                if (datasets.length === 0) {
+                    ul.innerHTML = "<li><em>None</em></li>"
+                    return
+                }
+
+                datasets.forEach(renderDataset)
+
+                function renderDataset(iri) {
+                    const template = ul.querySelector("li.template")
+
+                    const sampleID = iri
+                        .replace("https://vivo.metabolomics.info/individual/", "")
+                        .slice(1, -1)
+
+                    const bindings = {
+                        link: {
+                            href: m3c.ProfileLink("dataset", iri.slice(1, -1))
+                        },
+                        name: sampleID,
+                    }
+
+                    ui.Render(template, bindings)
                 }
             }
 
