@@ -69,8 +69,10 @@ h2 {
     font-weight: 300;
 }
 
+/* Slogan */
 header div.text p {
     font-size: 0.875em;
+    text-shadow: none;
 }
 
 ol,
