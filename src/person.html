@@ -229,14 +229,18 @@
             person.Organizations(renderOrganizations)
             person.Phones(renderPhones)
             person.Emails(renderEmails)
-            person.Collaborators(renderAdditionalCollaborators)
+            person.Collaborators(listRenderer("ul.people", "person"))
             person.Projects(listRenderer("ul.projects", "project"))
             person.Studies(listRenderer("ul.studies", "study"))
             person.Publications(renderPublications)
             person.Datasets(renderDatasets)
             person.Tools(listRenderer("ul.tools", "tool"))
 
-            ui.SortedList(root.querySelector("ul.people"), 1, getCollaboratorSortableName)
+            keepSorted("ul.people", getNameLastFirst)
+            keepSorted("ul.organizations", getOrganizationTypeAndName)
+            keepSorted("ul.projects")
+            keepSorted("ul.studies")
+            keepSorted("ul.publications")
 
             const sections = [
                 "people", "projects", "studies", "publications", "datasets",
@@ -252,12 +256,16 @@
             }
 
             /**
-             * Extracts a collaborator's name for use by a sorting function.
+             * Extracts a person's name for use by a sorting function.
              *
              * @param {HTMLLIElement} li
              */
-            function getCollaboratorSortableName(li) {
-                const displayName = li.querySelector("a").innerText
+            function getNameLastFirst(li) {
+                const link = li.querySelector("a")
+                if (!link) {
+                    return ""
+                }
+                const displayName = link.innerText
                 const names = displayName.split(' ')
                 const surname = names.slice(-1)
                 const other = names.slice(0, -1)
@@ -265,12 +273,42 @@
                 return lastFirst
             }
 
+            function getOrganizationTypeAndName(/** @type {HTMLLIElement} */li) {
+                const link = li.querySelector(".name")
+                var name = ""
+                if (link && link.innerText) {
+                    name = link.innerText.trim()
+                }
+
+                const classes = li.className
+                console.log(name, classes)
+
+                if (classes.indexOf("institute") !== -1) {
+                    return "   " + name
+                }
+
+                if (classes.indexOf("department") !== -1) {
+                    return "  " + name
+                }
+
+                if (classes.indexOf("laboratory") !== -1) {
+                    return " " + name
+                }
+
+                return name
+            }
+
+            function keepSorted(selector, keyFunc) {
+                const node = root.querySelector(selector)
+                ui.SortedList(node, 1, keyFunc)
+            }
+
             /**
              * Creates a function that accepts a list of items to render.
              *
-             * This is used for most of the entity associations, like Publications,
-             * instead of having a separate function for each, all of which would do
-             * pretty much the same thing.
+             * This is used for most of the entity associations, like
+             * Publications, instead of having a separate function for each, all
+             * of which would do pretty much the same thing.
              *
              * @param {string} selector
              * @param {string} type
@@ -290,26 +328,6 @@
                         function renderName(name) {
                             renderListItem(ul, type, iri, name)
                         }
-                    }
-                }
-            }
-
-            function renderAdditionalCollaborators(/** @type string[] */ collaborators) {
-                const ul = root.querySelector("ul.people")
-                if (collaborators.length === 0) {
-                    ul.innerHTML = "<li><em>None</em></li>"
-                    return
-                }
-
-                const section = root.querySelector("section.people")
-                section.className = section.className.replace("hidden", "")
-
-                collaborators.forEach(renderCollaborator)
-
-                function renderCollaborator(personIRI) {
-                    entity.Name(client, personIRI, renderCollaboratorListItem)
-                    function renderCollaboratorListItem(name) {
-                        renderListItem(ul, "person", personIRI, name)
                     }
                 }
             }
@@ -406,7 +424,9 @@
                                 className: "fas fa-fw fa-" + icons[type]
                             },
                         }
-                        ui.Render(template, bindings)
+
+                        const li = ui.Render(template, bindings)
+                        li.className = (li.className + " " + type.toLowerCase()).trim()
                     }
                 }
             }
