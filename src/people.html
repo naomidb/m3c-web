@@ -179,12 +179,12 @@
             // Setup the filters used by each facets. Each item should be a
             // function whose name matches the class name of the facet's HTML
             // element.
-            const filters = [
-                function organization(selected, li) {
+            const filters = {
+                organization: function organization(selected, li) {
                     const org = li.querySelector(".organization")
                     return selected.indexOf(org.innerText) !== -1
                 },
-            ]
+            }
 
             // Use facetsManager to dynamically increment the count of an option
             const facetsManager = ui.Facets(facets, results, filters)

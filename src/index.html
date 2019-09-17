@@ -98,6 +98,7 @@
             margin-top: 1em;
             display: -ms-grid;
             display: grid;
+            -ms-grid-columns: 1fr 1fr 1fr;
             grid-template-columns: repeat(auto-fit, 320px);
             /* grid-template-columns: 1fr 1fr 1fr; */
             grid-gap: 1em;
@@ -112,6 +113,10 @@
             min-height: 200px;
             padding: 1em;
         }
+
+        .visuals .wordcloud { -ms-grid-column: 1 }
+        .visuals .graph     { -ms-grid-column: 2 }
+        .visuals .about     { -ms-grid-column: 3 }
 
         .visuals div img {
             width: 100%;
@@ -229,7 +234,7 @@
                 <div class="wordcloud">
                     <img src="wordcloud.gif" alt="Word Cloud showing common terms relating to Metabolomics" />
                 </div>
-                <div>
+                <div class="graph">
                     <a href="projects_by_year.png">
                         <img src="projects_by_year.png" alt="Graph showing the number of projects by year" />
                     </a>
@@ -312,7 +317,10 @@
         <script>
             const client = m3c.NewTPFClient()
             const links = document.getElementById("links")
-            links.querySelectorAll("li").forEach(addLink)
+            const items = links.querySelectorAll("li")
+            for (var i = 0; i < items.length; i++) {
+                addLink(items[i])
+            }
 
             const featuredPersonLink = document.querySelector(".hero-item.person a")
             const featuredPersonIRI = featuredPersonLink.getAttribute("data-iri")

@@ -270,7 +270,7 @@
             function renderGrandparent(grandparentIRI) {
                 const t = root.querySelector(".grandparent")
                 if (!grandparentIRI) {
-                    t.remove()
+                    t.parentNode.removeChild(t)
                     return
                 }
 
@@ -293,7 +293,7 @@
             function renderParent(parentIRI) {
                 const t = root.querySelector(".parent")
                 if (!parentIRI) {
-                    t.remove()
+                    t.parentNode.removeChild(t)
                     return
                 }
 

@@ -174,8 +174,8 @@
             // Setup the filters used by each facets. Each item should be a
             // function whose name matches the class name of the facet's HTML
             // element.
-            const filters = [
-                function tag(selected, li) {
+            const filters = {
+                tag: function tag(selected, li) {
                     const tags = li.querySelectorAll(".tags .tag")
                     for (var j = 0; j < tags.length; j++) {
                         const tag = tags[j].innerText
@@ -187,7 +187,7 @@
                     }
                     return false
                 },
-            ]
+            }
 
             // Use facetsManager to dynamically increment the count of an option
             const facetsManager = ui.Facets(facets, results, filters)

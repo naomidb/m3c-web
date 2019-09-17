@@ -193,8 +193,8 @@
             // Setup the filters used by each facets. Each item should be a
             // function whose name matches the class name of the facet's HTML
             // element.
-            const filters = [
-                function author(selected, li) {
+            const filters = {
+                author: function author(selected, li) {
                     const authors = li.querySelector(".authors").innerText
                     for (var i = 0; i < selected.length; i++) {
                         if (authors.indexOf(selected[i]) !== -1) {
@@ -203,7 +203,7 @@
                     }
                     return false
                 },
-            ]
+            }
 
             // Use facetsManager to dynamically increment the count of an option
             const facetsManager = ui.Facets(facets, results, filters)
