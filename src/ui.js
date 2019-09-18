@@ -14,7 +14,8 @@ var ui = (function module() {
      *
      * @param {HTMLElement} facets HTML Element containing the facets.
      * @param {HTMLElement} results HTML Element containing the listed items.
-     * @param {Array.<(selected: string[], item: Node)>} filters
+     * @param {{[name: string]: (selected: string[], item: Node) => boolean}}
+     *        filters
      *        Filter functions that are called whenever there is a change to the
      *        selected facets. There should be one per facet.
      */
@@ -71,9 +72,9 @@ var ui = (function module() {
                 items.push(lis[i])
             }
 
-            const remainingSets = filters.map(function(filter) {
+            const remainingSets = Object.keys(filters).map(function (filter) {
                 const checked = facets.querySelectorAll(
-                    ".facet." + filter.name + " input:checked"
+                    ".facet." + filter + " input:checked"
                 )
 
                 const selected = []
@@ -88,8 +89,8 @@ var ui = (function module() {
                     return items
                 }
 
-                const remaining = items.filter(function(item) {
-                    return filter(selected, item)
+                const remaining = items.filter(function (item) {
+                    return filters[filter](selected, item)
                 })
 
                 return remaining
@@ -204,12 +205,17 @@ var ui = (function module() {
      *
      * @param {HTMLElement} ol Ordered list element.
      * @param {number} direction Initial order: 1 for normal, -1 for reverse.
-     * @param {(li: HTMLLIElement) => string} listItemKey
+     * @param {(li: HTMLLIElement) => string} [listItemKey]
      *        Callback function to get the sorting key for a list item.
+     *        Defaults to a alphabetical ordering of the list item's innerText.
      */
     function SortedList(ol, direction, listItemKey) {
         if (!direction) {
             direction = 1
+        }
+
+        if (!listItemKey) {
+            listItemKey = getText
         }
 
         // This observer is responsible for resorting the list whenever items
@@ -217,14 +223,27 @@ var ui = (function module() {
         const observer = new MutationObserver(onMutate)
         observe()
 
+        function getText(li) {
+            const link = li.querySelector("a")
+            if (!link) {
+                return ""
+            }
+            return link.innerText
+        }
+
         function observe() {
             observer.observe(ol, { childList: true })
         }
 
-        function onMutate(mutations) {
-            const mutation = mutations.find(function(mutation) {
-                return mutation.type === "childList"
-            })
+        function onMutate(/** @type {Array} */mutations) {
+            var mutation = null
+
+            for (var i = 0; i <= mutations.length; i++) {
+                if (mutations[i].type === "childList") {
+                    mutation = mutations[i]
+                    break
+                }
+            }
 
             if (!mutation) {
                 return
@@ -241,7 +260,7 @@ var ui = (function module() {
         /** Sorts an ordered list's items. */
         function sort() {
             const lis = Array.prototype.slice.call(ol.querySelectorAll("li"))
-            lis.sort(function(a, b) {
+            lis.sort(function (a, b) {
                 const name1 = listItemKey(a)
                 const name2 = listItemKey(b)
 
@@ -256,8 +275,8 @@ var ui = (function module() {
                 ol.removeChild(ol.firstChild)
             }
 
-            lis.forEach(function(li) {
-                ol.append(li)
+            lis.forEach(function (li) {
+                ol.appendChild(li)
             })
         }
 

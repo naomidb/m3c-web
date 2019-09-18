@@ -82,6 +82,10 @@
 
         .hero-item.person img.photo {
             border-radius: 50%;
+            border: 5px solid white;
+            box-shadow: 0 0 3px gray;
+            max-width: 300px;
+            height: 200px;
         }
 
         .hero-item.person p {
@@ -94,6 +98,7 @@
             margin-top: 1em;
             display: -ms-grid;
             display: grid;
+            -ms-grid-columns: 1fr 1fr 1fr;
             grid-template-columns: repeat(auto-fit, 320px);
             /* grid-template-columns: 1fr 1fr 1fr; */
             grid-gap: 1em;
@@ -109,9 +114,17 @@
             padding: 1em;
         }
 
+        .visuals .wordcloud { -ms-grid-column: 1 }
+        .visuals .graph     { -ms-grid-column: 2 }
+        .visuals .about     { -ms-grid-column: 3 }
+
         .visuals div img {
             width: 100%;
             height: auto;
+        }
+
+        .wordcloud img {
+            padding-top: 1.5em;
         }
 
         .about p {
@@ -159,6 +172,13 @@
                 margin-top: 0;
             }
         }
+
+
+        @media only screen and (max-width: 690px) {
+           .wordcloud img {
+               padding-top: 0.5em;
+           }
+        }
     </style>
 
 </head>
@@ -174,7 +194,7 @@
                     width=60 height=60>
                 <div class="text">
                     <h1>Metabolomics Info</h1>
-                    <p>An international resource for news and events in metabolomics</p>
+                    <p>Facilitating science through community</p>
                 </div>
             </a>
             <div class="spacer"></div>
@@ -187,10 +207,9 @@
 
             <div class="hero">
                 <div class="hero-item person">
-                    <a class="photo-frame" data-iri="https://vivo.metabolomics.info/individual/n4619"
-                        href="people.html?iri=https://vivo.metabolomics.info/individual/n4619">
-                        <img class="photo" src="http://stage.vivo.metabolomics.info/file/n423/s200_richard.yost.jpg"
-                            alt="Rick Yost" />
+                    <a class="photo-frame" data-iri="https://vivo.metabolomics.info/individual/160"
+                        href="people.html?iri=https://vivo.metabolomics.info/individual/160">
+                        <img class="photo" alt="Rick Yost" src="https://cdn.pixabay.com/photo/2016/08/08/09/17/avatar-1577909_960_720.png" />
                         <div class="name">Rick Yost</div>
                     </a>
 
@@ -208,15 +227,14 @@
                         Spectrometry, with specializationsin trace biomedical
                         analysis, imaging, and metabolomics.
                     </p>
-                    </a>
                 </div>
             </div>
 
             <div class="visuals">
-                <div>
-                    <h3>Word Cloud</h3>
+                <div class="wordcloud">
+                    <img src="wordcloud.gif" alt="Word Cloud showing common terms relating to Metabolomics" />
                 </div>
-                <div>
+                <div class="graph">
                     <a href="projects_by_year.png">
                         <img src="projects_by_year.png" alt="Graph showing the number of projects by year" />
                     </a>
@@ -239,13 +257,42 @@
 
             <nav>
                 <ul id="links">
-                    <li class="People"></li>
-                    <li class="Publications"></li>
-                    <li class="Projects"></li>
-                    <li class="Studies"></li>
-                    <li class="Organizations"></li>
-                    <li class="Datasets"></li>
-                    <li class="Tools"></li>
+                    <li class="People">
+                        <a href="people.html">
+                            People
+                            <span class="count"></span>
+                        </a>
+                    </li>
+                    <li class="Publications">
+                        <a href="people.html">
+                            Publications
+                            <span class="count"></span>
+                        </a>
+                    </li>
+                    <li class="Projects">
+                        <a href="people.html">
+                            Projects
+                            <span class="count"></span>
+                        </a>
+                    </li>
+                    <li class="Studies">
+                        <a href="people.html">
+                            Studies
+                            <span class="count"></span>
+                        </a>
+                    </li>
+                    <li class="Organizations">
+                        <a href="people.html">
+                            Organizations
+                            <span class="count"></span>
+                        </a>
+                    </li>
+                    <li class="Tools">
+                        <a href="people.html">
+                            Tools
+                            <span class="count"></span>
+                        </a>
+                    </li>
                 </ul>
             </nav>
 
@@ -265,31 +312,39 @@
         <script src="tpf.js"></script>
         <script src="str.js"></script>
         <script src="m3c.js"></script>
+        <script src="entity.js"></script>
 
         <script>
             const client = m3c.NewTPFClient()
             const links = document.getElementById("links")
-            links.querySelectorAll("li").forEach(addLink)
+            const items = links.querySelectorAll("li")
+            for (var i = 0; i < items.length; i++) {
+                addLink(items[i])
+            }
 
             const featuredPersonLink = document.querySelector(".hero-item.person a")
             const featuredPersonIRI = featuredPersonLink.getAttribute("data-iri")
             featuredPersonLink.href = m3c.ProfileLink("person", featuredPersonIRI)
+
+            const person = entity.Person(client, featuredPersonIRI)
+            person.Photo(renderPhoto)
 
             function addLink(li) {
                 const concept = li.className
                 const lowered = concept.toLowerCase()
                 const type = m3c.IRIFor(concept)
 
-                client
-                    .List(type)
-                    .Results(function (instances) {
-                        li.innerHTML = str.Format(
-                            '<a href="{}">{} <span class="count">{}</span></a>',
-                            m3c.ListingLink(lowered),
-                            concept,
-                            instances.length
-                        )
-                    })
+                m3c.Count(client, type, renderCount)
+
+                function renderCount(count) {
+                    li.querySelector("a").href = m3c.ListingLink(lowered)
+                    li.querySelector(".count").innerText = count
+                }
+            }
+
+            function renderPhoto(url) {
+                featuredPersonLink.querySelector(".photo").src =
+                    m3c.PhotoURL(client.Endpoint, url)
             }
         </script>
 

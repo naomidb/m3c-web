@@ -69,8 +69,10 @@ h2 {
     font-weight: 300;
 }
 
+/* Slogan */
 header div.text p {
     font-size: 0.875em;
+    text-shadow: none;
 }
 
 ol,
@@ -292,9 +294,11 @@ body.profile section h2 {
     display: table-cell;
     width: 45%;
     text-align: right;
+    vertical-align: top;
 }
 
 body.profile section ul {
+    padding-top: 0.25em;
     padding-left: 1.5em;
     display: table-cell;
 }
@@ -329,11 +333,17 @@ body.profile section li {
 
     body.profile section ul {
         display: block;
+        padding-left: 0;
     }
 }
 
 /* Profile */
 /***********/
+
+.fa-external-link-alt {
+    font-size: 0.7em;
+    color: gray;
+}
 
 footer {
     background-color: #00a9e0;

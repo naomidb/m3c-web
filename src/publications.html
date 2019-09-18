@@ -6,7 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
 
-    <title>M3C Projects Listing</title>
+    <title>M3C Publications Listing</title>
 
     <!-- Font Awesome for neat icons. -->
     <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.8.1/css/all.css"
@@ -47,7 +47,7 @@
         </header>
 
         <div class="page">
-            <h1>Projects</h1>
+            <h1>Publications</h1>
             <div id="listing">
                 <div class="controls">
                     <div class="count"></div>
@@ -55,8 +55,8 @@
                 </div>
 
                 <div class="facets">
-                    <div class="facet organization">
-                        <p>Organization</p>
+                    <div class="facet author">
+                        <p>Author</p>
                         <div class="facet-controls">
                             <a href="#" class="show">Show all</a>
                             <a href="#" class="limit">Show fewer</a>
@@ -76,11 +76,11 @@
 
                 <ol class="results">
                     <!-- Templates aren't visible, but their clones are filled out with real data. -->
-                    <li class="project template">
-                        <a href="#" class="link">
-                            <div class="name"></div>
-                        </a>
-                        <div class="organization"></div>
+                    <li class="publication template">
+                        <a href="#" class="name link"
+                            target="_blank" rel="noopener noreferrer"></a>
+                        <i class="fa fa-external-link-alt"></i>
+                        <div class="authors"></div>
                     </li>
                 </ol>
             </div>
@@ -111,38 +111,70 @@
             const results = root.querySelector(".results")
             const facets = root.querySelector(".facets")
             const ctrlReverse = root.querySelector(".reverse")
-            const projectTemplate = root.querySelector("li.project.template")
+            const template = root.querySelector("li.publication.template")
 
             // Keep the results sorted.
             const sorted = ui.SortedList(results, 1, sortByName)
             ctrlReverse.addEventListener("click", onCtrlReverseClick)
 
-            ui.SortedList(facets.querySelector(".organization ul"), -1, sortByCount)
+            ui.SortedList(facets.querySelector(".author ul"), -1, sortByCount)
 
-            // Query the TPF server for all projects and some related data.
+            // Query the TPF server for all publications and some related data.
             const data = {
-                projects: [],
-                names: {},    // entity IRI => label string
-                funding: {},  // project IRI => list of org IRIs
+                publications: [],
+                names: {},        // entity IRI => label string
+                authors: {},
             }
 
             const promises = [
-                entity.Projects(client),
+                entity.Publications(client),
                 entity.Names(client),
-                entity.FundingOrganizations(client),
+                entity.Authorships(client),
             ]
 
             Promise.all(promises)
                 .then(function setData(results) {
-                    data.projects = results[0]
+                    data.publications = results[0]
                     data.names = results[1]
-                    data.funding = results[2]
+                    data.authors = {}
 
-                    data.projects.forEach(renderProject)
+                    // authorship IRI => list of author and pub
+                    const authorships = results[2]
+
+                    for (var i = 0; i < data.publications.length; i++) {
+                        const pub = data.publications[i]
+                        const authors = []
+
+                        Object.keys(authorships)
+                            .forEach(function (iri) {
+                                const relates = authorships[iri]
+                                if (relates.length !== 2) {
+                                    console.warn(
+                                        "Unexpected number of authors and " +
+                                        "publications on authorship: " + iri
+                                    )
+                                    return
+                                }
+
+                                if (relates[0] === pub) {
+                                    authors.push(relates[1])
+                                    return
+                                }
+
+                                if (relates[1] === pub) {
+                                    authors.push(relates[0])
+                                    return
+                                }
+                            })
+
+                        data.authors[pub] = authors
+                    }
+
+                    data.publications.forEach(renderPublication)
                 })
                 .then(function automaticallyUpdateCount() {
-                    if (data.projects.length > 5 + 1) {
-                        const orgfacet = root.querySelector(".facet.organization")
+                    if (data.publications.length > 5 + 1) {
+                        const orgfacet = root.querySelector(".facet.author")
                         orgfacet.className = (orgfacet.className + " limit").trim()
                     }
 
@@ -162,9 +194,14 @@
             // function whose name matches the class name of the facet's HTML
             // element.
             const filters = {
-                organization: function organization(selected, li) {
-                    const org = li.querySelector(".organization")
-                    return selected.indexOf(org.innerText) !== -1
+                author: function author(selected, li) {
+                    const authors = li.querySelector(".authors").innerText
+                    for (var i = 0; i < selected.length; i++) {
+                        if (authors.indexOf(selected[i]) !== -1) {
+                            return true
+                        }
+                    }
+                    return false
                 },
             }
 
@@ -195,25 +232,52 @@
             }
 
             /**
-             * Render a project with the specified IRI.
-             * @param {string} projectIRI
+             * Render a publication with the specified IRI.
+             * @param {string} publicationIRI
              */
-            function renderProject(projectIRI) {
-                // const project = entity.Project(client, projectIRI.slice(1, -1))
-                const orgIRI = data.funding[projectIRI]
+            function renderPublication(publicationIRI) {
+                const authors = data.authors[publicationIRI]
+                    .map(function (authorIRI) {
+                        return data.names[authorIRI]
+                    })
+
+                authors.sort(function (a, b) {
+                    const aname = sortLastFirst(a)
+                    const bname = sortLastFirst(b)
+                    if (aname < bname) {
+                        return -1
+                    }
+
+                    if (aname > bname) {
+                        return +1
+                    }
+
+                    return 0
+                })
+
                 const bindings = {
                     link: {
-                        href: m3c.ProfileLink("project", projectIRI),
+                        href: m3c.ProfileLink("publication", publicationIRI.slice(1, -1)),
                     },
-                    name: parseVIVOString(data.names[projectIRI]),
-                    organization: orgIRI ? data.names[orgIRI] : null,
+                    name: parseVIVOString(data.names[publicationIRI]),
+                    authors: authors ? authors.join(", ") : ""
                 }
 
-                const li = ui.Render(projectTemplate, bindings)
+                const li = ui.Render(template, bindings)
 
-                if (orgIRI) {
-                    facetsManager.Increment('organization', bindings.organization, bindings.organization)
+                for (var i = 0; i < authors.length; i++) {
+                    facetsManager.Increment('author', authors[i], authors[i])
                 }
+            }
+
+
+            /**
+             * @param {string} name
+             */
+            function sortLastFirst(name) {
+                const firstLast = name.toUpperCase()
+                const lastFirst = firstLast.split(' ').reverse().join(' ')
+                return lastFirst
             }
 
             /**

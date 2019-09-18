@@ -25,18 +25,6 @@
     <script crossorigin src="https://unpkg.com/@ungap/url-search-params@0.1.2/min.js"></script>
 
     <style>
-        .type {
-            position: absolute;
-            left: 50%;
-            -moz-transform: translateX(-50%) translateY(-50%);
-            -webkit-transform: translateX(-50%) translateY(-50%);
-            transform: translateX(-50%) translateY(-50%);
-        }
-
-        img.photo {
-            margin-bottom: 1em;
-        }
-
         .publications li a {
             font-style: italic;
         }
@@ -46,34 +34,14 @@
             text-shadow: 1px 1px 3px gray;
         }
 
-        div.photo-frame,
         div.info-frame {
-            display: inline-block;
-        }
-
-        div.photo-frame img {
-            border-radius: 50%;
-        }
-
-        div.photo-frame {
-            text-align: right;
-            width: 45%;
-            margin-right: 2em;
-        }
-
-        div.info-frame {
-            vertical-align: top;
+            text-align: center;
             margin-top: 0.5em;
         }
 
-        .emails li a {
-            margin-left: -0.25em;
-        }
-
-        section.people {
-            margin-top: 1em;
-            padding-top: 2em;
-            border-top: 1px solid gray;
+        .info-frame > div.type {
+            padding-bottom: 1em;
+            font-size: larger;
         }
 
         section {
@@ -98,16 +66,6 @@
         }
 
         @media only screen and (max-width: 430px) {
-            div.photo-frame {
-                width: 100%;
-                text-align: center;
-            }
-
-            div.photo-frame,
-            div.info-frame {
-                display: block;
-            }
-
             section.people {
                 border-top: 0;
                 margin-top: 0;
@@ -147,7 +105,7 @@
                     width=60 height=60>
                 <div class="text">
                     <h1>Metabolomics Info</h1>
-                    <p>An international resource for news and events in metabolomics</p>
+                    <p>Facilitating science through community</p>
                 </div>
             </a>
             <div class="spacer"></div>
@@ -161,29 +119,53 @@
                 <h1 class="name"></h1>
 
                 <div class="info-frame">
-
                     <div class="organization"></div>
-                    <div class="type"></div>
-
+                    <div class="type">
+                        <i class="fas"></i>
+                        <a href="organizations.html" class="link typename"></a>
+                    </div>
+                    <div class="parent">
+                        <i class="fas"></i>
+                        <a href="#" class="link typename"></a>
+                    </div>
+                     <div class="grandparent">
+                        <i class="fas"></i>
+                        <a href="#" class="link typename"></a>
+                    </div>
                 </div>
 
                 <section class="people">
-                    <h2 class="people">Collaborators</h2>
+                    <h2 class="people">
+                        <a href="people.html">People</a>
+                    </h2>
                     <ul class="people"></ul>
                 </section>
 
+                <section class="organizations">
+                    <h2 class="organizations">
+                        <a href="organizations.html">Sub-organizations</a>
+                    </h2>
+                    <ul class="organizations"></ul>
+                </section>
+
                 <section class="projects">
-                    <h2 class="projects">Projects</h2>
+                    <h2 class="projects">
+                        <a href="projects.html">Projects</a>
+                    </h2>
                     <ul class="projects"></ul>
                 </section>
 
                 <section class="studies">
-                    <h2 class="studies">Studies</h2>
+                    <h2 class="studies">
+                        <a href="studies.html">Studies</a>
+                    </h2>
                     <ul class="studies"></ul>
                 </section>
 
                 <section class="publications">
-                    <h2 class="publications">Publications</h2>
+                    <h2 class="publications">
+                        <a href="publications.html">Publications</a>
+                    </h2>
                     <ul class="publications"></ul>
                 </section>
 
@@ -209,6 +191,7 @@
         <script src="str.js"></script>
         <script src="m3c.js"></script>
         <script src="entity.js"></script>
+        <script src="ui.js"></script>
 
         <script>
             const client = m3c.NewTPFClient()
@@ -216,33 +199,60 @@
             const root = document.getElementById("profile")
 
             const organization = entity.Organization(client, uri)
-
             organization.Name(renderName)
-            organization.People(renderAdditionalCollaborators)
             organization.Type(renderType)
+            organization.Parent(renderParent)
+            organization.Grandparent(renderGrandparent)
+            organization.People(listRenderer("ul.people", "person"))
+            organization.Children(listRenderer("ul.organizations", "organization"))
             organization.Projects(listRenderer("ul.projects", "project"))
             organization.Studies(listRenderer("ul.studies", "study"))
             organization.Publications(listRenderer("ul.publications", "publication"))
 
+            keepSorted("ul.people", getNameLastFirst)
+            keepSorted("ul.organizations")
+            keepSorted("ul.projects")
+            keepSorted("ul.studies")
+            keepSorted("ul.publications")
+
             const sections = [
-                "people", "projects", "studies", "publications", "datasets",
-                "tools",
+                "people", "projects", "studies", "publications", "organizations"
             ]
 
-            sections.forEach(function (name) {
-                const selector = str.Format("section.{} h2", name)
-                const h2 = document.querySelector(selector)
-                h2.innerHTML = str.Format(
-                    '<a href="{}">{}</a>',
-                    m3c.ListingLink(name), h2.innerHTML
-                )
-            })
+            sections.forEach(fixLink)
 
-            const placeholder = "https://cdn.pixabay.com/photo/2016/08/08/09/17/avatar-1577909_960_720.png"
+            function fixLink(name) {
+                const selector = str.Format("section.{} h2 a", name)
+                const link = root.querySelector(selector)
+                link.href = m3c.ListingLink(name)
+            }
+
+            /**
+             * Extracts a person's name for use by a sorting function.
+             *
+             * @param {HTMLLIElement} li
+             */
+            function getNameLastFirst(li) {
+                const link = li.querySelector("a")
+                if (!link) {
+                    return ""
+                }
+                const displayName = link.innerText
+                const names = displayName.split(' ')
+                const surname = names.slice(-1)
+                const other = names.slice(0, -1)
+                const lastFirst = surname.concat(other).join(' ')
+                return lastFirst
+            }
+
+            function keepSorted(selector, keyFunc) {
+                const node = root.querySelector(selector)
+                ui.SortedList(node, 1, keyFunc)
+            }
 
             function renderName(name) {
                 if (!name) {
-                    root.innerText = "Unknown Organization."
+                    root.innerText = "Unknown organization."
                     return
                 }
 
@@ -250,47 +260,64 @@
                 root.querySelector(".name").innerHTML = name
             }
 
-            function renderAdditionalCollaborators(collaborators) {
-                const ul = root.querySelector("ul.people")
-                if (collaborators.length === 0) {
-                    ul.innerHTML = "<li><em>None</em></li>"
+            const icons = {
+                "Institute": "city",
+                "Department": "building",
+                "Laboratory": "flask",
+                "Organization": "building",
+            }
+
+            function renderGrandparent(grandparentIRI) {
+                const t = root.querySelector(".grandparent")
+                if (!grandparentIRI) {
+                    t.parentNode.removeChild(t)
                     return
                 }
 
-                const section = root.querySelector("section.people")
-                section.className = section.className.replace("hidden", "")
+                grandparentIRI = grandparentIRI.slice(1, -1)
+                const gp = entity.Organization(client, grandparentIRI)
 
-                collaborators.forEach(renderCollaborator)
+                gp.Name(renderName)
+                gp.Type(renderType)
 
-                function renderCollaborator(personIRI) {
-                    entity.Name(client, personIRI, renderCollaboratorListItem)
-                    function renderCollaboratorListItem(name) {
-                        renderListItem(ul, "person", personIRI, name)
-                    }
+                function renderName(name) {
+                    t.querySelector(".typename").innerText = name
+                }
+
+                function renderType(type) {
+                    t.querySelector("i.fas").className = "fas fa-" + icons[type]
+                    t.querySelector(".link").href = m3c.ProfileLink("organization", grandparentIRI)
+                }
+            }
+
+            function renderParent(parentIRI) {
+                const t = root.querySelector(".parent")
+                if (!parentIRI) {
+                    t.parentNode.removeChild(t)
+                    return
+                }
+
+                parentIRI = parentIRI.slice(1, -1)
+                const p = entity.Organization(client, parentIRI)
+
+                p.Name(renderName)
+                p.Type(renderType)
+
+                function renderName(name) {
+                    t.querySelector(".typename").innerText = name
+                }
+
+                function renderType(type) {
+                    t.querySelector("i.fas").className = "fas fa-" + icons[type]
+                    t.querySelector(".link").href = m3c.ProfileLink("organization", parentIRI)
                 }
             }
 
             function renderType(type) {
-                if (!type) {
-                    root.innerText = "Unknown type."
-                    return
-                }
-
-                typeDict = {
-                    "<http://vivoweb.org/ontology/core#Institute>": "Institute",
-                    "<http://vivoweb.org/ontology/core#Department>": "Department",
-                    "<http://vivoweb.org/ontology/core#Laboratory>": "Laboratory"
-                }
-
-                type = "Organization"
-
-                for (var i = 0; i < type.length; i++) {
-                    if (type[i] in typeDict){
-                        type = typeDict[type[i]]
-                    }
-                }
-
-                root.querySelector(".type").innerHTML = type
+                const t = root.querySelector(".type")
+                t.querySelector("i.fas").className = "fas fa-" + icons[type]
+                t.querySelector(".link").href = m3c.ListingLink("organizations")
+                t.querySelector(".typename").innerText = type
             }
 
             /**
@@ -322,7 +349,6 @@
                 }
             }
 
-
             function renderListItem(ul, type, iri, name) {
                 const li = document.createElement("li")
                 li.innerHTML = str.Format(
@@ -332,7 +358,6 @@
                 )
                 ul.appendChild(li)
             }
-
 
         </script>
 

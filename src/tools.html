@@ -6,7 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
 
-    <title>M3C Projects Listing</title>
+    <title>M3C Tools Listing</title>
 
     <!-- Font Awesome for neat icons. -->
     <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.8.1/css/all.css"
@@ -24,6 +24,17 @@
     <!-- URL polyfill to support Internet Explorer -->
     <script crossorigin src="https://unpkg.com/@ungap/url-search-params@0.1.2/min.js"></script>
 
+    <style>
+        .tags div {
+            display: inline;
+            padding-left: 0.25em;
+            padding-right: 0.25em;
+            color: gray;
+        }
+        .tags div.template {
+            display: none;
+        }
+    </style>
 </head>
 
 <body class="listing">
@@ -47,7 +58,7 @@
         </header>
 
         <div class="page">
-            <h1>Projects</h1>
+            <h1>Tools</h1>
             <div id="listing">
                 <div class="controls">
                     <div class="count"></div>
@@ -55,8 +66,8 @@
                 </div>
 
                 <div class="facets">
-                    <div class="facet organization">
-                        <p>Organization</p>
+                    <div class="facet tag">
+                        <p>Tag</p>
                         <div class="facet-controls">
                             <a href="#" class="show">Show all</a>
                             <a href="#" class="limit">Show fewer</a>
@@ -76,11 +87,13 @@
 
                 <ol class="results">
                     <!-- Templates aren't visible, but their clones are filled out with real data. -->
-                    <li class="project template">
+                    <li class="tool template">
                         <a href="#" class="link">
                             <div class="name"></div>
                         </a>
-                        <div class="organization"></div>
+                        <div class="tags">
+                            <div class="template"><span class="tag" /></div>
+                        </div>
                     </li>
                 </ol>
             </div>
@@ -111,38 +124,38 @@
             const results = root.querySelector(".results")
             const facets = root.querySelector(".facets")
             const ctrlReverse = root.querySelector(".reverse")
-            const projectTemplate = root.querySelector("li.project.template")
+            const template = root.querySelector("li.tool.template")
 
             // Keep the results sorted.
             const sorted = ui.SortedList(results, 1, sortByName)
             ctrlReverse.addEventListener("click", onCtrlReverseClick)
 
-            ui.SortedList(facets.querySelector(".organization ul"), -1, sortByCount)
+            ui.SortedList(facets.querySelector(".tag ul"), -1, sortByCount)
 
-            // Query the TPF server for all projects and some related data.
+            // Query the TPF server for all tools and some related data.
             const data = {
-                projects: [],
-                names: {},    // entity IRI => label string
-                funding: {},  // project IRI => list of org IRIs
+                tools: [],
+                names: {}, // entity IRI => label string
+                tags: {},  // tool IRI => list of tags
             }
 
             const promises = [
-                entity.Projects(client),
+                entity.Tools(client),
                 entity.Names(client),
-                entity.FundingOrganizations(client),
+                entity.Tags(client),
             ]
 
             Promise.all(promises)
                 .then(function setData(results) {
-                    data.projects = results[0]
+                    data.tools = results[0]
                     data.names = results[1]
-                    data.funding = results[2]
+                    data.tags = results[2]
 
-                    data.projects.forEach(renderProject)
+                    data.tools.forEach(renderTool)
                 })
                 .then(function automaticallyUpdateCount() {
-                    if (data.projects.length > 5 + 1) {
-                        const orgfacet = root.querySelector(".facet.organization")
+                    if (data.tools.length > 5 + 1) {
+                        const orgfacet = root.querySelector(".facet.tag")
                         orgfacet.className = (orgfacet.className + " limit").trim()
                     }
 
@@ -162,9 +175,17 @@
             // function whose name matches the class name of the facet's HTML
             // element.
             const filters = {
-                organization: function organization(selected, li) {
-                    const org = li.querySelector(".organization")
-                    return selected.indexOf(org.innerText) !== -1
+                tag: function tag(selected, li) {
+                    const tags = li.querySelectorAll(".tags .tag")
+                    for (var j = 0; j < tags.length; j++) {
+                        const tag = tags[j].innerText
+                        for (var i = 0; i < selected.length; i++) {
+                            if (tag === selected[i]) {
+                                return true
+                            }
+                        }
+                    }
+                    return false
                 },
             }
 
@@ -195,25 +216,36 @@
             }
 
             /**
-             * Render a project with the specified IRI.
-             * @param {string} projectIRI
+             * Render a tool with the specified IRI.
+             * @param {string} toolIRI
              */
-            function renderProject(projectIRI) {
-                // const project = entity.Project(client, projectIRI.slice(1, -1))
-                const orgIRI = data.funding[projectIRI]
+            function renderTool(toolIRI) {
+                const tags = data.tags[toolIRI] || []
+
                 const bindings = {
                     link: {
-                        href: m3c.ProfileLink("project", projectIRI),
+                        href: m3c.ProfileLink("tool", toolIRI.slice(1, -1)),
                     },
-                    name: parseVIVOString(data.names[projectIRI]),
-                    organization: orgIRI ? data.names[orgIRI] : null,
+                    name: parseVIVOString(data.names[toolIRI]),
                 }
 
-                const li = ui.Render(projectTemplate, bindings)
+                const li = ui.Render(template, bindings)
 
-                if (orgIRI) {
-                    facetsManager.Increment('organization', bindings.organization, bindings.organization)
+                const tagTemplate = li.querySelector(".tags .template")
+                for (var i = 0; i < tags.length; i++) {
+                    const tag = tags[i]
+                    ui.Render(tagTemplate, { "tag": tag })
+                    facetsManager.Increment('tag', tag, tag)
                 }
+            }
+
+
+            /**
+             * Extract the count of a facet option; used for sorting.
+             * @param {HTMLLIElement} li
+             */
+            function sortByCount(li) {
+                return parseInt(li.querySelector(".count").innerText)
             }
 
             /**
@@ -223,14 +255,6 @@
             function sortByName(li) {
                 const name = li.querySelector(".name").innerText.toUpperCase()
                 return name
-            }
-
-            /**
-             * Extract the count of a facet option; used for sorting.
-             * @param {HTMLLIElement} li
-             */
-            function sortByCount(li) {
-                return parseInt(li.querySelector(".count").innerText)
             }
         </script>
     </div>

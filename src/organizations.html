@@ -6,7 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
 
-    <title>M3C Projects Listing</title>
+    <title>M3C Organizations Listing</title>
 
     <!-- Font Awesome for neat icons. -->
     <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.8.1/css/all.css"
@@ -23,6 +23,27 @@
     <script crossorigin src="https://unpkg.com/whatwg-fetch@3.0.0/dist/fetch.umd.js"></script>
     <!-- URL polyfill to support Internet Explorer -->
     <script crossorigin src="https://unpkg.com/@ungap/url-search-params@0.1.2/min.js"></script>
+
+    <style>
+        .type .show,
+        .type .limit {
+            display: none;
+        }
+
+        .listing ol.results li div {
+            padding-left: 80px;
+        }
+
+        .listing ol.results li  {
+            min-height: 100px;
+        }
+
+        span.parent,
+        span.grandparent {
+            display: block;
+            color: gray;
+        }
+    </style>
 
 </head>
 
@@ -47,7 +68,7 @@
         </header>
 
         <div class="page">
-            <h1>Projects</h1>
+            <h1>Organizations</h1>
             <div id="listing">
                 <div class="controls">
                     <div class="count"></div>
@@ -55,8 +76,8 @@
                 </div>
 
                 <div class="facets">
-                    <div class="facet organization">
-                        <p>Organization</p>
+                    <div class="facet type">
+                        <p>Type</p>
                         <div class="facet-controls">
                             <a href="#" class="show">Show all</a>
                             <a href="#" class="limit">Show fewer</a>
@@ -76,11 +97,20 @@
 
                 <ol class="results">
                     <!-- Templates aren't visible, but their clones are filled out with real data. -->
-                    <li class="project template">
+                    <li class="organization template">
                         <a href="#" class="link">
+                            <img class="photo" width="64" height="64"
+                                src="https://cdn.pixabay.com/photo/2016/08/08/09/17/avatar-1577909_960_720.png" />
                             <div class="name"></div>
                         </a>
-                        <div class="organization"></div>
+                        <div class="type">
+                            <i class="fas fa-city"></i>
+                            <span class="typename"></span>
+                        </div>
+                        <div class="ancestry">
+                            <span class="parent"></span>
+                            <span class="grandparent"></span>
+                        </div>
                     </li>
                 </ol>
             </div>
@@ -111,59 +141,62 @@
             const results = root.querySelector(".results")
             const facets = root.querySelector(".facets")
             const ctrlReverse = root.querySelector(".reverse")
-            const projectTemplate = root.querySelector("li.project.template")
+            const organizationType = root.querySelector("li.organization.template")
 
             // Keep the results sorted.
             const sorted = ui.SortedList(results, 1, sortByName)
             ctrlReverse.addEventListener("click", onCtrlReverseClick)
 
-            ui.SortedList(facets.querySelector(".organization ul"), -1, sortByCount)
+            ui.SortedList(facets.querySelector(".type ul"), -1, sortByCount)
 
-            // Query the TPF server for all projects and some related data.
+            // Query the TPF server for all organizations and some related data.
             const data = {
-                projects: [],
-                names: {},    // entity IRI => label string
-                funding: {},  // project IRI => list of org IRIs
+                institutes: [],    // list of institute IRIs
+                departments: [],
+                laboratories: [],
+                names: {},         // entity IRI => label string
+                parents: {},
             }
 
             const promises = [
-                entity.Projects(client),
+                entity.Institutes(client),
+                entity.Departments(client),
+                entity.Laboratories(client),
                 entity.Names(client),
-                entity.FundingOrganizations(client),
+                entity.Parents(client),
             ]
 
             Promise.all(promises)
                 .then(function setData(results) {
-                    data.projects = results[0]
-                    data.names = results[1]
-                    data.funding = results[2]
+                    data.institutes = results[0]
+                    data.departments = results[1]
+                    data.laboratories = results[2]
+                    data.names = results[3]
+                    data.parents = results[4]
 
-                    data.projects.forEach(renderProject)
+                    data.institutes.forEach(function (i) { renderOrganization(i, "Institute") })
+                    data.departments.forEach(function (i) { renderOrganization(i, "Department") })
+                    data.laboratories.forEach(function (i) { renderOrganization(i, "Laboratory") })
                 })
                 .then(function automaticallyUpdateCount() {
-                    if (data.projects.length > 5 + 1) {
-                        const orgfacet = root.querySelector(".facet.organization")
-                        orgfacet.className = (orgfacet.className + " limit").trim()
-                    }
-
                     const checkboxes = document.querySelectorAll(".facet input")
                     for (var i = 0; i < checkboxes.length; i++) {
-                        checkboxes[i].addEventListener("click", updateCount)
+                        checkboxes[i].addEventListener("click", updateOrganizationCount)
                     }
 
-                    function updateCount() {
+                    function updateOrganizationCount() {
                         const visible = document.querySelectorAll(".results li:not(.hidden):not(.template)")
                         document.querySelector(".controls .count").innerText = visible.length
                     }
-                    updateCount()
+                    updateOrganizationCount()
                 })
 
             // Setup the filters used by each facets. Each item should be a
             // function whose name matches the class name of the facet's HTML
             // element.
             const filters = {
-                organization: function organization(selected, li) {
-                    const org = li.querySelector(".organization")
+                type: function type(selected, li) {
+                    const org = li.querySelector(".typename")
                     return selected.indexOf(org.innerText) !== -1
                 },
             }
@@ -195,25 +228,37 @@
             }
 
             /**
-             * Render a project with the specified IRI.
-             * @param {string} projectIRI
+             * Render an organization of type with the specified IRI.
+             * @param {string} organizationIRI
+             * @param {"Institute"|"Department"|"Laboratory"} type
              */
-            function renderProject(projectIRI) {
-                // const project = entity.Project(client, projectIRI.slice(1, -1))
-                const orgIRI = data.funding[projectIRI]
+            function renderOrganization(organizationIRI, type) {
+                const org = entity.Organization(client, organizationIRI.slice(1, -1))
+                const parentIRI = data.parents[organizationIRI]
+                const grandparentIRI = parentIRI ? data.parents[parentIRI] : null
+
+                const icons = {
+                    "Institute": "city",
+                    "Department": "building",
+                    "Laboratory": "flask",
+                }
+
                 const bindings = {
                     link: {
-                        href: m3c.ProfileLink("project", projectIRI),
+                        href: m3c.ProfileLink("organization", organizationIRI.slice(1,-1)),
                     },
-                    name: parseVIVOString(data.names[projectIRI]),
-                    organization: orgIRI ? data.names[orgIRI] : null,
+                    name: parseVIVOString(data.names[organizationIRI]),
+                    typename: type,
+                    fas: {
+                        className: "fas fa-"+ icons[type],
+                    },
+                    parent: parentIRI ? data.names[parentIRI] : "",
+                    grandparent: grandparentIRI ? data.names[grandparentIRI] : "",
                 }
 
-                const li = ui.Render(projectTemplate, bindings)
+                const li = ui.Render(organizationType, bindings)
 
-                if (orgIRI) {
-                    facetsManager.Increment('organization', bindings.organization, bindings.organization)
-                }
+                facetsManager.Increment('type', type, type)
             }
 
             /**
@@ -221,8 +266,7 @@
              * @param {HTMLLIElement} li
              */
             function sortByName(li) {
-                const name = li.querySelector(".name").innerText.toUpperCase()
-                return name
+                return li.querySelector(".name").innerText.toUpperCase()
             }
 
             /**

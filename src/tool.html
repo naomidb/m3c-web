@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -31,18 +32,20 @@
             padding-bottom: 0.25em;
         }
 
-        .projects-link {
+        #profile > h1.name {
+            margin-bottom: 0;
+        }
+
+        .listing-link {
             font-size: larger;
             padding-top: 0;
             padding-bottom: 1em;
         }
 
-        #profile > h1.name {
-            margin-bottom: 0;
-        }
-
-        .mwb {
-            font-size: smaller;
+        ul.tags { display: inline; }
+        ul.tags li {
+            display: inline;
+            padding-left: 0.25em;
         }
     </style>
 
@@ -73,70 +76,35 @@
                 <h1 class="name"></h1>
 
                 <div class="properties">
-                    <a href="projects.html" class="projects-link">Project</a>
+                    <a href="tools.html" class="listing-link">Tool</a>
 
-                    <a href="https://www.metabolomicsworkbench.org/data/DRCCMetadata.php?Mode=Project" class="mwb" target="_blank">
-                    View project on Metabolomics Workbench
-                    <i class="fa fa-external-link-alt"></i>
-                    </a>
+                    <div class="website">
+                        Website:
+                        <a href="#" class="link" target="_blank">
+                            <span class="text"></span>
+                            <i class="fa fa-external-link-alt"></i>
+                        </a>
+                    </div>
+
+                    <div class="license">
+                        License:
+                        <a href="#" class="license-url" target="_blank">
+                            <span class="license-name"></span>
+                            <i class="fa fa-external-link-alt"></i>
+                        </a>
+                    </div>
+
+                    <div class="tags">
+                        Tags:
+                        <ul class="tags"></ul>
+                    </div>
                 </div>
-
-                <section class="organizations">
-                    <h2 class="organizations">
-                        <a href="organizations.html">Organizations</a>
-                    </h2>
-                    <ul class="organizations">
-                        <li>
-                            <i class="fas fa-fw fa-city"></i>
-                            <a class="institute"></a>
-                        </li>
-                        <li>
-                            <i class="fas fa-fw fa-building"></i>
-                            <a class="department"></a>
-                        </li>
-                        <li>
-                            <i class="fas fa-fw fa-flask"></i>
-                            <a class="laboratory"></a>
-                        </li>
-                    </ul>
-                </section>
 
                 <section class="people">
                     <h2 class="people">
-                        <a href="people.html">People</a>
+                        <a href="people.html">Contributors</a>
                     </h2>
                     <ul class="people"></ul>
-                </section>
-
-                <section class="studies">
-                    <h2 class="studies">
-                        <a href="studies.html">Studies</a>
-                    </h2>
-                    <ul class="studies"></ul>
-                </section>
-<!--
-                <section class="publications">
-                    <h2 class="publications">Publications</h2>
-                    <ul class="publications"></ul>
-                </section>
- -->
-                <section class="datasets">
-                    <h2 class="datasets">
-                        <a href="datasets.html">Datasets</a>
-                    </h2>
-                    <ul class="datasets">
-                        <li class="template">
-                            <a href="#" class="link name" target="_blank"></a>
-                            <i class="fa fa-external-link-alt"></i>
-                        </li>
-                    </ul>
-                </section>
-
-                <section class="tools">
-                    <h2 class="tools">
-                        <a href="tools.html">Tools</a>
-                    </h2>
-                    <ul class="tools"></ul>
                 </section>
 
             </div>
@@ -168,26 +136,20 @@
             const uri = m3c.Subject()
             const root = document.getElementById("profile")
 
-            const project = entity.Project(client, uri)
-            project.ID(renderID)
-            project.Name(renderName)
-            project.Institute(renderInstitute)
-            project.Department(renderDepartment)
-            project.Laboratory(renderLaboratory)
-            project.People(listRenderer("ul.people", "person"))
-            project.Studies(listRenderer("ul.studies", "study"))
-            project.Datasets(renderDatasets)
-            project.Tools(listRenderer("ul.tools", "tool"))
+            const tool = entity.Tool(client, uri)
+            tool.Name(renderName)
+            tool.Website(renderWebsite)
+            tool.Tags(renderTags)
+            tool.License(renderLicense)
+            tool.People(listRenderer("ul.people", "person"))
 
             keepSorted("ul.people", getNameLastFirst)
-            keepSorted("ul.studies")
-            keepSorted("ul.datasets")
 
-            const sections = ["people", "studies", "datasets", "tools"]
+            const sections = ["people"]
             sections.forEach(fixLink)
 
-            const listingLink = root.querySelector(".projects-link")
-            listingLink.href = m3c.ListingLink("projects")
+            const listingLink = root.querySelector(".listing-link")
+            listingLink.href = m3c.ListingLink("tools")
 
             function fixLink(name) {
                 const selector = str.Format("section.{} h2 a", name)
@@ -247,83 +209,12 @@
                 }
             }
 
-            function renderDatasets(datasets) {
-                const ul = root.querySelector("ul.datasets")
+            function renderLicense(license) {
+                const name = root.querySelector(".license-name")
+                const url = root.querySelector(".license-url")
 
-                if (datasets.length === 0) {
-                    ul.innerHTML = "<li><em>None</em></li>"
-                    return
-                }
-
-                datasets.forEach(renderDataset)
-
-                function renderDataset(iri) {
-                    const template = ul.querySelector("li.template")
-
-                    const sampleID = iri
-                        .replace("https://vivo.metabolomics.info/individual/", "")
-                        .slice(1, -1)
-
-                    const bindings = {
-                        link: {
-                            href: m3c.ProfileLink("dataset", iri.slice(1, -1))
-                        },
-                        name: sampleID,
-                    }
-
-                    ui.Render(template, bindings)
-                }
-            }
-
-            function renderDepartment(departmentIRI) {
-                const a = root.querySelector(".department")
-                if (!departmentIRI) {
-                    a.parentElement.parentElement.removeChild(a.parentElement)
-                }
-
-                entity.Name(client, departmentIRI, renderName)
-
-                function renderName(name) {
-                    a.href = m3c.ProfileLink("organization", departmentIRI.slice(1, -1))
-                    a.innerText = name
-                }
-            }
-
-            function renderID(projectID) {
-                const a = root.querySelector(".mwb")
-                if (!projectID) {
-                    a.parentElement.parentElement.removeChild(a.parentElement)
-                }
-
-                a.href += "&ProjectID=" + projectID
-            }
-
-            function renderInstitute(instituteIRI) {
-                const a = root.querySelector(".institute")
-                if (!instituteIRI) {
-                    a.parentElement.parentElement.removeChild(a.parentElement)
-                }
-
-                entity.Name(client, instituteIRI, renderName)
-
-                function renderName(name) {
-                    a.href = m3c.ProfileLink("organization", instituteIRI.slice(1, -1))
-                    a.innerText = name
-                }
-            }
-
-            function renderLaboratory(laboratoryIRI) {
-                const a = root.querySelector(".laboratory")
-                if (!laboratoryIRI) {
-                    a.parentElement.parentElement.removeChild(a.parentElement)
-                }
-
-                entity.Name(client, laboratoryIRI, renderName)
-
-                function renderName(name) {
-                    a.href = m3c.ProfileLink("organization", laboratoryIRI.slice(1, -1))
-                    a.innerText = name
-                }
+                name.innerText = license.name
+                url.href = license.url
             }
 
             function renderListItem(ul, type, iri, name) {
@@ -338,12 +229,31 @@
 
             function renderName(name) {
                 if (!name) {
-                    root.innerText = "Unknown project."
+                    root.innerText = "Unknown tool."
                     return
                 }
 
                 name = name.trim()
                 root.querySelector(".name").innerHTML = name
+            }
+
+            function renderTags(tags) {
+                const list = root.querySelector("ul.tags")
+
+                tags.forEach(renderTag)
+
+                function renderTag(tag) {
+                    const item = document.createElement("li")
+                    item.innerText = tag
+                    list.appendChild(item)
+                }
+            }
+
+            function renderWebsite(url) {
+                const link = root.querySelector(".website .link")
+                const text = root.querySelector(".website .text")
+                link.href = url
+                text.innerText = url
             }
         </script>
 

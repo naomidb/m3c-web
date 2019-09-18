@@ -15,6 +15,41 @@ var m3c = (function module() {
     const params = new URLSearchParams(loc.search)
     const defaultEndpoint = loc.protocol + "//" + loc.hostname + "/tpf/core"
 
+    /**
+     * Fetches the total number of individuals of a given type.
+     *
+     * @param {tpf.Client} client
+     * @param {string} type
+     * @param {(count: number) => void} callback
+     */
+    function Count(client, type, callback) {
+        const rdf = "http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+        const totalItems = "<http://www.w3.org/ns/hydra/core#totalItems>"
+        const xsdInteger = "^^<http://www.w3.org/2001/XMLSchema#integer>"
+
+        tpf.Query(client.Endpoint, null, rdf + "type", type, 1)
+            .then(findTotalItems)
+            .then(callback)
+
+        function findTotalItems(triples) {
+            for (var i = 0; i < triples.length; i++) {
+                const triple = triples[i]
+
+                if (triple.Predicate !== totalItems) {
+                    continue
+                }
+
+                var cnt = triple.Object
+                cnt = cnt.replace(xsdInteger, "")
+                cnt = cnt.slice(1, -1)
+                cnt = parseInt(cnt)
+
+                return cnt
+            }
+            return -1
+        }
+    }
+
     function DashboardLink() {
         const endpoint = params.get("endpoint")
         if (endpoint) {
@@ -143,6 +178,7 @@ var m3c = (function module() {
 
     // Module Exports
     return {
+        Count: Count,
         DashboardLink: DashboardLink,
         IRIFor: IRIFor,
         ListingLink: ListingLink,

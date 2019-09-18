@@ -37,7 +37,7 @@
                     width=60 height=60>
                 <div class="text">
                     <h1>Metabolomics Info</h1>
-                    <p>An international resource for news and events in metabolomics</p>
+                    <p>Facilitating science through community</p>
                 </div>
             </a>
             <div class="spacer"></div>
@@ -117,7 +117,7 @@
             const sorted = ui.SortedList(results, 1, sortByName)
             ctrlReverse.addEventListener("click", onCtrlReverseClick)
 
-            ui.SortedList(facets.querySelector(".submitted ul"), -1, sortByCount)
+            ui.SortedList(facets.querySelector(".submitted ul"), -1, sortByName)
 
             // Query the TPF server for all studies and some related data.
             const data = {
@@ -161,12 +161,12 @@
             // Setup the filters used by each facets. Each item should be a
             // function whose name matches the class name of the facet's HTML
             // element.
-            const filters = [
-                function submitted(selected, li) {
+            const filters = {
+                submitted: function submitted(selected, li) {
                     const org = li.querySelector(".submitted")
                     return selected.indexOf(org.innerText) !== -1
                 },
-            ]
+            }
 
             // Use facetsManager to dynamically increment the count of an option
             const facetsManager = ui.Facets(facets, results, filters)
@@ -223,14 +223,6 @@
             function sortByName(li) {
                 const name = li.querySelector(".name").innerText.toUpperCase()
                 return name
-            }
-
-            /**
-             * Extract the count of a facet option; used for sorting.
-             * @param {HTMLLIElement} li
-             */
-            function sortByCount(li) {
-                return parseInt(li.querySelector(".count").innerText)
             }
         </script>
     </div>

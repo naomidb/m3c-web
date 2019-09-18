@@ -38,6 +38,8 @@
             max-width: 300px;
             height: 200px;
             border-radius: 50%;
+            border: 5px solid white;
+            box-shadow: 0 0 3px gray;
         }
 
         div.photo-frame {
@@ -58,11 +60,6 @@
         section.people {
             padding-top: 2em;
             border-top: 1px solid gray;
-        }
-
-        .fa-external-link-alt {
-            font-size: 0.7em;
-            color: gray;
         }
 
         @media only screen and (max-width: 450px) {
@@ -105,7 +102,7 @@
                     width=60 height=60>
                 <div class="text">
                     <h1>Metabolomics Info</h1>
-                    <p>An international resource for news and events in metabolomics</p>
+                    <p>Facilitating science through community</p>
                 </div>
             </a>
             <div class="spacer"></div>
@@ -123,16 +120,8 @@
                 </div>
                 <div class="info-frame">
                     <ul class="organizations">
-                        <li class="template institute">
-                            <i class="fas fa-fw fa-city"></i>
-                            <a href="#" class="name link"></a>
-                        </li>
-                        <li class="template department">
-                            <i class="fas fa-fw fa-building"></i>
-                            <a href="#" class="name link"></a>
-                        </li>
-                        <li class="template laboratory">
-                            <i class="fas fa-fw fa-flask"></i>
+                        <li class="template">
+                            <i class="fas fa-fw"></i>
                             <a href="#" class="name link"></a>
                         </li>
                     </ul>
@@ -186,18 +175,23 @@
                     </ul>
                 </section>
 
-                <section class="datasets">
-                    <h2 class="datasets">
-                        <a href="datasets.html">Datasets</a>
-                    </h2>
-                    <ul class="datasets"></ul>
-                </section>
-
                 <section class="tools">
                     <h2 class="tools">
                         <a href="tools.html">Tools</a>
                     </h2>
                     <ul class="tools"></ul>
+                </section>
+
+                <section class="datasets">
+                    <h2 class="datasets">
+                        <a href="datasets.html">Datasets</a>
+                    </h2>
+                    <ul class="datasets">
+                        <li class="template">
+                            <a href="#" class="link name" target="_blank"></a>
+                            <i class="fa fa-external-link-alt"></i>
+                        </li>
+                    </ul>
                 </section>
 
             </div>
@@ -235,14 +229,18 @@
             person.Organizations(renderOrganizations)
             person.Phones(renderPhones)
             person.Emails(renderEmails)
-            person.Collaborators(renderAdditionalCollaborators)
+            person.Collaborators(listRenderer("ul.people", "person"))
             person.Projects(listRenderer("ul.projects", "project"))
             person.Studies(listRenderer("ul.studies", "study"))
             person.Publications(renderPublications)
-            person.Datasets(listRenderer("ul.datasets", "dataset"))
+            person.Datasets(renderDatasets)
             person.Tools(listRenderer("ul.tools", "tool"))
 
-            ui.SortedList(root.querySelector("ul.people"), 1, getCollaboratorSortableName)
+            keepSorted("ul.people", getNameLastFirst)
+            keepSorted("ul.organizations", getOrganizationTypeAndName)
+            keepSorted("ul.projects")
+            keepSorted("ul.studies")
+            keepSorted("ul.publications")
 
             const sections = [
                 "people", "projects", "studies", "publications", "datasets",
@@ -258,12 +256,16 @@
             }
 
             /**
-             * Extracts a collaborator's name for use by a sorting function.
+             * Extracts a person's name for use by a sorting function.
              *
              * @param {HTMLLIElement} li
              */
-            function getCollaboratorSortableName(li) {
-                const displayName = li.querySelector("a").innerText
+            function getNameLastFirst(li) {
+                const link = li.querySelector("a")
+                if (!link) {
+                    return ""
+                }
+                const displayName = link.innerText
                 const names = displayName.split(' ')
                 const surname = names.slice(-1)
                 const other = names.slice(0, -1)
@@ -271,12 +273,42 @@
                 return lastFirst
             }
 
+            function getOrganizationTypeAndName(/** @type {HTMLLIElement} */li) {
+                const link = li.querySelector(".name")
+                var name = ""
+                if (link && link.innerText) {
+                    name = link.innerText.trim()
+                }
+
+                const classes = li.className
+                console.log(name, classes)
+
+                if (classes.indexOf("institute") !== -1) {
+                    return "   " + name
+                }
+
+                if (classes.indexOf("department") !== -1) {
+                    return "  " + name
+                }
+
+                if (classes.indexOf("laboratory") !== -1) {
+                    return " " + name
+                }
+
+                return name
+            }
+
+            function keepSorted(selector, keyFunc) {
+                const node = root.querySelector(selector)
+                ui.SortedList(node, 1, keyFunc)
+            }
+
             /**
              * Creates a function that accepts a list of items to render.
              *
-             * This is used for most of the entity associations, like Publications,
-             * instead of having a separate function for each, all of which would do
-             * pretty much the same thing.
+             * This is used for most of the entity associations, like
+             * Publications, instead of having a separate function for each, all
+             * of which would do pretty much the same thing.
              *
              * @param {string} selector
              * @param {string} type
@@ -300,23 +332,31 @@
                 }
             }
 
-            function renderAdditionalCollaborators(/** @type string[] */ collaborators) {
-                const ul = root.querySelector("ul.people")
-                if (collaborators.length === 0) {
+            function renderDatasets(datasets) {
+                const ul = root.querySelector("ul.datasets")
+
+                if (datasets.length === 0) {
                     ul.innerHTML = "<li><em>None</em></li>"
                     return
                 }
 
-                const section = root.querySelector("section.people")
-                section.className = section.className.replace("hidden", "")
+                datasets.forEach(renderDataset)
 
-                collaborators.forEach(renderCollaborator)
+                function renderDataset(iri) {
+                    const template = ul.querySelector("li.template")
 
-                function renderCollaborator(personIRI) {
-                    entity.Name(client, personIRI, renderCollaboratorListItem)
-                    function renderCollaboratorListItem(name) {
-                        renderListItem(ul, "person", personIRI, name)
+                    const sampleID = iri
+                        .replace("https://vivo.metabolomics.info/individual/", "")
+                        .slice(1, -1)
+
+                    const bindings = {
+                        link: {
+                            href: m3c.ProfileLink("dataset", iri.slice(1, -1))
+                        },
+                        name: sampleID,
                     }
+
+                    ui.Render(template, bindings)
                 }
             }
 
@@ -359,25 +399,35 @@
 
             function renderOrganizations(organizations) {
                 const list = root.querySelector("ul.organizations")
-                const templates = {
-                    institute: list.querySelector("li.template.institute"),
-                    department: list.querySelector("li.template.department"),
-                    laboratory: list.querySelector("li.template.laboratory"),
-                }
+                const template = list.querySelector("li.template")
 
                 organizations.forEach(renderOrganization)
 
+                const icons = {
+                    "Institute": "city",
+                    "Department": "building",
+                    "Laboratory": "flask",
+                    "Organization": "building",
+                }
+
                 function renderOrganization(organizationIRI) {
                     organizationIRI = organizationIRI.slice(1, -1) // strip < >
+                    entity.Organization(client, organizationIRI).Type(render)
 
-                    const bindings = {
-                        name: entity.Name.bind(null, client, organizationIRI),
-                        link: {
-                            href: m3c.ProfileLink("organization", organizationIRI),
-                        },
+                    function render(type) {
+                        const bindings = {
+                            name: entity.Name.bind(null, client, organizationIRI),
+                            link: {
+                                href: m3c.ProfileLink("organization", organizationIRI),
+                            },
+                            fas: {
+                                className: "fas fa-fw fa-" + icons[type]
+                            },
+                        }
+
+                        const li = ui.Render(template, bindings)
+                        li.className = (li.className + " " + type.toLowerCase()).trim()
                     }
-
-                    ui.Render(templates.department, bindings)
                 }
             }
 
