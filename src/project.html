@@ -35,7 +35,6 @@
         .projects-link {
             font-size: larger;
             padding-top: 0;
-            padding-bottom: 1em;
         }
 
         #profile > h1.name {
@@ -44,6 +43,13 @@
 
         .mwb {
             font-size: smaller;
+        }
+
+        p.summary {
+            text-align: justify;
+            max-width: 1024px;
+            margin-left: auto;
+            margin-right: auto;
         }
     </style>
 
@@ -81,6 +87,11 @@
                     <i class="fa fa-external-link-alt"></i>
                     </a>
                 </div>
+
+                <section>
+                    <h2>Summary</h2>
+                    <p class="summary"></p>
+                </section>
 
                 <section class="organizations">
                     <h2 class="organizations">
@@ -172,6 +183,7 @@
             const project = entity.Project(client, uri)
             project.ID(renderID)
             project.Name(renderName)
+            project.Summary(renderSummary)
             project.Institute(renderInstitute)
             project.Department(renderDepartment)
             project.Laboratory(renderLaboratory)
@@ -345,6 +357,17 @@
 
                 name = name.trim()
                 root.querySelector(".name").innerHTML = name
+            }
+
+            function renderSummary(summary) {
+                const node = root.querySelector(".summary")
+
+                if (!summary) {
+                    node.innerHTML = "<em>None</em>"
+                    return
+                }
+
+                node.innerText = summary
             }
         </script>
 

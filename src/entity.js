@@ -640,6 +640,15 @@ var entity = (function module() {
             })
         }
 
+        this.Summary = function Summary(returnSummary) {
+            return new Promise(function() {
+                client
+                    .Entity(iri)
+                    .Link(base, "summary")
+                    .Single(decodeString(returnSummary))
+            })
+        }
+
         this.Tools = function Tools(returnTools) {
             return new Promise(function(resolve) {
                 self.People(resolve)
@@ -812,6 +821,15 @@ var entity = (function module() {
                         const date = parseDate(triples[0].Object)
                         returnSubmitted(date)
                     })
+            })
+        }
+
+        this.Summary = function Summary(returnSummary) {
+            return new Promise(function() {
+                client
+                    .Entity(iri)
+                    .Link(base, "summary")
+                    .Single(decodeString(returnSummary))
             })
         }
     }

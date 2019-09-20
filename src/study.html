@@ -39,7 +39,6 @@
         .studies-link {
             font-size: larger;
             padding-top: 0;
-            padding-bottom: 1em;
         }
 
         .mwb {
@@ -83,6 +82,11 @@
                         <i class="fa fa-external-link-alt"></i>
                     </a>
                 </div>
+
+                <section class="summary">
+                    <h2>Summary</h2>
+                    <p class="summary"></p>
+                </section>
 
                 <section class="organizations">
                     <h2 class="organizations">
@@ -181,6 +185,7 @@
             const study = entity.Study(client, uri)
             study.ID(renderID)
             study.Name(renderName)
+            study.Summary(renderSummary)
             study.Project(renderProject)
             study.Submitted(renderSubmitted)
             study.Institute(renderInstitute)
@@ -396,6 +401,17 @@
 
                     return "" + x
                 }
+            }
+
+            function renderSummary(summary) {
+                const node = root.querySelector("p.summary")
+
+                if (!summary) {
+                    node.innerHTML = "<em>None</em>"
+                    return
+                }
+
+                node.innerText = summary
             }
         </script>
 

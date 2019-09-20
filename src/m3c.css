@@ -303,6 +303,12 @@ body.profile section ul {
     display: table-cell;
 }
 
+body.profile section p {
+    padding-top: 0.25em;
+    padding-left: 1.75em;
+    display: table-cell;
+}
+
 body.profile section li {
     padding-bottom: 0.75em;
 }
@@ -331,6 +337,7 @@ body.profile section li {
         text-align: left;
     }
 
+    body.profile section p,
     body.profile section ul {
         display: block;
         padding-left: 0;
