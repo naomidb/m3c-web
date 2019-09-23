@@ -62,6 +62,14 @@
             border-top: 1px solid gray;
         }
 
+        .year {
+            color: gray;
+        }
+
+        i.fa-external-link-alt {
+            vertical-align: top;
+        }
+
         @media only screen and (max-width: 450px) {
             div.photo-frame,
             div.info-frame {
@@ -170,6 +178,7 @@
                         <li class="template">
                             <a href="#" class="title link"
                                target="_blank" rel="noopener noreferrer"></a>
+                            <span class="year"></span>
                             <i class="fa fa-external-link-alt"></i>
                         </li>
                     </ul>
@@ -461,6 +470,7 @@
                         link: {
                             href: pub.PubMedLink
                         },
+                        year: pub.Year,
                     }
                     ui.Render(template, bindings)
                 }

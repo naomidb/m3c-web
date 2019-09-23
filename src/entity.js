@@ -679,7 +679,7 @@ var entity = (function module() {
             return new Promise(function() {
                 client
                     .Entity(iri)
-                    .Link(vivo, "pmid")
+                    .Link(bibo, "pmid")
                     .Single(decodeString(makeLink))
             })
 
@@ -699,6 +699,29 @@ var entity = (function module() {
 
         this.Title = function Title(returnName) {
             return Name(client, iri, returnName)
+        }
+
+        this.Year = function Year(returnYear) {
+            return new Promise(function() {
+                client
+                    .Entity(iri)
+                    .Link(vivo, "dateTimeValue")
+                    .Link(vivo, "dateTime")
+                    .Single(extractYear)
+            })
+
+            function extractYear(dateTime) {
+                if (!dateTime || dateTime[0] != '"') {
+                    return
+                }
+
+                const year = dateTime.slice(1, 1 + "1984".length)
+                if (!parseInt(year)) {
+                    return
+                }
+
+                returnYear(year)
+            }
         }
     }
 
