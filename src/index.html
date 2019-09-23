@@ -24,6 +24,9 @@
     <!-- URL polyfill to support Internet Explorer -->
     <script crossorigin src="https://unpkg.com/@ungap/url-search-params@0.1.2/min.js"></script>
 
+    <!-- animate.css licensed under the MIT License -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.7.2/animate.min.css">
+
     <style>
         #links {
             display: table;
@@ -59,28 +62,31 @@
             background: rgba(0, 169, 224, 0.4);
         }
 
+        .hero-item:nth-child(n+2) {
+            display: none;
+        }
+
         .hero-item,
         .hero-item:visited {
             box-shadow: 3px 4px 5px rgba(0, 169, 224, 0.9);
             background: white;
             padding: 2em;
-            width: 80%;
             margin: auto;
         }
 
         .hero-item {
-            width: 80%;
+            width: 100%;
             max-width: 1200px;
+            display: flex;
             display: grid;
-            grid-template-columns: 2fr 5fr;
+            grid-template-columns: 1fr 4fr 10fr 1fr;
         }
 
-        .hero-item.person a {
-            justify-self: end;
+        .hero-item a.photo-frame {
             padding-right: 1em;
         }
 
-        .hero-item.person img.photo {
+        .hero-item img.photo {
             border-radius: 50%;
             border: 5px solid white;
             box-shadow: 0 0 3px gray;
@@ -88,9 +94,17 @@
             height: 200px;
         }
 
-        .hero-item.person p {
+        .hero-item p {
             align-self: center;
             text-align: justify;
+        }
+
+        .hero-item .animated {
+            background-color: white;
+        }
+
+        .animated {
+            animation-duration: 500ms;
         }
 
         .visuals {
@@ -105,6 +119,7 @@
             width: 95%;
             justify-content: center;
             justify-items: stretch;
+            padding-bottom: 1em;
         }
 
         .visuals div {
@@ -132,6 +147,13 @@
             padding: 0 1em;
         }
 
+        h3 {
+            text-shadow: 1px 1px 3px gray;
+            font-weight: 300;
+            margin: 0.5em auto;
+        }
+
+        /* Slider */
         .spotlight {
             display: block;
             font-size: larger;
@@ -141,11 +163,35 @@
             margin-bottom: 1em;
         }
 
-        h3 {
-            text-shadow: 1px 1px 3px gray;
-            font-weight: 300;
-            margin: 0.5em auto;
+        a.prev-link,
+        a.next-link {
+            height: 100%;
+            width: 100%;
+            color:rgba(0, 169, 224, 0.4);
         }
+
+        a.prev-link:hover,
+        a.next-link:hover {
+            color:rgba(0, 169, 224, 0.9);
+        }
+
+        div.prev,
+        div.next {
+            display: table;
+            height: 100%;
+            width: 100%;
+        }
+
+        div.prev i,
+        div.next i {
+            display: table-cell;
+            vertical-align: middle;
+            font-size: xx-large;
+        }
+
+        div.prev i { text-align: left; }
+        div.next i { text-align: right; }
+        /* End Slider */
 
         @media only screen and (max-width: 800px) {
             .hero {
@@ -157,22 +203,40 @@
                 width: 98%;
             }
 
-            .hero-item.person a {
+            a.next-link,
+            a.prev-link {
+                display: none;
+            }
+
+            .animated {
+                animation: unset;
+            }
+
+            .hero-item:nth-child(n+2) {
+                display: flex;
+                display: grid;
+            }
+
+            .hero-item a {
                 justify-self: center;
                 padding-right: 0;
             }
 
-            .hero-item.person p {
+            .hero-item p {
                 text-align: left;
                 padding: 0;
+            }
+
+            .hero-item a.photo-frame {
+                padding-right: 0;
             }
 
             .spotlight {
                 text-align: center;
                 margin-top: 0;
             }
-        }
 
+        }
 
         @media only screen and (max-width: 690px) {
            .wordcloud img {
@@ -248,27 +312,103 @@
 
             <div class="hero">
                 <div class="hero-item person">
-                    <a class="photo-frame" data-iri="https://vivo.metabolomics.info/individual/160"
-                        href="people.html?iri=https://vivo.metabolomics.info/individual/160">
-                        <img class="photo" alt="Rick Yost" src="https://cdn.pixabay.com/photo/2016/08/08/09/17/avatar-1577909_960_720.png" />
+                    <a class="prev-link">
+                        <div class="prev">
+                            <i class="fas fa-arrow-left"></i>
+                        </div>
+                    </a>
+
+                    <a class="photo-frame person" href="person.html?iri=https://vivo.metabolomics.info/individual/160">
+                        <img class="photo" alt="Rick Yost" src="https://vivo.metabolomics.info/file/n6097/yost.png" />
                         <div class="name">Rick Yost</div>
                     </a>
 
-                    <p class="about">
-                        <span class="spotlight">Spotlight</span>
-                        <strong>Dr. Richard A. Yost</strong> is the Robin and
-                        Jean Gibson Professor, College of Liberal Arts &amp;
-                        Sciences, and Professor and Head of Analytical Chemistry
-                        at the University of Florida. He currently serves on the
-                        Florida Board of Governors for the statewide university
-                        system and is Chair of the Advisory Council of Faculty
-                        Senates of Florida. He is past Chair of the UF Faculty
-                        Senate and has served on the UF Board of Trustees. His
-                        research is in Analytical Chemistry and Mass
-                        Spectrometry, with specializationsin trace biomedical
-                        analysis, imaging, and metabolomics.
-                    </p>
+                    <div class="about">
+                        <span class="spotlight">Person Spotlight</span>
+                        <p>
+                        <strong>Richard A Yost</strong> is an American scientist. He is a Professor and Head
+                        of Analytical Chemistry at the University of Florida. He received his BS degree in Chemistry in
+                        1974 from the University of Arizona, having performed undergraduate research in chromatography
+                        with Professor Mike Burke and his PhD degree in Analytical Chemistry in 1979 from Michigan
+                        State University, having performed graduate research with Professor Chris Enke. He then joined
+                        the faculty of the University of Florida.
+                        </p><p>
+                        He is the director of the Southeast Center for
+                        Integrated Metabolomics (SECIM) and of NIH&apos;s Metabolomics Consortium Coordinating Center
+                        (M3C). He is also a Professor of Pathology at both the University of Florida and the University
+                        of Utah/ARUP.
+                        </p>
+                    </div>
+
+                    <a class="next-link">
+                        <div class="next">
+                            <i class="fas fa-arrow-right"></i>
+                        </div>
+                    </a>
                 </div>
+
+                <div class="hero-item study">
+                    <a class="prev-link">
+                        <div class="prev">
+                            <i class="fas fa-arrow-left"></i>
+                        </div>
+                    </a>
+
+                    <a class="photo-frame person" href="person.html?iri=https://vivo.metabolomics.info/individual/583" >
+                        <img class="photo" alt="Megan Showalter" src="https://vivo.metabolomics.info/file/n4568/megan-showalter.jpeg" />
+                        <div class="name">Megan Showalter</div>
+                    </a>
+
+                    <div class="about">
+                        <span class="spotlight">Study Spotlight</span>
+                        <p>
+                            <a href="study.html?iri=https://vivo.metabolomics.info/individual/ST001246" class="study">
+                                <strong>TFPa/HADHA is required for fatty acid beta-oxidation and cardiolipin re-modeling in human cardiomyocytes (part-I)</strong>
+                            </a>
+                        </p><p>
+                            Mitochondrial trifunctional protein deficiency, due to mutations in hydratase subunit A (HADHA), results in sudden infant death syndrome (SIDS) with no cure. To reveal the disease etiology, we generated stem cell-derived cardiomyocytes from HADHA-deficient hiPSCs and accelerated their maturation via a novel, engineered MicroRNA Maturation Cocktail (MiMaC) that upregulated the epigenetic regulator, HOPX.
+                        </p><p>
+                            This study reveals that TFPa/HADHA, a MLCL-AT-like enzyme, is required for FAO and cardiolipin remodeling, essential for functional mitochondria in human cardiomyocytes.
+                        </p>
+                    </div>
+
+                    <a class="next-link">
+                        <div class="next">
+                            <i class="fas fa-arrow-right"></i>
+                        </div>
+                    </a>
+                </div>
+
+                <div class="hero-item project">
+                    <a class="prev-link">
+                        <div class="prev">
+                            <i class="fas fa-arrow-left"></i>
+                        </div>
+                    </a>
+
+                    <a class="photo-frame person" href="person.html?iri=https://vivo.metabolomics.info/individual/593">
+                        <img class="photo" alt="Rachel Culp-Hill" src="https://vivo.metabolomics.info/file/n2813/rachel-culp-hioll.jpg" />
+                        <div class="name">Rachel Culp-Hill</div>
+                    </a>
+
+                    <div class="about">
+                        <span class="spotlight">Project Spotlight</span>
+                        <p>
+                            <a href="project.html?iri=https://vivo.metabolomics.info/individual/PR000830" class="project">
+                                <strong>Trisomy 21 activates the kynurenine pathway via increased dosage of interferon receptors</strong>
+                            </a>
+                        </p><p>
+                            Trisomy 21 (T21) causes Down syndrome (DS), affecting immune and neurological function by unknown mechanisms. We report here a large metabolomics study of plasma and cerebrospinal fluid showing that people with DS produce elevated levels of kynurenine and quinolinic acid, two tryptophan catabolites with potent immunosuppressive and neurotoxic properties, respectively.
+                        </p>
+                    </div>
+
+                    <a class="next-link">
+                        <div class="next">
+                            <i class="fas fa-arrow-right"></i>
+                        </div>
+                    </a>
+                </div>
+
             </div>
 
             <div class="visuals">
@@ -322,12 +462,33 @@
                 addLink(items[i])
             }
 
-            const featuredPersonLink = document.querySelector(".hero-item.person a")
-            const featuredPersonIRI = featuredPersonLink.getAttribute("data-iri")
-            featuredPersonLink.href = m3c.ProfileLink("person", featuredPersonIRI)
+            const personLinks = document.querySelectorAll("a.person")
+            for (var i = 0; i < personLinks.length; i++) {
+                updateProfileLink("person", personLinks[i])
+            }
 
-            const person = entity.Person(client, featuredPersonIRI)
-            person.Photo(renderPhoto)
+            const studyLinks = document.querySelectorAll("a.study")
+            for (var i = 0; i < studyLinks.length; i++) {
+                updateProfileLink("study", studyLinks[i])
+            }
+
+            const projectLinks = document.querySelectorAll("a.project")
+            for (var i = 0; i < projectLinks.length; i++) {
+                updateProfileLink("project", projectLinks[i])
+            }
+
+            var lastSlide = new Date()
+            const sliderTimer = setInterval(slide, 1000) // Once per second
+
+            const nextLinks = document.querySelectorAll("a.next-link")
+            for (var i = 0; i < nextLinks.length; i++) {
+                addNextLinkClickHandler(nextLinks[i])
+            }
+
+            const prevLinks = document.querySelectorAll("a.prev-link")
+            for (var i = 0; i < prevLinks.length; i++) {
+                addPrevLinkClickHandler(prevLinks[i])
+            }
 
             function addLink(li) {
                 const concept = li.className
@@ -342,9 +503,84 @@
                 }
             }
 
-            function renderPhoto(url) {
-                featuredPersonLink.querySelector(".photo").src =
-                    m3c.PhotoURL(client.Endpoint, url)
+            function addNextLinkClickHandler(link) {
+                link.addEventListener("click", onNextClick)
+
+                function onNextClick(clickEvent) {
+                    if (clickEvent) {
+                        clickEvent.preventDefault()
+                        // Clicking the navigation arrows effectively stops the
+                        clearInterval(sliderTimer)
+                    }
+
+                    const item = link.parentElement
+                    const slider = item.parentElement
+                    const next = item.nextElementSibling
+
+                    item.addEventListener("animationend", afterAnimation)
+                    item.className = item.className.replace(/(animated|slide(In|Out)(Left|Right))/g, "")
+                    item.className = (item.className + " animated slideOutLeft").trim()
+
+                    function afterAnimation() {
+                        item.removeEventListener("animationend", afterAnimation)
+                        next.className = next.className.replace(/(animated|slide(In|Out)(Left|Right))/g, "")
+                        next.className = (next.className + " animated slideInRight").trim()
+                        slider.appendChild(item)
+                    }
+                }
+            }
+
+            function addPrevLinkClickHandler(link) {
+                link.addEventListener("click", onPrevClick)
+
+                function onPrevClick(clickEvent) {
+                    if (clickEvent) {
+                        clickEvent.preventDefault()
+                    }
+
+                    const item = link.parentElement
+                    const slider = item.parentElement
+                    const prev = slider.lastElementChild
+
+                    item.addEventListener("animationend", afterAnimation)
+                    item.className = item.className.replace(/(animated|slide(In|Out)(Left|Right))/g, "")
+                    item.className = (item.className + " animated slideOutRight").trim()
+
+                    function afterAnimation() {
+                        item.removeEventListener("animationend", afterAnimation)
+                        prev.className = prev.className.replace(/(animated|slide(In|Out)(Left|Right))/g, "")
+                        prev.className = (prev.className + " animated slideInLeft").trim()
+
+                        slider.insertBefore(prev, item)
+                    }
+                }
+            }
+
+            function slide() {
+                const fiveSecondsAgo = new Date()
+                fiveSecondsAgo.setSeconds(fiveSecondsAgo.getSeconds() - 5)
+
+                if (lastSlide < fiveSecondsAgo) {
+                    document.querySelector("a.next-link").click()
+                }
+            }
+
+            function updateProfileLink(concept, link) {
+                const fragment = concept + ".html?iri="
+                const start = link.href.indexOf(fragment)
+                const iri = link.href.slice(start + fragment.length)
+                console.log(concept, iri)
+
+                link.href = m3c.ProfileLink(concept, iri)
+                if (concept !== "person") {
+                    return
+                }
+
+                const person = entity.Person(client, iri)
+                person.Photo(function (url) {
+                    link.querySelector("img.photo").src =
+                        m3c.PhotoURL(client.Endpoint, url)
+                })
             }
         </script>
 
