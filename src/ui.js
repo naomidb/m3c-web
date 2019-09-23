@@ -185,13 +185,13 @@ var ui = (function module() {
 
                 case "string":
                 default:
-                    placeholder.innerText = data[key]
+                    placeholder.innerHTML = data[key]
                     break
             }
 
             function setText(element) {
                 return function callback(text) {
-                    element.innerText = text
+                    element.innerHTML = text
                 }
             }
         }
