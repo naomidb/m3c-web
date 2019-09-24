@@ -505,6 +505,7 @@
 
             function addNextLinkClickHandler(link) {
                 link.addEventListener("click", onNextClick)
+                link.slideNext = onNextClick
 
                 function onNextClick(clickEvent) {
                     if (clickEvent) {
@@ -521,11 +522,13 @@
                     item.className = item.className.replace(/(animated|slide(In|Out)(Left|Right))/g, "")
                     item.className = (item.className + " animated slideOutLeft").trim()
 
+                    lastSlide = new Date()
                     function afterAnimation() {
                         item.removeEventListener("animationend", afterAnimation)
                         next.className = next.className.replace(/(animated|slide(In|Out)(Left|Right))/g, "")
                         next.className = (next.className + " animated slideInRight").trim()
                         slider.appendChild(item)
+                        lastSlide = new Date()
                     }
                 }
             }
@@ -536,6 +539,8 @@
                 function onPrevClick(clickEvent) {
                     if (clickEvent) {
                         clickEvent.preventDefault()
+                        // Clicking the navigation arrows effectively stops the
+                        clearInterval(sliderTimer)
                     }
 
                     const item = link.parentElement
@@ -546,12 +551,14 @@
                     item.className = item.className.replace(/(animated|slide(In|Out)(Left|Right))/g, "")
                     item.className = (item.className + " animated slideOutRight").trim()
 
+                    lastSlide = new Date()
                     function afterAnimation() {
                         item.removeEventListener("animationend", afterAnimation)
                         prev.className = prev.className.replace(/(animated|slide(In|Out)(Left|Right))/g, "")
                         prev.className = (prev.className + " animated slideInLeft").trim()
 
                         slider.insertBefore(prev, item)
+                        lastSlide = new Date()
                     }
                 }
             }
@@ -561,7 +568,7 @@
                 fiveSecondsAgo.setSeconds(fiveSecondsAgo.getSeconds() - 5)
 
                 if (lastSlide < fiveSecondsAgo) {
-                    document.querySelector("a.next-link").click()
+                    document.querySelector("a.next-link").slideNext()
                 }
             }
 
@@ -569,7 +576,6 @@
                 const fragment = concept + ".html?iri="
                 const start = link.href.indexOf(fragment)
                 const iri = link.href.slice(start + fragment.length)
-                console.log(concept, iri)
 
                 link.href = m3c.ProfileLink(concept, iri)
                 if (concept !== "person") {
