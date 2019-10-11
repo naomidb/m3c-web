@@ -94,11 +94,13 @@ a:visited {
 /* Orange #bc581a
 Blue #00529b */
 
-.listing .facets {
+.listing .facet {
     background-color: white;
     box-shadow: 3px 4px 5px gray;
-    padding: 0em 1em;
+    padding: 0.1em 1em;
+    margin-bottom: 1em;
 }
+
 .listing .facets p {
     font-size: larger;
     font-weight: 300;

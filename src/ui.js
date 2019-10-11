@@ -99,8 +99,8 @@ var ui = (function module() {
             for (var i = 0; i < items.length; i++) {
                 const item = items[i]
 
-                if (remainingSets.some(isItemInSubset)) {
-                    // Item is in at least one of the sets of remaining items.
+                if (remainingSets.every(isItemInSubset)) {
+                    // Item is in every set of remaining items.
                     item.className = item.className.replace("hidden", "")
                     item.className = item.className.trim()
                     continue
