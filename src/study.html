@@ -276,6 +276,7 @@
                 const a = root.querySelector(".department")
                 if (!departmentIRI) {
                     a.parentElement.parentElement.removeChild(a.parentElement)
+                    return
                 }
 
                 entity.Name(client, departmentIRI, renderName)
@@ -327,6 +328,7 @@
                 const a = root.querySelector(".institute")
                 if (!instituteIRI) {
                     a.parentElement.parentElement.removeChild(a.parentElement)
+                    return
                 }
 
                 entity.Name(client, instituteIRI, renderName)
@@ -341,6 +343,7 @@
                 const a = root.querySelector(".laboratory")
                 if (!laboratoryIRI) {
                     a.parentElement.parentElement.removeChild(a.parentElement)
+                    return
                 }
 
                 entity.Name(client, laboratoryIRI, renderName)
