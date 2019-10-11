@@ -478,7 +478,7 @@
             }
 
             var lastSlide = new Date()
-            const sliderTimer = setInterval(slide, 1000) // Once per second
+            const sliderTimer = setInterval(slide, 1000) // Check every second
 
             const nextLinks = document.querySelectorAll("a.next-link")
             for (var i = 0; i < nextLinks.length; i++) {
@@ -564,10 +564,13 @@
             }
 
             function slide() {
-                const fiveSecondsAgo = new Date()
-                fiveSecondsAgo.setSeconds(fiveSecondsAgo.getSeconds() - 5)
+                const maxDurationSecs = 10
+                // Check to see if it has been 10 seconds since the last slide.
+                // If it has, then slide again.
+                const cutoff = new Date()
+                cutoff.setSeconds(cutoff.getSeconds() - maxDurationSecs)
 
-                if (lastSlide < fiveSecondsAgo) {
+                if (lastSlide < cutoff) {
                     document.querySelector("a.next-link").slideNext()
                 }
             }
