@@ -286,6 +286,12 @@ body.profile section {
     margin-bottom: 2em;
 }
 
+body.profile .loading {
+    width: 100%;
+    font-size: larger;
+    text-align: center;
+}
+
 body.profile section:first-of-type {
     margin-top: 2em;
 }
@@ -311,6 +317,12 @@ body.profile section p {
 
 body.profile section li {
     padding-bottom: 0.75em;
+}
+
+body.profile .fa-project-diagram,
+body.profile .fa-user,
+body.profile .fa-chart-line {
+    font-size: smaller;
 }
 
 @media only screen and (max-width: 450px) {

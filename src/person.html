@@ -149,6 +149,10 @@
                     </ul>
                 </div>
 
+                <div class="loading">
+                    <div class="fas fa-spinner fa-spin hidden"></div>
+                </div>
+
                 <section class="people">
                     <h2 class="people">
                         <a href="people.html">Collaborators</a>
@@ -229,8 +233,6 @@
 
         <script>
             const client = m3c.NewTPFClient()
-            client.OnLoading(() => console.log("Loading"))
-            client.OnDone(() => console.log("Done"))
             const uri = m3c.Subject()
             const root = document.getElementById("profile")
 
