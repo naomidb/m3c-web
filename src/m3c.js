@@ -113,9 +113,11 @@ var m3c = (function module() {
      * By default, if no `endpoint` is passed in the query string, the endpoint
      * of the TPF server is assumed to be at `/tpf/core` on the current server.
      *
+     * @param {Node} [loading]
+     *
      * @returns {tpf.Client}
      */
-    function NewTPFClient() {
+    function NewTPFClient(loading) {
         var endpoint = params.get("endpoint")
         if (!endpoint) {
             endpoint = defaultEndpoint
@@ -129,6 +131,8 @@ var m3c = (function module() {
 
         const client = new tpf.Client(endpoint)
         client.Endpoint = endpoint
+        patchFetch(client, loading)
+
         return client
     }
 
@@ -174,6 +178,75 @@ var m3c = (function module() {
      */
     function Subject() {
         return params.get("iri")
+    }
+
+    /* Monkey patch fetch to easily track when data loading occurs */
+    function patchFetch(client, loadingIcon) {
+        if (typeof window === "undefined" || !window.fetch || window._fetch) {
+            return
+        }
+
+        var fetches = 0
+        const loading = []
+        const done = []
+
+        function decrement() {
+            fetches -= 1
+            if (fetches === 0) {
+                done.forEach(function (callback) {
+                    setTimeout(callback, 1)
+                })
+            }
+        }
+
+        function increment() {
+            fetches += 1
+            if (fetches === 1) {
+                loading.forEach(function (callback) {
+                    setTimeout(callback, 1)
+                })
+            }
+        }
+
+        const fetch = window.fetch
+        window.fetch = function m3cFetch() {
+            increment()
+            return fetch
+                .apply(null, arguments)
+                .then(function (response) {
+                    decrement()
+                    return response
+                })
+                .catch(function (err) {
+                    decrement()
+                    throw err
+                })
+        }
+
+        client.OnLoading = function OnLoading(callback) {
+            loading.push(callback)
+        }
+
+        client.OnDone = function onDone(callback) {
+            done.push(callback)
+        }
+
+        // Setup automatic behavior to toggle loading icon.
+        if (!loadingIcon) {
+            loadingIcon = window.document.querySelector(".fa-spinner.fa-spin")
+            if (!loadingIcon) {
+                return
+            }
+        }
+
+        client.OnLoading(function () {
+            loadingIcon.className =
+                loadingIcon.className.replace("hidden", "").trim()
+        })
+
+        client.OnDone(function () {
+            loadingIcon.className = loadingIcon.className + " hidden"
+        })
     }
 
     // Module Exports

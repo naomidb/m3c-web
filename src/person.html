@@ -229,6 +229,8 @@
 
         <script>
             const client = m3c.NewTPFClient()
+            client.OnLoading(() => console.log("Loading"))
+            client.OnDone(() => console.log("Done"))
             const uri = m3c.Subject()
             const root = document.getElementById("profile")
 
