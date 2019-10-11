@@ -184,6 +184,38 @@ var entity = (function module() {
         return new publication(client, iri)
     }
 
+    function PublicationYears(client) {
+        const dateTimeValues = client.Query(null, vivo + "dateTimeValue", null)
+        const dateTimes = client.Query(null, vivo + "dateTime", null)
+
+        return Promise.all([dateTimeValues, dateTimes])
+            .then(function (results) {
+                const dateTimesToPubs = mapTriples(results[0], true)
+                const dateTimesToValues = mapTriples(results[1])
+
+                const years = {}
+                Object.keys(dateTimesToValues).forEach(function (dateTimeIRI) {
+                    const publicationIRI = dateTimesToPubs[dateTimeIRI]
+                    if (!publicationIRI) {
+                        return
+                    }
+                    const value = dateTimesToValues[dateTimeIRI]
+                    if (!value) {
+                        return
+                    }
+
+                    // Using January 2 works around issues with timezones.
+                    const date = parseDate(value.replace("-01-01", "-01-02"))
+                    const year = date.getFullYear()
+                    if (year && !isNaN(year)) {
+                        years[publicationIRI] = year.toString()
+                    }
+                })
+
+                return years
+            })
+    }
+
     function Publications(client) {
         return new Promise(function (resolve) {
             client
@@ -265,6 +297,26 @@ var entity = (function module() {
         return arr.reduce(function(acc, val) {
             return acc.concat(val)
         }, [])
+    }
+
+    /**
+     * Turns an array of triple objects into a mapping from Subject to Object.
+     * If `reverse` is set, then the mapping will be from Object to Subject.
+     *
+     * @param {{Subject: string, Predicate: string, Object: string}[]} triples
+     * @param {boolean} [reverse=false]
+     * @returns {{[key: string]: string}}
+     */
+    function mapTriples(triples, reverse) {
+        const mapping = {}
+        triples.forEach(function (triple) {
+            if (!reverse) {
+                mapping[triple.Subject] = triple.Object
+            } else {
+                mapping[triple.Object] = triple.Subject
+            }
+        })
+        return mapping
     }
 
     /**
@@ -950,6 +1002,7 @@ var entity = (function module() {
         Project: Project,
         Projects: Projects,
         Publication: Publication,
+        PublicationYears: PublicationYears,
         Publications: Publications,
         Studies: Studies,
         Study: Study,

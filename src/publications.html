@@ -56,6 +56,24 @@
                 </div>
 
                 <div class="facets">
+                    <div class="facet published">
+                        <p>Year Published</p>
+                        <div class="facet-controls">
+                            <a href="#" class="show">Show all</a>
+                            <a href="#" class="limit">Show fewer</a>
+                            <a href="#" class="reset">Uncheck all</a>
+                        </div>
+                        <ul>
+                            <li class="template">
+                                <label>
+                                    <input type="checkbox" class="box" />
+                                    <span class="name"></span>
+                                    <span class="count"></span>
+                                </label>
+                            </li>
+                        </ul>
+                    </div>
+
                     <div class="facet author">
                         <p>Author</p>
                         <div class="facet-controls">
@@ -81,6 +99,7 @@
                         <a href="#" class="name link"
                             target="_blank" rel="noopener noreferrer"></a>
                         <i class="fa fa-external-link-alt"></i>
+                        <span class="year"></span>
                         <div class="authors"></div>
                     </li>
                 </ol>
@@ -118,6 +137,7 @@
             const sorted = ui.SortedList(results, 1, sortByName)
             ctrlReverse.addEventListener("click", onCtrlReverseClick)
 
+            ui.SortedList(facets.querySelector(".published ul"), -1, sortByName)
             ui.SortedList(facets.querySelector(".author ul"), -1, sortByCount)
 
             // Query the TPF server for all publications and some related data.
@@ -131,6 +151,7 @@
                 entity.Publications(client),
                 entity.Names(client),
                 entity.Authorships(client),
+                entity.PublicationYears(client),
             ]
 
             Promise.all(promises)
@@ -138,6 +159,7 @@
                     data.publications = results[0]
                     data.names = results[1]
                     data.authors = {}
+                    data.years = results[3]
 
                     // authorship IRI => list of author and pub
                     const authorships = results[2]
@@ -175,8 +197,11 @@
                 })
                 .then(function automaticallyUpdateCount() {
                     if (data.publications.length > 5 + 1) {
-                        const orgfacet = root.querySelector(".facet.author")
-                        orgfacet.className = (orgfacet.className + " limit").trim()
+                        const facets = document.querySelectorAll(".facet")
+                        for (var i = 0; i < facets.length; i++) {
+                            var f = facets[i]
+                            f.className = (f.className + " limit").trim()
+                        }
                     }
 
                     const checkboxes = document.querySelectorAll(".facet input")
@@ -195,6 +220,10 @@
             // function whose name matches the class name of the facet's HTML
             // element.
             const filters = {
+                published: function published(selected, li) {
+                    const year = li.querySelector(".year")
+                    return selected.indexOf(year.innerText) !== -1
+                },
                 author: function author(selected, li) {
                     const authors = li.querySelector(".authors").innerText
                     for (var i = 0; i < selected.length; i++) {
@@ -256,11 +285,14 @@
                     return 0
                 })
 
+                const published = data.years[publicationIRI]
+
                 const bindings = {
                     link: {
                         href: m3c.ProfileLink("publication", publicationIRI.slice(1, -1)),
                     },
                     name: parseVIVOString(data.names[publicationIRI]),
+                    year: published ? published : null,
                     authors: authors ? authors.join(", ") : ""
                 }
 
@@ -268,6 +300,10 @@
 
                 for (var i = 0; i < authors.length; i++) {
                     facetsManager.Increment('author', authors[i], authors[i])
+                }
+
+                if (published) {
+                    facetsManager.Increment('published', bindings.year, bindings.year)
                 }
             }
 
