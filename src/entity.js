@@ -715,6 +715,10 @@ var entity = (function module() {
                     return
                 }
 
+                if (dateTime.length != '"1984-01-01T00:00:00"'.length) {
+                    return
+                }
+
                 const year = dateTime.slice(1, 1 + "1984".length)
                 if (!parseInt(year)) {
                     return
