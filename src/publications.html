@@ -24,6 +24,12 @@
     <!-- URL polyfill to support Internet Explorer -->
     <script crossorigin src="https://unpkg.com/@ungap/url-search-params@0.1.2/min.js"></script>
 
+    <style>
+        .disclaimer {
+            padding: 0.1em 1em;
+            text-align: left;
+        }
+    </style>
 </head>
 
 <body class="listing">
@@ -47,7 +53,7 @@
         </header>
 
         <div class="page">
-            <h1>Publications</h1>
+            <h1>PubMed Publications</h1>
             <div id="listing">
                 <div class="controls">
                     <div class="fa fa-spinner fa-spin hidden"></div>
@@ -91,6 +97,14 @@
                             </li>
                         </ul>
                     </div>
+
+                    <p class="disclaimer">
+                        Publication information from
+                        <a href="https://www.ncbi.nlm.nih.gov/pubmed/">PubMed</a>
+                        <i class="fa fa-external-link-alt"></i>.
+                        <br />
+                        <a href="https://github.com/ctsit/m3c-web/issues">Report an issue</a>
+                    </p>
                 </div>
 
                 <ol class="results">
