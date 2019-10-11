@@ -397,9 +397,8 @@
 
                 const node = root.querySelector(".submitted")
                 node.innerHTML =
-                    '<span class="sr-only">Submitted on</span>' +
                     '<i class="fas fa-cloud-upload-alt" aria-hidden="true">' +
-                    '</i> ' + formatted
+                    '</i> Submitted on ' + formatted
 
                 function pad(x) {
                     if (0 < x && x < 10) {
