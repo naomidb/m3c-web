@@ -179,11 +179,12 @@ Blue #00529b */
 }
 
 header {
-    padding: 0.5% 2% 0 2%;
+    padding: 1em 2em 1em 2.3em;
     background-color: white;
 
     display: flex;
     flex-wrap: wrap;
+    justify-content: center;
 }
 
 header h1,
@@ -206,17 +207,22 @@ header div.text h1,
 header div.text p {
     margin: 0;
     padding: 0;
-
 }
 
 header .spacer {
     flex-grow: 2;
 }
 
-header h2 {
-    text-align: right;
-    padding: 1em;
+header a {
     margin: 0;
+}
+
+header h2 {
+    display: inline-block;
+    padding: 1.195em 1em;
+    margin: 0;
+    font-size: 1.125em;
+    display: inline-block;
 }
 
 header h1 {
@@ -224,11 +230,15 @@ header h1 {
     line-height: 1.2;
 }
 
+header img {
+    margin-right: 1em;
+}
+
 header a h1,
 header a h2,
 header a p,
 #profile section h2 a {
-    color: black;
+    color: #444444;
 }
 
 header a:hover h1,
@@ -239,12 +249,24 @@ header a:focus h1,
     text-shadow: none;
 }
 
+header a.current h2,
 header a:focus h2,
 header a:hover h2 {
     background-color: #00a9e0;
     color: white;
     text-shadow: none;
 }
+
+#menuToggle {
+    display: none;
+    margin: auto;
+    font-size: large;
+    padding-right: 0.5em;
+}
+
+#menuToggle        i.fa-times { display: none; }
+#menuToggle.opened i.fa-times { display: unset; }
+#menuToggle.opened i.fa-bars { display: none; }
 
 .listing .page h1 {
     text-align: center;
@@ -328,6 +350,10 @@ body.profile .fa-chart-line {
 }
 
 @media only screen and (max-width: 450px) {
+    header {
+        padding: 1em 0;
+    }
+
     body.profile h1.name {
         font-size: 1.6em;
     }
@@ -393,14 +419,28 @@ footer p:last-of-type { text-align: right }
     }
 }
 
-@media only screen and (max-width: 680px) {
-    header div.text {
-        display: unset;
+@media only screen and (max-width: 1048px) {
+    header {
+        font-size: smaller;
+    }
+}
+
+@media only screen and (max-width: 888px) {
+    #menuToggle {
+        display: inline;
     }
 
-    header div.text p {
+    header nav {
         display: none;
     }
+
+    header nav.opened {
+        display: block;
+        padding-top: 1em;
+    }
+}
+
+@media only screen and (max-width: 680px) {
 
     header h1 {
         font-size: 1.9em;
@@ -418,16 +458,15 @@ footer p:last-of-type { text-align: right }
         vertical-align: middle;
     }
 
-    header a,
     header h2 {
         width: 100%;
         text-align: center;
     }
 
     header h2 {
-        padding: 0;
+        padding: 0.5em 0;
         margin: 0;
-        margin-bottom: 0.5em;
+        box-shadow: 0 0 1px rgba(0,0,0, 0.1);
     }
 
     footer {
@@ -464,13 +503,6 @@ footer p:last-of-type { text-align: right }
 }
 
 @media only screen and (max-width: 320px) {
-    header img,
-    header h1 {
-        display: block;
-        text-align: center;
-        margin: auto;
-    }
-
     footer {
         font-size: smaller;
     }
