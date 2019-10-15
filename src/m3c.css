@@ -179,11 +179,12 @@ Blue #00529b */
 }
 
 header {
-    padding: 0.5% 2% 0 2%;
+    padding: 1em 2em 1em 2.3em;
     background-color: white;
 
     display: flex;
     flex-wrap: wrap;
+    justify-content: center;
 }
 
 header h1,
@@ -206,17 +207,22 @@ header div.text h1,
 header div.text p {
     margin: 0;
     padding: 0;
-
 }
 
 header .spacer {
     flex-grow: 2;
 }
 
-header h2 {
-    text-align: right;
-    padding: 1em;
+header a {
     margin: 0;
+}
+
+header h2 {
+    display: inline-block;
+    padding: 1.195em 1em;
+    margin: 0;
+    font-size: 1.125em;
+    display: inline-block;
 }
 
 header h1 {
@@ -224,11 +230,15 @@ header h1 {
     line-height: 1.2;
 }
 
+header img {
+    margin-right: 1em;
+}
+
 header a h1,
 header a h2,
 header a p,
 #profile section h2 a {
-    color: black;
+    color: #444444;
 }
 
 header a:hover h1,
@@ -239,6 +249,7 @@ header a:focus h1,
     text-shadow: none;
 }
 
+header a.current h2,
 header a:focus h2,
 header a:hover h2 {
     background-color: #00a9e0;
@@ -328,6 +339,10 @@ body.profile .fa-chart-line {
 }
 
 @media only screen and (max-width: 450px) {
+    header {
+        padding: 0;
+    }
+
     body.profile h1.name {
         font-size: 1.6em;
     }
@@ -393,7 +408,20 @@ footer p:last-of-type { text-align: right }
     }
 }
 
+@media only screen and (max-width: 1048px) {
+    header {
+        font-size: smaller;
+    }
+}
+
+@media only screen and (max-width: 888px) {
+    header .spacer {
+        display: none;
+    }
+}
+
 @media only screen and (max-width: 680px) {
+
     header div.text {
         display: unset;
     }
@@ -425,9 +453,9 @@ footer p:last-of-type { text-align: right }
     }
 
     header h2 {
-        padding: 0;
+        padding: 0.5em 0;
         margin: 0;
-        margin-bottom: 0.5em;
+        box-shadow: 0 0 1px rgba(0,0,0, 0.1);
     }
 
     footer {
