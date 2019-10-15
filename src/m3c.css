@@ -257,6 +257,17 @@ header a:hover h2 {
     text-shadow: none;
 }
 
+#menuToggle {
+    display: none;
+    margin: auto;
+    font-size: large;
+    padding-right: 0.5em;
+}
+
+#menuToggle        i.fa-times { display: none; }
+#menuToggle.opened i.fa-times { display: unset; }
+#menuToggle.opened i.fa-bars { display: none; }
+
 .listing .page h1 {
     text-align: center;
     text-shadow: 1px 1px 3px gray;
@@ -340,7 +351,7 @@ body.profile .fa-chart-line {
 
 @media only screen and (max-width: 450px) {
     header {
-        padding: 0;
+        padding: 1em 0;
     }
 
     body.profile h1.name {
@@ -415,20 +426,21 @@ footer p:last-of-type { text-align: right }
 }
 
 @media only screen and (max-width: 888px) {
-    header .spacer {
+    #menuToggle {
+        display: inline;
+    }
+
+    header nav {
         display: none;
+    }
+
+    header nav.opened {
+        display: block;
+        padding-top: 1em;
     }
 }
 
 @media only screen and (max-width: 680px) {
-
-    header div.text {
-        display: unset;
-    }
-
-    header div.text p {
-        display: none;
-    }
 
     header h1 {
         font-size: 1.9em;
@@ -446,7 +458,6 @@ footer p:last-of-type { text-align: right }
         vertical-align: middle;
     }
 
-    header a,
     header h2 {
         width: 100%;
         text-align: center;
@@ -492,13 +503,6 @@ footer p:last-of-type { text-align: right }
 }
 
 @media only screen and (max-width: 320px) {
-    header img,
-    header h1 {
-        display: block;
-        text-align: center;
-        margin: auto;
-    }
-
     footer {
         font-size: smaller;
     }

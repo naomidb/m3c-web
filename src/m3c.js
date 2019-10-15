@@ -129,11 +129,35 @@ var m3c = (function module() {
             links[i].href = m3c.DashboardLink()
         }
 
+        /* Listen for nav menu toggle */
+        const menuToggle = document.getElementById("menuToggle")
+        if (menuToggle) {
+            menuToggle.addEventListener("click", toggleMenu)
+        }
+
         const client = new tpf.Client(endpoint)
         client.Endpoint = endpoint
         patchFetch(client, loading)
 
         return client
+    }
+
+    function toggleMenu() {
+        const menuToggle = document.getElementById("menuToggle")
+        const nav = document.querySelector("header nav")
+
+        if (!menuToggle || !nav) {
+            return
+        }
+
+        if (nav.className.indexOf("opened") === -1) {
+            menuToggle.className = (menuToggle.className + " opened").trim()
+            nav.className = (nav.className + " opened").trim()
+            return
+        }
+
+        menuToggle.className = menuToggle.className.replace("opened", "").trim()
+        nav.className = nav.className.replace("opened", "").trim()
     }
 
     /**
