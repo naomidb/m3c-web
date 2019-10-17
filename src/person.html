@@ -55,7 +55,9 @@
         }
 
         div.info-frame { padding-left: 2em; }
-        i.fas, i.far   { margin-left: -1.5em; }
+        div.info-frame i.fas, i.far {
+            margin-left: -1.5em;
+        }
 
         section.people {
             padding-top: 2em;
@@ -64,10 +66,6 @@
 
         .year {
             color: gray;
-        }
-
-        i.fa-external-link-alt {
-            vertical-align: top;
         }
 
         @media only screen and (max-width: 450px) {
@@ -196,13 +194,18 @@
                 <section class="publications">
                     <h2 class="publications">
                         <a href="publications.html">Publications</a>
+                        <span class="disclaimer">
+                            Data from
+                            <a href="https://www.ncbi.nlm.nih.gov/pubmed/">PubMed</a>
+                            <i class="fas fa-external-link-alt"></i>
+                        </span>
                     </h2>
                     <ul class="publications">
                         <li class="template">
                             <a href="#" class="title link"
                                target="_blank" rel="noopener noreferrer"></a>
+                            <i class="fas fa-external-link-alt"></i>
                             <span class="year"></span>
-                            <i class="fa fa-external-link-alt"></i>
                         </li>
                     </ul>
                 </section>
@@ -221,7 +224,7 @@
                     <ul class="datasets">
                         <li class="template">
                             <a href="#" class="link name" target="_blank"></a>
-                            <i class="fa fa-external-link-alt"></i>
+                            <i class="fas fa-external-link-alt"></i>
                         </li>
                     </ul>
                 </section>
@@ -230,12 +233,7 @@
             <p class="disclaimer">
                 Data from the
                 <a href="https://www.metabolomicsworkbench.org">Metabolomics Workbench</a>
-                <i class="fa fa-external-link-alt"></i>.
-            </p>
-            <p class="disclaimer">
-                Publication information from
-                <a href="https://www.ncbi.nlm.nih.gov/pubmed/">PubMed</a>
-                <i class="fa fa-external-link-alt"></i>.
+                <i class="fas fa-external-link-alt"></i>.
             </p>
         </div>
 

@@ -178,6 +178,11 @@ Blue #00529b */
     padding-right: 2%;
 }
 
+.publications .disclaimer {
+    display: block;
+    padding-right: unset;
+}
+
 header {
     padding: 1em 2em 1em 2.3em;
     background-color: white;
@@ -237,7 +242,7 @@ header img {
 header a h1,
 header a h2,
 header a p,
-#profile section h2 a {
+#profile section h2 > a {
     color: #444444;
 }
 
@@ -388,6 +393,7 @@ body.profile .fa-chart-line {
 /***********/
 
 .fa-external-link-alt {
+    vertical-align: super;
     font-size: 0.7em;
     color: gray;
 }
