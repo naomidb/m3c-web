@@ -307,12 +307,24 @@ header a:hover h2 {
 body.profile h1.name {
     text-align: center;
     text-shadow: 1px 1px 3px gray;
+    margin-bottom: 0;
+}
+
+#profile {
+    text-align: center;
+}
+
+div.info-frame {
+    display: inline-block;
+    margin: 0 auto;
+    text-align: left;
 }
 
 body.profile section {
     display: table;
     width: 100%;
     margin-bottom: 2em;
+    text-align: left;
 }
 
 body.profile .loading {
@@ -346,12 +358,6 @@ body.profile section p {
 
 body.profile section li {
     padding-bottom: 0.75em;
-}
-
-body.profile .fa-project-diagram,
-body.profile .fa-user,
-body.profile .fa-chart-line {
-    font-size: smaller;
 }
 
 @media only screen and (max-width: 450px) {

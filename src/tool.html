@@ -6,7 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
 
-    <title>M3C Profile</title>
+    <title>M3C Tool Profile</title>
 
     <!-- Font Awesome for neat icons. -->
     <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.8.1/css/all.css"
@@ -25,15 +25,10 @@
     <script crossorigin src="https://unpkg.com/@ungap/url-search-params@0.1.2/min.js"></script>
 
     <style>
-        .properties > * {
-            text-align: center;
+        .info-frame > * {
             display: block;
             padding-top: 0.25em;
             padding-bottom: 0.25em;
-        }
-
-        #profile > h1.name {
-            margin-bottom: 0;
         }
 
         .listing-link {
@@ -93,16 +88,20 @@
         <div id="content" class="page">
             <div id="profile">
                 <h1 class="name"></h1>
+                <div>
+                    <i class="fas fa-tools" aria-hidden="true"></i>
+                    <a href="tools.html" class="listing-link">
+                        Tool
+                    </a>
+                </div>
 
-                <div class="properties">
-                    <a href="tools.html" class="listing-link">Tool</a>
-
+                <div class="info-frame">
                     <div class="website">
                         Website:
                         <a href="#" class="link" target="_blank">
                             <span class="text"></span>
-                            <i class="fas fa-external-link-alt"></i>
                         </a>
+                        <i class="fas fa-external-link-alt"></i>
                     </div>
 
                     <div class="license">
@@ -234,6 +233,12 @@
             }
 
             function renderLicense(license) {
+                if (!license || !license.name) {
+                    const element = root.querySelector(".license")
+                    element.parentElement.removeChild(element)
+                    return
+                }
+
                 const name = root.querySelector(".license-name")
                 const url = root.querySelector(".license-url")
 

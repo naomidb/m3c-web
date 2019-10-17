@@ -6,7 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
 
-    <title>M3C Profile</title>
+    <title>M3C Organization Profile</title>
 
     <!-- Font Awesome for neat icons. -->
     <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.8.1/css/all.css"
@@ -34,13 +34,12 @@
             text-shadow: 1px 1px 3px gray;
         }
 
-        div.info-frame {
+        .type {
+            padding-bottom: 1em;
             text-align: center;
-            margin-top: 0.5em;
         }
 
-        .info-frame > div.type {
-            padding-bottom: 1em;
+        .type a {
             font-size: larger;
         }
 
@@ -137,18 +136,18 @@
             <div id="profile">
                 <h1 class="name"></h1>
 
+                <div class="type">
+                    <i class="fas"></i>
+                    <a href="organizations.html" class="link typename"></a>
+                </div>
+
                 <div class="info-frame">
-                    <div class="organization"></div>
-                    <div class="type">
-                        <i class="fas"></i>
-                        <a href="organizations.html" class="link typename"></a>
-                    </div>
                     <div class="parent">
-                        <i class="fas"></i>
+                        <i class="fas fa-fw"></i>
                         <a href="#" class="link typename"></a>
                     </div>
                      <div class="grandparent">
-                        <i class="fas"></i>
+                        <i class="fas fa-fw"></i>
                         <a href="#" class="link typename"></a>
                     </div>
                 </div>
@@ -314,7 +313,7 @@
                 }
 
                 function renderType(type) {
-                    t.querySelector("i.fas").className = "fas fa-" + icons[type]
+                    t.querySelector("i.fas").className += " fa-" + icons[type]
                     t.querySelector(".link").href = m3c.ProfileLink("organization", grandparentIRI)
                 }
             }
@@ -337,14 +336,14 @@
                 }
 
                 function renderType(type) {
-                    t.querySelector("i.fas").className = "fas fa-" + icons[type]
+                    t.querySelector("i.fas").className += " fa-" + icons[type]
                     t.querySelector(".link").href = m3c.ProfileLink("organization", parentIRI)
                 }
             }
 
             function renderType(type) {
                 const t = root.querySelector(".type")
-                t.querySelector("i.fas").className = "fas fa-" + icons[type]
+                t.querySelector("i.fas").className += " fa-" + icons[type]
                 t.querySelector(".link").href = m3c.ListingLink("organizations")
                 t.querySelector(".typename").innerText = type
             }
