@@ -45,18 +45,7 @@ var entity = (function module() {
      * @param {tpf.Client} client
      */
     function AssociatedWiths(client) {
-        return client
-            .Query(null, base + "associatedWith", null)
-            .then(function(triples) {
-                const associatedWith = {}
-                triples.forEach(function(triple) {
-                    if (!associatedWith[triple.Subject]) {
-                        associatedWith[triple.Subject] = []
-                    }
-                    associatedWith[triple.Subject].push(triple.Object)
-                })
-                return associatedWith
-            })
+        return client.MapAll(base + "associatedWith")
     }
 
     function Departments(client) {
@@ -68,15 +57,7 @@ var entity = (function module() {
     }
 
     function FundingOrganizations(client) {
-        return client
-            .Query(null, base + "managedBy", null)
-            .then(function(triples) {
-                const fundedBys = {}
-                triples.forEach(function(triple) {
-                    fundedBys[triple.Subject] = triple.Object
-                })
-                return fundedBys
-            })
+        return client.Map(base + "managedBy")
     }
 
     function Institutes(client) {
@@ -140,15 +121,7 @@ var entity = (function module() {
      * @param {tpf.Client} client
      */
     function Parents(client) {
-        return client
-            .Query(null, base + "hasParent", null)
-            .then(function (triples) {
-                const parents = {}
-                triples.forEach(function (triple) {
-                    parents[triple.Subject] = triple.Object
-                })
-                return parents
-            })
+        return client.Map(base + "hasParent")
     }
 
     /**
