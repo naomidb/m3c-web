@@ -438,7 +438,7 @@
                     return
                 }
 
-                node.innerText = summary
+                node.innerText = summary.replace(/\\"/g, '"')
             }
         </script>
 
