@@ -6,7 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
 
-    <title>M3C Profile</title>
+    <title>M3C Person Profile</title>
 
     <!-- Font Awesome for neat icons. -->
     <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.8.1/css/all.css"
@@ -52,14 +52,25 @@
             vertical-align: top;
             margin-top: 0.5em;
             width: 50%;
+            text-align: left;
         }
 
         div.info-frame { padding-left: 2em; }
-        i.fas, i.far   { margin-left: -1.5em; }
+        div.info-frame i.fas, i.far {
+            margin-left: -1.5em;
+        }
 
         section.people {
             padding-top: 2em;
             border-top: 1px solid gray;
+        }
+
+        .year {
+            color: gray;
+        }
+
+        body.profile h1.name {
+            margin-bottom: 0.5em;
         }
 
         @media only screen and (max-width: 450px) {
@@ -106,12 +117,31 @@
                 </div>
             </a>
             <div class="spacer"></div>
-            <a href="index.html" class="dashboard-link">
-                <h2>People Portal</h2>
+            <a id="menuToggle" aria-label="Toggle site navigation links">
+                <i class="fas fa-fw fa-bars" aria-hidden="true"></i>
+                <i class="fas fa-fw fa-times" aria-hidden="true"></i>
             </a>
+            <nav>
+                <a href="#content" class="sr-only">Skip to Content</a>
+                <a href="index.html" class="dashboard-link current">
+                    <h2>People Portal</h2>
+                </a>
+                <a href="https://metabolomics.info/about/">
+                    <h2>About</h2>
+                </a>
+                <a href="https://metabolomics.info/events/">
+                    <h2>Events</h2>
+                </a>
+                <a href="https://metabolomics.info/contact/">
+                    <h2>Contact</h2>
+                </a>
+                <a href="https://metabolomics.info/consortium/">
+                    <h2>NIH Consortium</h2>
+                </a>
+            </nav>
         </header>
 
-        <div class="page">
+        <div id="content" class="page">
             <div id="profile">
                 <h1 class="name"></h1>
 
@@ -141,6 +171,10 @@
                     </ul>
                 </div>
 
+                <div class="loading">
+                    <div class="fas fa-spinner fa-spin hidden"></div>
+                </div>
+
                 <section class="people">
                     <h2 class="people">
                         <a href="people.html">Collaborators</a>
@@ -165,12 +199,18 @@
                 <section class="publications">
                     <h2 class="publications">
                         <a href="publications.html">Publications</a>
+                        <span class="disclaimer">
+                            Data from
+                            <a href="https://www.ncbi.nlm.nih.gov/pubmed/">PubMed</a>
+                            <i class="fas fa-external-link-alt"></i>
+                        </span>
                     </h2>
                     <ul class="publications">
                         <li class="template">
                             <a href="#" class="title link"
                                target="_blank" rel="noopener noreferrer"></a>
-                            <i class="fa fa-external-link-alt"></i>
+                            <i class="fas fa-external-link-alt"></i>
+                            <span class="year"></span>
                         </li>
                     </ul>
                 </section>
@@ -189,7 +229,7 @@
                     <ul class="datasets">
                         <li class="template">
                             <a href="#" class="link name" target="_blank"></a>
-                            <i class="fa fa-external-link-alt"></i>
+                            <i class="fas fa-external-link-alt"></i>
                         </li>
                     </ul>
                 </section>
@@ -197,7 +237,8 @@
             </div>
             <p class="disclaimer">
                 Data from the
-                <a href="https://www.metabolomicsworkbench.org">Metabolomics Workbench</a>.
+                <a href="https://www.metabolomicsworkbench.org">Metabolomics Workbench</a>
+                <i class="fas fa-external-link-alt"></i>.
             </p>
         </div>
 
@@ -281,7 +322,6 @@
                 }
 
                 const classes = li.className
-                console.log(name, classes)
 
                 if (classes.indexOf("institute") !== -1) {
                     return "   " + name
@@ -462,6 +502,7 @@
                         link: {
                             href: pub.PubMedLink
                         },
+                        year: pub.Year,
                     }
                     ui.Render(template, bindings)
                 }

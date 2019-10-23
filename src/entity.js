@@ -45,18 +45,7 @@ var entity = (function module() {
      * @param {tpf.Client} client
      */
     function AssociatedWiths(client) {
-        return client
-            .Query(null, base + "associatedWith", null)
-            .then(function(triples) {
-                const associatedWith = {}
-                triples.forEach(function(triple) {
-                    if (!associatedWith[triple.Subject]) {
-                        associatedWith[triple.Subject] = []
-                    }
-                    associatedWith[triple.Subject].push(triple.Object)
-                })
-                return associatedWith
-            })
+        return client.MapAll(base + "associatedWith")
     }
 
     function Departments(client) {
@@ -68,15 +57,7 @@ var entity = (function module() {
     }
 
     function FundingOrganizations(client) {
-        return client
-            .Query(null, base + "managedBy", null)
-            .then(function(triples) {
-                const fundedBys = {}
-                triples.forEach(function(triple) {
-                    fundedBys[triple.Subject] = triple.Object
-                })
-                return fundedBys
-            })
+        return client.Map(base + "managedBy")
     }
 
     function Institutes(client) {
@@ -140,15 +121,7 @@ var entity = (function module() {
      * @param {tpf.Client} client
      */
     function Parents(client) {
-        return client
-            .Query(null, base + "hasParent", null)
-            .then(function (triples) {
-                const parents = {}
-                triples.forEach(function (triple) {
-                    parents[triple.Subject] = triple.Object
-                })
-                return parents
-            })
+        return client.Map(base + "hasParent")
     }
 
     /**
@@ -182,6 +155,38 @@ var entity = (function module() {
 
     function Publication(client, iri) {
         return new publication(client, iri)
+    }
+
+    function PublicationYears(client) {
+        const dateTimeValues = client.Query(null, vivo + "dateTimeValue", null)
+        const dateTimes = client.Query(null, vivo + "dateTime", null)
+
+        return Promise.all([dateTimeValues, dateTimes])
+            .then(function (results) {
+                const dateTimesToPubs = mapTriples(results[0], true)
+                const dateTimesToValues = mapTriples(results[1])
+
+                const years = {}
+                Object.keys(dateTimesToValues).forEach(function (dateTimeIRI) {
+                    const publicationIRI = dateTimesToPubs[dateTimeIRI]
+                    if (!publicationIRI) {
+                        return
+                    }
+                    const value = dateTimesToValues[dateTimeIRI]
+                    if (!value) {
+                        return
+                    }
+
+                    // Using January 2 works around issues with timezones.
+                    const date = parseDate(value.replace("-01-01", "-01-02"))
+                    const year = date.getFullYear()
+                    if (year && !isNaN(year)) {
+                        years[publicationIRI] = year.toString()
+                    }
+                })
+
+                return years
+            })
     }
 
     function Publications(client) {
@@ -265,6 +270,26 @@ var entity = (function module() {
         return arr.reduce(function(acc, val) {
             return acc.concat(val)
         }, [])
+    }
+
+    /**
+     * Turns an array of triple objects into a mapping from Subject to Object.
+     * If `reverse` is set, then the mapping will be from Object to Subject.
+     *
+     * @param {{Subject: string, Predicate: string, Object: string}[]} triples
+     * @param {boolean} [reverse=false]
+     * @returns {{[key: string]: string}}
+     */
+    function mapTriples(triples, reverse) {
+        const mapping = {}
+        triples.forEach(function (triple) {
+            if (!reverse) {
+                mapping[triple.Subject] = triple.Object
+            } else {
+                mapping[triple.Object] = triple.Subject
+            }
+        })
+        return mapping
     }
 
     /**
@@ -640,6 +665,15 @@ var entity = (function module() {
             })
         }
 
+        this.Summary = function Summary(returnSummary) {
+            return new Promise(function() {
+                client
+                    .Entity(iri)
+                    .Link(base, "summary")
+                    .Single(decodeString(returnSummary))
+            })
+        }
+
         this.Tools = function Tools(returnTools) {
             return new Promise(function(resolve) {
                 self.People(resolve)
@@ -670,7 +704,7 @@ var entity = (function module() {
             return new Promise(function() {
                 client
                     .Entity(iri)
-                    .Link(vivo, "pmid")
+                    .Link(bibo, "pmid")
                     .Single(decodeString(makeLink))
             })
 
@@ -690,6 +724,33 @@ var entity = (function module() {
 
         this.Title = function Title(returnName) {
             return Name(client, iri, returnName)
+        }
+
+        this.Year = function Year(returnYear) {
+            return new Promise(function() {
+                client
+                    .Entity(iri)
+                    .Link(vivo, "dateTimeValue")
+                    .Link(vivo, "dateTime")
+                    .Single(extractYear)
+            })
+
+            function extractYear(dateTime) {
+                if (!dateTime || dateTime[0] != '"') {
+                    return
+                }
+
+                if (dateTime.length != '"1984-01-01T00:00:00"'.length) {
+                    return
+                }
+
+                const year = dateTime.slice(1, 1 + "1984".length)
+                if (!parseInt(year)) {
+                    return
+                }
+
+                returnYear(year)
+            }
         }
     }
 
@@ -814,6 +875,15 @@ var entity = (function module() {
                     })
             })
         }
+
+        this.Summary = function Summary(returnSummary) {
+            return new Promise(function() {
+                client
+                    .Entity(iri)
+                    .Link(base, "summary")
+                    .Single(decodeString(returnSummary))
+            })
+        }
     }
 
     function tool(client, iri) {
@@ -905,6 +975,7 @@ var entity = (function module() {
         Project: Project,
         Projects: Projects,
         Publication: Publication,
+        PublicationYears: PublicationYears,
         Publications: Publications,
         Studies: Studies,
         Study: Study,

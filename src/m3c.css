@@ -94,11 +94,13 @@ a:visited {
 /* Orange #bc581a
 Blue #00529b */
 
-.listing .facets {
+.listing .facet {
     background-color: white;
     box-shadow: 3px 4px 5px gray;
-    padding: 0em 1em;
+    padding: 0.1em 1em;
+    margin-bottom: 1em;
 }
+
 .listing .facets p {
     font-size: larger;
     font-weight: 300;
@@ -176,12 +178,18 @@ Blue #00529b */
     padding-right: 2%;
 }
 
+.publications .disclaimer {
+    display: block;
+    padding-right: unset;
+}
+
 header {
-    padding: 0.5% 2% 0 2%;
+    padding: 1em 2em 1em 2.3em;
     background-color: white;
 
     display: flex;
     flex-wrap: wrap;
+    justify-content: center;
 }
 
 header h1,
@@ -204,17 +212,22 @@ header div.text h1,
 header div.text p {
     margin: 0;
     padding: 0;
-
 }
 
 header .spacer {
     flex-grow: 2;
 }
 
-header h2 {
-    text-align: right;
-    padding: 1em;
+header a {
     margin: 0;
+}
+
+header h2 {
+    display: inline-block;
+    padding: 1.195em 1em;
+    margin: 0;
+    font-size: 1.125em;
+    display: inline-block;
 }
 
 header h1 {
@@ -222,11 +235,15 @@ header h1 {
     line-height: 1.2;
 }
 
+header img {
+    margin-right: 1em;
+}
+
 header a h1,
 header a h2,
 header a p,
-#profile section h2 a {
-    color: black;
+#profile section h2 > a {
+    color: #444444;
 }
 
 header a:hover h1,
@@ -237,12 +254,24 @@ header a:focus h1,
     text-shadow: none;
 }
 
+header a.current h2,
 header a:focus h2,
 header a:hover h2 {
     background-color: #00a9e0;
     color: white;
     text-shadow: none;
 }
+
+#menuToggle {
+    display: none;
+    margin: auto;
+    font-size: large;
+    padding-right: 0.5em;
+}
+
+#menuToggle        i.fa-times { display: none; }
+#menuToggle.opened i.fa-times { display: unset; }
+#menuToggle.opened i.fa-bars { display: none; }
 
 .listing .page h1 {
     text-align: center;
@@ -278,12 +307,30 @@ header a:hover h2 {
 body.profile h1.name {
     text-align: center;
     text-shadow: 1px 1px 3px gray;
+    margin-bottom: 0;
+}
+
+#profile {
+    text-align: center;
+}
+
+div.info-frame {
+    display: inline-block;
+    margin: 0 auto;
+    text-align: left;
 }
 
 body.profile section {
     display: table;
     width: 100%;
     margin-bottom: 2em;
+    text-align: left;
+}
+
+body.profile .loading {
+    width: 100%;
+    font-size: larger;
+    text-align: center;
 }
 
 body.profile section:first-of-type {
@@ -303,11 +350,21 @@ body.profile section ul {
     display: table-cell;
 }
 
+body.profile section p {
+    padding-top: 0.25em;
+    padding-left: 1.75em;
+    display: table-cell;
+}
+
 body.profile section li {
     padding-bottom: 0.75em;
 }
 
 @media only screen and (max-width: 450px) {
+    header {
+        padding: 1em 0;
+    }
+
     body.profile h1.name {
         font-size: 1.6em;
     }
@@ -331,6 +388,7 @@ body.profile section li {
         text-align: left;
     }
 
+    body.profile section p,
     body.profile section ul {
         display: block;
         padding-left: 0;
@@ -341,6 +399,7 @@ body.profile section li {
 /***********/
 
 .fa-external-link-alt {
+    vertical-align: super;
     font-size: 0.7em;
     color: gray;
 }
@@ -372,14 +431,28 @@ footer p:last-of-type { text-align: right }
     }
 }
 
-@media only screen and (max-width: 680px) {
-    header div.text {
-        display: unset;
+@media only screen and (max-width: 1048px) {
+    header {
+        font-size: smaller;
+    }
+}
+
+@media only screen and (max-width: 888px) {
+    #menuToggle {
+        display: inline;
     }
 
-    header div.text p {
+    header nav {
         display: none;
     }
+
+    header nav.opened {
+        display: block;
+        padding-top: 1em;
+    }
+}
+
+@media only screen and (max-width: 680px) {
 
     header h1 {
         font-size: 1.9em;
@@ -397,16 +470,15 @@ footer p:last-of-type { text-align: right }
         vertical-align: middle;
     }
 
-    header a,
     header h2 {
         width: 100%;
         text-align: center;
     }
 
     header h2 {
-        padding: 0;
+        padding: 0.5em 0;
         margin: 0;
-        margin-bottom: 0.5em;
+        box-shadow: 0 0 1px rgba(0,0,0, 0.1);
     }
 
     footer {
@@ -443,13 +515,6 @@ footer p:last-of-type { text-align: right }
 }
 
 @media only screen and (max-width: 320px) {
-    header img,
-    header h1 {
-        display: block;
-        text-align: center;
-        margin: auto;
-    }
-
     footer {
         font-size: smaller;
     }

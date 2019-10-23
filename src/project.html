@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
 
-    <title>M3C Profile</title>
+    <title>M3C Project Profile</title>
 
     <!-- Font Awesome for neat icons. -->
     <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.8.1/css/all.css"
@@ -34,15 +34,17 @@
         .projects-link {
             font-size: larger;
             padding-top: 0;
-            padding-bottom: 1em;
-        }
-
-        #profile > h1.name {
-            margin-bottom: 0;
         }
 
         .mwb {
             font-size: smaller;
+        }
+
+        p.summary {
+            text-align: justify;
+            max-width: 1024px;
+            margin-left: auto;
+            margin-right: auto;
         }
     </style>
 
@@ -63,23 +65,56 @@
                 </div>
             </a>
             <div class="spacer"></div>
-            <a href="index.html" class="dashboard-link">
-                <h2>People Portal</h2>
+            <a id="menuToggle" aria-label="Toggle site navigation links">
+                <i class="fas fa-fw fa-bars" aria-hidden="true"></i>
+                <i class="fas fa-fw fa-times" aria-hidden="true"></i>
             </a>
+            <nav>
+                <a href="#content" class="sr-only">Skip to Content</a>
+                <a href="index.html" class="dashboard-link current">
+                    <h2>People Portal</h2>
+                </a>
+                <a href="https://metabolomics.info/about/">
+                    <h2>About</h2>
+                </a>
+                <a href="https://metabolomics.info/events/">
+                    <h2>Events</h2>
+                </a>
+                <a href="https://metabolomics.info/contact/">
+                    <h2>Contact</h2>
+                </a>
+                <a href="https://metabolomics.info/consortium/">
+                    <h2>NIH Consortium</h2>
+                </a>
+            </nav>
         </header>
 
-        <div class="page">
+        <div id="content" class="page">
             <div id="profile">
                 <h1 class="name"></h1>
 
                 <div class="properties">
-                    <a href="projects.html" class="projects-link">Project</a>
+                    <div>
+                        <i class="fas fa-project-diagram"></i>
+                        <a href="projects.html" class="projects-link">
+                            Project
+                        </a>
+                    </div>
 
                     <a href="https://www.metabolomicsworkbench.org/data/DRCCMetadata.php?Mode=Project" class="mwb" target="_blank">
                     View project on Metabolomics Workbench
-                    <i class="fa fa-external-link-alt"></i>
+                    <i class="fas fa-external-link-alt"></i>
                     </a>
                 </div>
+
+                <div class="loading">
+                    <div class="fas fa-spinner fa-spin hidden"></div>
+                </div>
+
+                <section>
+                    <h2>Summary</h2>
+                    <p class="summary"></p>
+                </section>
 
                 <section class="organizations">
                     <h2 class="organizations">
@@ -127,7 +162,7 @@
                     <ul class="datasets">
                         <li class="template">
                             <a href="#" class="link name" target="_blank"></a>
-                            <i class="fa fa-external-link-alt"></i>
+                            <i class="fas fa-external-link-alt"></i>
                         </li>
                     </ul>
                 </section>
@@ -142,7 +177,8 @@
             </div>
             <p class="disclaimer">
                 Data from the
-                <a href="https://www.metabolomicsworkbench.org">Metabolomics Workbench</a>.
+                <a href="https://www.metabolomicsworkbench.org">Metabolomics Workbench</a>
+                <i class="fas fa-external-link-alt"></i>.
             </p>
         </div>
 
@@ -171,6 +207,7 @@
             const project = entity.Project(client, uri)
             project.ID(renderID)
             project.Name(renderName)
+            project.Summary(renderSummary)
             project.Institute(renderInstitute)
             project.Department(renderDepartment)
             project.Laboratory(renderLaboratory)
@@ -279,6 +316,7 @@
                 const a = root.querySelector(".department")
                 if (!departmentIRI) {
                     a.parentElement.parentElement.removeChild(a.parentElement)
+                    return
                 }
 
                 entity.Name(client, departmentIRI, renderName)
@@ -302,6 +340,7 @@
                 const a = root.querySelector(".institute")
                 if (!instituteIRI) {
                     a.parentElement.parentElement.removeChild(a.parentElement)
+                    return
                 }
 
                 entity.Name(client, instituteIRI, renderName)
@@ -316,6 +355,7 @@
                 const a = root.querySelector(".laboratory")
                 if (!laboratoryIRI) {
                     a.parentElement.parentElement.removeChild(a.parentElement)
+                    return
                 }
 
                 entity.Name(client, laboratoryIRI, renderName)
@@ -344,6 +384,17 @@
 
                 name = name.trim()
                 root.querySelector(".name").innerHTML = name
+            }
+
+            function renderSummary(summary) {
+                const node = root.querySelector(".summary")
+
+                if (!summary) {
+                    node.innerHTML = "<em>None</em>"
+                    return
+                }
+
+                node.innerText = summary
             }
         </script>
 

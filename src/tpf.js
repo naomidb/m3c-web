@@ -48,6 +48,84 @@ var tpf = (function module() {
         }
 
         /**
+         * Maps subject-IRIs to object-IRIs with a given `predicate`.
+         *
+         * Unlike {@link Client#MapAll}, this expects a one-to-one mapping
+         * between subject and object.
+         *
+         * **Example**: get a map of person to their one and only VCard
+         *
+         *    new Client("https://vivo.metabolomics.info/tpf/core")
+         *       .Map("http://purl.obolibrary.org/obo/ARG_2000028",
+         *            function (map) { // Print James's one and only VCard
+         *                var vcard = map["https://vivo.metabolomics.info/individual/n007"]
+         *                console.log(vcard)
+         *            })
+         * @param {string} predicate
+         * @param {({[subjectIRI: string]: string})} [callback]
+         * @returns {Promise<{[subjectIRI: string]: string}>}
+         */
+
+        this.Map = function Map(predicate, callback) {
+            return this
+                .Query(null, predicate, null)
+                .then(function (triples) {
+                    const map = {}
+
+                    triples.forEach(function (triple) {
+                        map[triple.Subject] = triple.Object
+                    })
+
+                    if (callback) {
+                        callback(map)
+                    }
+
+                    return map
+                })
+        }
+
+        /**
+         * Maps subject-IRIs to a list of object-IRIs with a given `predicate`.
+         *
+         * Maps are represented as JavaScript objects. The subject-IRIs are the
+         * JavaScript object's properties and their values are a list of
+         * object-IRIs.
+         *
+         * **Example**: get a map of Person to their VCards
+         *
+         *    new Client("https://vivo.metabolomics.info/tpf/core")
+         *       .MapAll("http://purl.obolibrary.org/obo/ARG_2000028",
+         *            function (map) { // Print James's VCards
+         *                var person =
+         *                    "https://vivo.metabolomics.info/individual/n007"
+         *                console.log(map[person])
+         *            })
+         * @param {string} predicate
+         * @param {({[subjectIRI: string]: string[]})} [callback]
+         * @returns {Promise<{[subjectIRI: string]: string[]}>}
+         */
+        this.MapAll = function MapAll(predicate, callback) {
+            return this
+                .Query(null, predicate, null)
+                .then(function (triples) {
+                    const map = {}
+
+                    triples.forEach(function (triple) {
+                        if (!map[triple.Subject]) {
+                            map[triple.Subject] = []
+                        }
+                        map[triple.Subject].push(triple.Object)
+                    })
+
+                    if (callback) {
+                        callback(map)
+                    }
+
+                    return map
+                })
+        }
+
+        /**
          * Query the TPF server.
          *
          * @param {string} subject
